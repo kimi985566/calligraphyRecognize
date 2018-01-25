@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +17,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-/**
- * Created by kimi9 on 2018/1/22.
- */
 
 public class LoginMainActivity extends AppCompatActivity {
 
@@ -35,10 +30,6 @@ public class LoginMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login_main);
         initViews();
         initAnims();
-        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-            finish();
-            return;
-        }
     }
 
     private void initViews() {
@@ -62,7 +53,9 @@ public class LoginMainActivity extends AppCompatActivity {
         //获取屏幕高度
         WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics metrics = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(metrics);
+        if (manager != null) {
+            manager.getDefaultDisplay().getMetrics(metrics);
+        }
         int screenHeight = metrics.heightPixels;
 
         //通过测量，获取ivLogo的高度
