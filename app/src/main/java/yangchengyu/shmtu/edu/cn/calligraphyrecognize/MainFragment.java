@@ -65,7 +65,7 @@ public class MainFragment extends Fragment {
     }
 
     private void initMainCamera(View view) {
-        //to be done
+        //to be continued
     }
 
     private void initSetting(View view) {
