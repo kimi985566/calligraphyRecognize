@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="@string/item_hot"
+        android:icon="@drawable/ic_menu_hot" />
+
+    <item
+        android:title="@string/item_camera"
+        android:icon="@drawable/ic_menu_camera" />
+
+    <item
+        android:title="@string/item_setting"
+        android:icon="@drawable/ic_menu_setting" />
+
+</menu>

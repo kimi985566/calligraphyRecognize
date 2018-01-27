@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
@@ -29,10 +30,15 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     public long exitTime;
+    private int[] tabColors;
+    private boolean useMenuResource = true;
+
     private MainFragment mMainFragment;
     private MainViewPagerAdapter mMainViewPagerAdapter;
     private Handler mHandler = new Handler();
+
     private AHBottomNavigation mBottomNavigation;
+    private AHBottomNavigationAdapter navigationAdapter;
     private AHBottomNavigationViewPager mAHBottomNavigationViewPager;
     private FloatingActionButton mFloatingActionButton;
     private ArrayList<AHBottomNavigationItem> mBottomNavigationItems = new ArrayList<>();
@@ -57,18 +63,25 @@ public class MainActivity extends AppCompatActivity {
         mAHBottomNavigationViewPager = findViewById(R.id.vp_Main);
         mFloatingActionButton = findViewById(R.id.fab_Main);
 
-        AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, R.color.color_tab_1);
-        AHBottomNavigationItem item_camera = new AHBottomNavigationItem(R.string.item_camera, R.drawable.ic_menu_camera, R.color.color_tab_2);
-        AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_setting, R.color.color_tab_3);
+        if (useMenuResource) {
+            tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
+            navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu_3);
+            navigationAdapter.setupWithBottomNavigation(mBottomNavigation, tabColors);
+        } else {
+            AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, R.color.color_tab_1);
+            AHBottomNavigationItem item_camera = new AHBottomNavigationItem(R.string.item_camera, R.drawable.ic_menu_camera, R.color.color_tab_2);
+            AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_setting, R.color.color_tab_3);
 
-        mBottomNavigationItems.add(item_hot);
-        mBottomNavigationItems.add(item_camera);
-        mBottomNavigationItems.add(item_setting);
+            mBottomNavigationItems.add(item_hot);
+            mBottomNavigationItems.add(item_camera);
+            mBottomNavigationItems.add(item_setting);
 
-        mBottomNavigation.addItems(mBottomNavigationItems);
+            mBottomNavigation.addItems(mBottomNavigationItems);
+        }
+
         mBottomNavigation.manageFloatingActionButtonBehavior(mFloatingActionButton);
-        mBottomNavigation.setColored(true);
         mBottomNavigation.setTranslucentNavigationEnabled(true);
+        mBottomNavigation.setColored(true);
         mBottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
         mBottomNavigation.setCurrentItem(0);
 
@@ -108,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                             .alpha(1)
                             .scaleX(1)
                             .scaleY(1)
-                            .setDuration(500)
+                            .setDuration(300)
                             .setInterpolator(new OvershootInterpolator())
                             .setListener(new Animator.AnimatorListener() {
                                 @Override
@@ -167,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                                 .start();
                     }
                 }
+
                 return true;
             }
         });
