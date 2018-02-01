@@ -16,6 +16,8 @@
     <color name="color_notification_back">#ffcd33</color>
     <color name="color_notification_text">#3E4757</color>
 
+    <color name="control_background">#cc4285f4</color>
+
     <array name="tab_colors">
         <item name="tab_1">#FF4081</item>
         <item name="tab_2">#303F9F</item>

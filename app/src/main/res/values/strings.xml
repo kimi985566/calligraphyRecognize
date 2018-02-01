@@ -6,4 +6,6 @@
     <string name="item_hot">热门</string>
     <string name="item_camera">拍照识别</string>
     <string name="item_setting">设置</string>
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
 </resources>
