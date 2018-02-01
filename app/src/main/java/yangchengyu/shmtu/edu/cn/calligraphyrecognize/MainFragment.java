@@ -12,14 +12,15 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
 
 public class MainFragment extends Fragment {
 
-    private FrameLayout mFragmentContainer;
-    private RecyclerView mRecyclerView;
+    private FrameLayout mFragmentMainContainer;
+    private RecyclerView mFragmentMainRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
     public static MainFragment newInstance(int index) {
@@ -49,23 +50,24 @@ public class MainFragment extends Fragment {
     }
 
     private void initMainList(View view) {
-        mFragmentContainer = view.findViewById(R.id.fragment_container);
-        mRecyclerView = view.findViewById(R.id.fragment_recycle_view);
-        mRecyclerView.setHasFixedSize(true);
+        mFragmentMainContainer = view.findViewById(R.id.fragment_main_container);
+        mFragmentMainRecyclerView = view.findViewById(R.id.fragment_main_recycle_view);
+        mFragmentMainRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mFragmentMainRecyclerView.setLayoutManager(mLayoutManager);
 
         ArrayList<String> itemsData = new ArrayList<>();
         for (int i = 0; i < 25; i++) {
             itemsData.add("Fragment " + getArguments().getInt("index", -1) + " / Item " + i);
         }
 
-        MainAdapter mainAdapter = new MainAdapter(itemsData);
-        mRecyclerView.setAdapter(mainAdapter);
+        RecycleViewMainAdapter mainAdapter = new RecycleViewMainAdapter(itemsData);
+        mFragmentMainRecyclerView.setAdapter(mainAdapter);
     }
 
     private void initMainCamera(View view) {
-        //to be continued
+
+
     }
 
     private void initSetting(View view) {
@@ -73,23 +75,22 @@ public class MainFragment extends Fragment {
     }
 
     public void refresh() {
-        if (getArguments().getInt("index", 0) > 0 && mRecyclerView != null) {
-            mRecyclerView.smoothScrollToPosition(0);
+        if (getArguments().getInt("index", 0) > 0 && mFragmentMainRecyclerView != null) {
+            mFragmentMainRecyclerView.smoothScrollToPosition(0);
         }
     }
 
     public void willBeDisplayed() {
-        // Do what you want here, for example animate the content
-        if (mFragmentContainer != null) {
+        if (mFragmentMainContainer != null) {
             Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
-            mFragmentContainer.startAnimation(fadeIn);
+            mFragmentMainContainer.startAnimation(fadeIn);
         }
     }
 
     public void willBeHidden() {
-        if (mFragmentContainer != null) {
+        if (mFragmentMainContainer != null) {
             Animation fadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
-            mFragmentContainer.startAnimation(fadeOut);
+            mFragmentMainContainer.startAnimation(fadeOut);
         }
     }
 }

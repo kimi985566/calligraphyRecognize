@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
             tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
             navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu_3);
             navigationAdapter.setupWithBottomNavigation(mBottomNavigation, tabColors);
+            mBottomNavigation.setBehaviorTranslationEnabled(true);
         } else {
             AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, R.color.color_tab_1);
             AHBottomNavigationItem item_camera = new AHBottomNavigationItem(R.string.item_camera, R.drawable.ic_menu_camera, R.color.color_tab_2);
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigation.setColored(true);
         mBottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
         mBottomNavigation.setCurrentItem(0);
+        mAHBottomNavigationViewPager.setCurrentItem(0);
 
         mBottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
@@ -111,8 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 mMainFragment.willBeDisplayed();
 
                 if (position == 0) {
-                    mBottomNavigation.setNotification("", 0);
-
+                    mAHBottomNavigationViewPager.setCurrentItem(0);
                     mFloatingActionButton.setVisibility(View.VISIBLE);
                     mFloatingActionButton.setAlpha(0f);
                     mFloatingActionButton.setScaleX(0f);

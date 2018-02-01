@@ -25,6 +25,11 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
         fragments.add(MainFragment.newInstance(2));
     }
 
+    public MainViewPagerAdapter(FragmentManager fm, ArrayList<MainFragment> fragments) {
+        super(fm);
+        this.fragments = fragments;
+    }
+
     @Override
     public Fragment getItem(int position) {
         return fragments.get(position);
@@ -46,4 +51,5 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
     public MainFragment getCurrentFragment() {
         return currentFragment;
     }
+
 }

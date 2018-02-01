@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Created by kimi9 on 2018/1/25.
  */
 
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
+public class RecycleViewMainAdapter extends RecyclerView.Adapter<RecycleViewMainAdapter.ViewHolder> {
 
     private ArrayList<String> mDataset = new ArrayList<>();
 
@@ -25,13 +25,17 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         }
     }
 
-    public MainAdapter(ArrayList<String> dataset) {
+    public RecycleViewMainAdapter(ArrayList<String> dataset) {
         mDataset.clear();
         mDataset.addAll(dataset);
     }
 
+    public RecycleViewMainAdapter() {
+
+    }
+
     @Override
-    public MainAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecycleViewMainAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
