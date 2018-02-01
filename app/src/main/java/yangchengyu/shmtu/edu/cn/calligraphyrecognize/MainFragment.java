@@ -56,7 +56,7 @@ public class MainFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mFragmentMainRecyclerView.setLayoutManager(mLayoutManager);
 
-        ArrayList<String> itemsData  = new ArrayList<>();
+        ArrayList<String> itemsData = new ArrayList<>();
         for (int i = 0; i < 25; i++) {
             itemsData.add("Fragment " + getArguments().getInt("index", -1) + " / Item " + i);
         }
