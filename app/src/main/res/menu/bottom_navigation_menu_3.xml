@@ -5,8 +5,8 @@
         android:icon="@drawable/ic_menu_hot" />
 
     <item
-        android:title="@string/item_camera"
-        android:icon="@drawable/ic_menu_camera" />
+        android:title="@string/item_content"
+        android:icon="@drawable/ic_menu_content" />
 
     <item
         android:title="@string/item_setting"

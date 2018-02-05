@@ -2,13 +2,12 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,14 +15,11 @@ import android.support.v7.app.AppCompatDelegate;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
-import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 
 import java.util.ArrayList;
 
@@ -70,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             mBottomNavigation.setBehaviorTranslationEnabled(true);
         } else {
             AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, R.color.color_tab_1);
-            AHBottomNavigationItem item_camera = new AHBottomNavigationItem(R.string.item_camera, R.drawable.ic_menu_camera, R.color.color_tab_2);
+            AHBottomNavigationItem item_camera = new AHBottomNavigationItem(R.string.item_content, R.drawable.ic_camera, R.color.color_tab_2);
             AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_setting, R.color.color_tab_3);
 
             mBottomNavigationItems.add(item_hot);
@@ -191,6 +187,14 @@ public class MainActivity extends AppCompatActivity {
         mAHBottomNavigationViewPager.setAdapter(mMainViewPagerAdapter);
 
         mMainFragment = mMainViewPagerAdapter.getCurrentFragment();
+
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,CameraActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
