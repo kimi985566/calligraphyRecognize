@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.Camera2BasicFragment;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 
 public class CameraActivity extends AppCompatActivity {
 

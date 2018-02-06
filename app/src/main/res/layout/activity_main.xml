@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="yangchengyu.shmtu.edu.cn.calligraphyrecognize.MainActivity">
+    tools:context="yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.MainActivity">
 
     <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
         android:id="@+id/vp_Main"

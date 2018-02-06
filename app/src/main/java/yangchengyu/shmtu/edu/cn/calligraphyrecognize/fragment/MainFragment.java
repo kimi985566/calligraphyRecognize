@@ -1,4 +1,4 @@
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment;
 
 
 import android.Manifest;
@@ -22,6 +22,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
+
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainAdapter;
 
 
 public class MainFragment extends Fragment

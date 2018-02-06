@@ -1,4 +1,4 @@
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -7,11 +7,9 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -20,13 +18,14 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+
 public class StartActivity extends AppCompatActivity {
 
     private ImageView mivLogo;
     private TextView mtvAppName;
     final Handler mHandler = new Handler();
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,11 +34,15 @@ public class StartActivity extends AppCompatActivity {
         initAnimations();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initViews() {
         mtvAppName = findViewById(R.id.tv_app_name);
         mivLogo = findViewById(R.id.iv_logo);
-        Typeface typeface = getResources().getFont(R.font.lixukefonts);
+        Typeface typeface;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            typeface = getResources().getFont(R.font.lixukefonts);
+        } else {
+            typeface = Typeface.createFromAsset(getAssets(), "lixukefonts.ttf");
+        }
         mtvAppName.setTypeface(typeface);
     }
 

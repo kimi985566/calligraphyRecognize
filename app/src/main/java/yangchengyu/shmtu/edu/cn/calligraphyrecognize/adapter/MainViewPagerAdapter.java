@@ -1,4 +1,4 @@
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 
 /**
  * Created by kimi9 on 2018/1/26.

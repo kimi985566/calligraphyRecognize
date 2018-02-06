@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils;
 
 import android.content.Context;
 import android.util.AttributeSet;

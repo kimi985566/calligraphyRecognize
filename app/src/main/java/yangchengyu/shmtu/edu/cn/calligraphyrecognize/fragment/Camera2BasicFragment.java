@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment;
 
 import android.Manifest;
 import android.app.Activity;
@@ -70,6 +70,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.AutoFitTextureView;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 
 public class Camera2BasicFragment extends Fragment
         implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {

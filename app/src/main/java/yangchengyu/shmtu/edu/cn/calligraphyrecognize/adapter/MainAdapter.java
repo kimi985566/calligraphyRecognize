@@ -1,6 +1,5 @@
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 
 /**
  * Created by kimi9 on 2018/1/25.
@@ -17,8 +17,6 @@ import java.util.List;
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     private ArrayList<String> mDataset = new ArrayList<>();
-    private Context context;
-    private List<MsgBean> dataList;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mTextView;
@@ -32,12 +30,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     public MainAdapter(ArrayList<String> dataset) {
         mDataset.clear();
         mDataset.addAll(dataset);
-    }
-
-    public MainAdapter(Context context, List<MsgBean> dataList) {
-        this.context = context;
-        this.dataList = dataList;
-
     }
 
     @Override

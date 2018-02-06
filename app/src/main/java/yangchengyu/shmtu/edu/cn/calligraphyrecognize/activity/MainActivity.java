@@ -1,8 +1,6 @@
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
 import android.animation.Animator;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,9 +16,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -29,6 +25,10 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 
 import java.util.ArrayList;
+
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainViewPagerAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 
 import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.R.color.color_tab_1;
 
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private MainFragment mMainFragment;
     private MainViewPagerAdapter mMainViewPagerAdapter;
     private Handler mHandler = new Handler();
-    private MainActivity mMainActivity;
 
     private AHBottomNavigation mBottomNavigation;
     private AHBottomNavigationAdapter navigationAdapter;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 .getBoolean("translucentNavigation", false);
         setTheme(enabledTranslucentNavigation ? R.style.AppTheme_TranslucentNavigation : R.style.AppTheme);
         setContentView(R.layout.activity_main);
-        mWindow=this.getWindow();
+        mWindow = this.getWindow();
         initUI();
     }
 
@@ -67,9 +66,7 @@ public class MainActivity extends AppCompatActivity {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         }
 
-        mBottomNavigation = findViewById(R.id.bn_Main);
-        mAHBottomNavigationViewPager = findViewById(R.id.vp_Main);
-        mFloatingActionButton = findViewById(R.id.fab_Main);
+        bindView();
 
         if (useMenuResource) {
             tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
@@ -98,29 +95,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
-                switch (position) {
-                    case 0:
-                        getSupportActionBar().setTitle(R.string.item_hot);
-                        int color_hot = Color.parseColor("#FF4081");
-                        @SuppressLint("ResourceAsColor") ColorDrawable colorDrawable_hot = new ColorDrawable(color_hot);
-                        getSupportActionBar().setBackgroundDrawable(colorDrawable_hot);
-                        mWindow.setStatusBarColor(color_hot);
-                        break;
-                    case 1:
-                        getSupportActionBar().setTitle(R.string.item_content);
-                        int color_content = Color.parseColor("#303F9F");
-                        @SuppressLint("ResourceAsColor") ColorDrawable colorDrawable_content = new ColorDrawable(color_content);
-                        getSupportActionBar().setBackgroundDrawable(colorDrawable_content);
-                        mWindow.setStatusBarColor(color_content);
-                        break;
-                    case 2:
-                        getSupportActionBar().setTitle(R.string.item_setting);
-                        int color_setting = Color.parseColor("#00886A");
-                        @SuppressLint("ResourceAsColor") ColorDrawable colorDrawable_setting = new ColorDrawable(color_setting);
-                        getSupportActionBar().setBackgroundDrawable(colorDrawable_setting);
-                        mWindow.setStatusBarColor(color_setting);
-                        break;
-                }
+                change_status_action_bar_color(position);
 
                 if (mMainFragment == null) {
                     mMainFragment = mMainViewPagerAdapter.getCurrentFragment();
@@ -213,12 +188,37 @@ public class MainActivity extends AppCompatActivity {
                                 .start();
                     }
                 }
-
                 return true;
+            }
+
+            private void change_status_action_bar_color(int position) {
+                switch (position) {
+                    case 0:
+                        getSupportActionBar().setTitle(R.string.item_hot);
+                        int color_hot = Color.parseColor("#FF4081");
+                        ColorDrawable colorDrawable_hot = new ColorDrawable(color_hot);
+                        getSupportActionBar().setBackgroundDrawable(colorDrawable_hot);
+                        mWindow.setStatusBarColor(color_hot);
+                        break;
+                    case 1:
+                        getSupportActionBar().setTitle(R.string.item_content);
+                        int color_content = Color.parseColor("#303F9F");
+                        ColorDrawable colorDrawable_content = new ColorDrawable(color_content);
+                        getSupportActionBar().setBackgroundDrawable(colorDrawable_content);
+                        mWindow.setStatusBarColor(color_content);
+                        break;
+                    case 2:
+                        getSupportActionBar().setTitle(R.string.item_setting);
+                        int color_setting = Color.parseColor("#00886A");
+                        ColorDrawable colorDrawable_setting = new ColorDrawable(color_setting);
+                        getSupportActionBar().setBackgroundDrawable(colorDrawable_setting);
+                        mWindow.setStatusBarColor(color_setting);
+                        break;
+                }
             }
         });
 
-        mAHBottomNavigationViewPager.setOffscreenPageLimit(4);
+        mAHBottomNavigationViewPager.setOffscreenPageLimit(3);
         mMainViewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
         mAHBottomNavigationViewPager.setAdapter(mMainViewPagerAdapter);
 
@@ -234,6 +234,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void bindView() {
+        mBottomNavigation = findViewById(R.id.bn_Main);
+        mAHBottomNavigationViewPager = findViewById(R.id.vp_Main);
+        mFloatingActionButton = findViewById(R.id.fab_Main);
+    }
 
     @Override
     protected void onDestroy() {
