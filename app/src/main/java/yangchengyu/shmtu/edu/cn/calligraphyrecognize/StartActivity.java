@@ -7,9 +7,11 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -18,28 +20,30 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class LoginMainActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity {
 
     private ImageView mivLogo;
     private TextView mtvAppName;
     final Handler mHandler = new Handler();
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_main);
+        setContentView(R.layout.activity_start);
         initViews();
-        initAnims();
+        initAnimations();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initViews() {
         mtvAppName = findViewById(R.id.tv_app_name);
         mivLogo = findViewById(R.id.iv_logo);
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "lixukefonts.ttf");
+        Typeface typeface = getResources().getFont(R.font.lixukefonts);
         mtvAppName.setTypeface(typeface);
     }
 
-    private void initAnims() {
+    private void initAnimations() {
         //初始化底部App Name
         //以控件自身所在的位置为原点，从下方距离原点200像素的位置移动到原点
         ObjectAnimator tranAppName = ObjectAnimator.ofFloat(mtvAppName, "translationY", 200, 0);
@@ -90,7 +94,7 @@ public class LoginMainActivity extends AppCompatActivity {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(LoginMainActivity.this, MainActivity.class);
+                Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }

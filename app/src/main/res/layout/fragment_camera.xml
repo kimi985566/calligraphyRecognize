@@ -7,14 +7,14 @@
     android:layout_height="wrap_content">
 
     <yangchengyu.shmtu.edu.cn.calligraphyrecognize.AutoFitTextureView
-        android:id="@+id/texture"
+        android:id="@+id/fragment_camera_texture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"/>
 
     <FrameLayout
-        android:id="@+id/control"
+        android:id="@+id/fragment_camera_fl_control"
         android:layout_width="match_parent"
         android:layout_height="152dp"
         android:layout_alignParentBottom="true"
@@ -22,21 +22,13 @@
         android:background="@color/control_background">
 
         <Button
-            android:id="@+id/picture"
+            android:id="@+id/fragment_camera_btn_picture"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:background="@drawable/take_photo_button"
             android:elevation="6dp"/>
 
-        <Button
-            android:id="@+id/info"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginRight="50dp"
-            android:background="@drawable/ic_fragment_flash_auto"
-            android:elevation="6dp"/>
     </FrameLayout>
 
 </RelativeLayout>

@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void gotoLogin() {
-        Intent intent = new Intent(SplashActivity.this, LoginMainActivity.class);
+        Intent intent = new Intent(SplashActivity.this, StartActivity.class);
         startActivity(intent);
         finish();
         //取消界面跳转时的动画，使启动页的logo图片与注册、登录主页的logo图片完美衔接

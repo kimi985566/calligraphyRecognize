@@ -1,5 +1,6 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,14 +8,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kimi9 on 2018/1/25.
  */
 
-public class RecycleViewMainAdapter extends RecyclerView.Adapter<RecycleViewMainAdapter.ViewHolder> {
+public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     private ArrayList<String> mDataset = new ArrayList<>();
+    private Context context;
+    private List<MsgBean> dataList;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mTextView;
@@ -25,17 +29,19 @@ public class RecycleViewMainAdapter extends RecyclerView.Adapter<RecycleViewMain
         }
     }
 
-    public RecycleViewMainAdapter(ArrayList<String> dataset) {
+    public MainAdapter(ArrayList<String> dataset) {
         mDataset.clear();
         mDataset.addAll(dataset);
     }
 
-    public RecycleViewMainAdapter() {
+    public MainAdapter(Context context, List<MsgBean> dataList) {
+        this.context = context;
+        this.dataList = dataList;
 
     }
 
     @Override
-    public RecycleViewMainAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MainAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;

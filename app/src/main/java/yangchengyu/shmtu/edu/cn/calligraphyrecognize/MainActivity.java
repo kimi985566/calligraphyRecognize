@@ -1,8 +1,12 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -14,6 +18,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -22,6 +29,8 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 
 import java.util.ArrayList;
+
+import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.R.color.color_tab_1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,12 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private MainFragment mMainFragment;
     private MainViewPagerAdapter mMainViewPagerAdapter;
     private Handler mHandler = new Handler();
+    private MainActivity mMainActivity;
 
     private AHBottomNavigation mBottomNavigation;
     private AHBottomNavigationAdapter navigationAdapter;
     private AHBottomNavigationViewPager mAHBottomNavigationViewPager;
     private FloatingActionButton mFloatingActionButton;
     private ArrayList<AHBottomNavigationItem> mBottomNavigationItems = new ArrayList<>();
+    private Window mWindow;
 
 
     @Override
@@ -47,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 .getBoolean("translucentNavigation", false);
         setTheme(enabledTranslucentNavigation ? R.style.AppTheme_TranslucentNavigation : R.style.AppTheme);
         setContentView(R.layout.activity_main);
+        mWindow=this.getWindow();
         initUI();
     }
 
@@ -65,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             navigationAdapter.setupWithBottomNavigation(mBottomNavigation, tabColors);
             mBottomNavigation.setBehaviorTranslationEnabled(true);
         } else {
-            AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, R.color.color_tab_1);
+            AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, color_tab_1);
             AHBottomNavigationItem item_camera = new AHBottomNavigationItem(R.string.item_content, R.drawable.ic_camera, R.color.color_tab_2);
             AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_setting, R.color.color_tab_3);
 
@@ -86,6 +98,30 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
+                switch (position) {
+                    case 0:
+                        getSupportActionBar().setTitle(R.string.item_hot);
+                        int color_hot = Color.parseColor("#FF4081");
+                        @SuppressLint("ResourceAsColor") ColorDrawable colorDrawable_hot = new ColorDrawable(color_hot);
+                        getSupportActionBar().setBackgroundDrawable(colorDrawable_hot);
+                        mWindow.setStatusBarColor(color_hot);
+                        break;
+                    case 1:
+                        getSupportActionBar().setTitle(R.string.item_content);
+                        int color_content = Color.parseColor("#303F9F");
+                        @SuppressLint("ResourceAsColor") ColorDrawable colorDrawable_content = new ColorDrawable(color_content);
+                        getSupportActionBar().setBackgroundDrawable(colorDrawable_content);
+                        mWindow.setStatusBarColor(color_content);
+                        break;
+                    case 2:
+                        getSupportActionBar().setTitle(R.string.item_setting);
+                        int color_setting = Color.parseColor("#00886A");
+                        @SuppressLint("ResourceAsColor") ColorDrawable colorDrawable_setting = new ColorDrawable(color_setting);
+                        getSupportActionBar().setBackgroundDrawable(colorDrawable_setting);
+                        mWindow.setStatusBarColor(color_setting);
+                        break;
+                }
+
                 if (mMainFragment == null) {
                     mMainFragment = mMainViewPagerAdapter.getCurrentFragment();
                 }
@@ -191,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,CameraActivity.class);
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 startActivity(intent);
             }
         });
