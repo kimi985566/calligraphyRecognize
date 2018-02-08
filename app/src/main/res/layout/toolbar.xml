@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.AppBarLayout
+
+<android.support.v7.widget.Toolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/com.ycy.calligraphy"
+    android:id="@+id/toolBar"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="?attr/actionBarSize"
     android:layout_alignParentTop="true"
-    android:elevation="4dp"
-    android:theme="@style/AppTheme.AppBarOverlay">
+    android:background="?attr/colorPrimary"
+    android:elevation="@dimen/spacing_micro"
+    app:layout_scrollFlags="scroll|enterAlways"
+    app:popupTheme="@style/AppTheme.PopupOverlay"
+    app:subtitle="SubTitle"
+    app:subtitleTextColor="#ffffff"
+    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    app:title="Title"
+    app:titleTextColor="#ffffff">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolBar"
-        android:layout_width="fill_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="@dimen/spacing_micro"
-        android:paddingTop="0dp"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-    </android.support.v7.widget.Toolbar>
+    <TextView
+        android:id="@+id/toolBar_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/lixukefonts"
+        android:text="Title"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"/>
 
-</android.support.design.widget.AppBarLayout>
+</android.support.v7.widget.Toolbar>

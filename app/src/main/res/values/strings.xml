@@ -20,4 +20,6 @@
     <string name="description_info">Info</string>
     <string name="request_permission">This APP needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="camera_for_recognize">拍照识别</string>
+    <string name="album_for_crop">从相册中选取</string>
 </resources>

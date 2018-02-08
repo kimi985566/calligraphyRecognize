@@ -1,15 +1,23 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
+import android.Manifest;
 import android.animation.Animator;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,21 +26,30 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
+import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.ToastUtils;
+import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.UCropActivity;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import pub.devrel.easypermissions.EasyPermissions;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainViewPagerAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.PathUtils;
 
 import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.R.color.color_tab_1;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     public long exitTime;
     private int[] tabColors;
@@ -49,6 +66,16 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<AHBottomNavigationItem> mBottomNavigationItems = new ArrayList<>();
     private Window mWindow;
 
+    private Uri mProviderUri;
+    private Uri mUri;
+
+    public static final int PERMISSIONS_REQUEST_CODE = 101;
+    public static final int TAKE_PIC_RESULT_CODE = 201;
+    public static final int SELECT_PIC_RESULT_CODE = 202;
+
+    private String[] mPerms = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
                 .getBoolean("translucentNavigation", false);
         setTheme(enabledTranslucentNavigation ? R.style.AppTheme_TranslucentNavigation : R.style.AppTheme);
         setContentView(R.layout.activity_main);
+        if (EasyPermissions.hasPermissions(this, mPerms)) {
+        } else {
+            // 如果用户拒绝权限，第二次打开才会显示提示文字
+            EasyPermissions.requestPermissions(this, "使用拍照功能需要拍照权限！", PERMISSIONS_REQUEST_CODE, mPerms);
+        }
         mWindow = this.getWindow();
         initUI();
     }
@@ -227,17 +259,130 @@ public class MainActivity extends AppCompatActivity {
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                startActivity(intent);
+                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+                bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet);
+                bottomSheetDialog.show();
+                bottomSheetDialog.findViewById(R.id.bs_bt_cancel).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.bs_bt_camera).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openCamera();
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.bs_bt_album).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        selectImg();
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+
             }
         });
+    }
 
+    private void selectImg() {
+        Intent pickIntent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        startActivityForResult(pickIntent, SELECT_PIC_RESULT_CODE);
+    }
+
+    private void openCamera() {
+        File file = new File(PathUtils.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Android7.0以上URI
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //通过FileProvider创建一个content类型的Uri
+            mProviderUri = FileProvider.getUriForFile(this.getApplicationContext(),
+                    "yangchengyu.shmtu.edu.cn.calligraphyrecognize.fileprovider", file);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, mProviderUri);
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            mUri = Uri.fromFile(file);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
+        }
+        try {
+            startActivityForResult(intent, TAKE_PIC_RESULT_CODE);
+        } catch (ActivityNotFoundException anf) {
+            ToastUtils.showShort("摄像头未准备好！");
+        }
+    }
+
+    public void cropRawPhoto(Uri uri) {
+
+        UCrop.Options options = new UCrop.Options();
+        // 修改标题栏颜色
+        options.setToolbarColor(getResources().getColor(R.color.colorPrimary));
+        // 修改状态栏颜色
+        options.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        //设置裁剪图片可操作的手势
+        options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.ALL);
+        // 图片格式
+        options.setCompressionFormat(Bitmap.CompressFormat.PNG);
+        // 设置图片压缩质量
+        options.setCompressionQuality(100);
+        // 是否让用户调整范围(默认false)，如果开启，可能会造成剪切的图片的长宽比不是设定的
+        // 如果不开启，用户不能拖动选框，只能缩放图片
+        options.setFreeStyleCropEnabled(false);
+        // 不显示网格线
+        options.setShowCropGrid(false);
+
+        FileUtils.createOrExistsDir(PathUtils.SAVE_REAL_PATH);
+
+        // 设置源uri及目标uri
+        UCrop.of(uri, Uri.fromFile(new File(PathUtils.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg")))
+                // 长宽比
+                .withAspectRatio(1, 1)
+                // 图片大小
+                .withMaxResultSize(1024, 1024)
+                // 配置参数
+                .withOptions(options)
+                .start(this);
     }
 
     private void bindView() {
         mBottomNavigation = findViewById(R.id.bn_Main);
         mAHBottomNavigationViewPager = findViewById(R.id.vp_Main);
         mFloatingActionButton = findViewById(R.id.fab_Main);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == UCrop.RESULT_ERROR) {
+            Snackbar.make(mBottomNavigation, String.valueOf(UCrop.getError(data)), Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case TAKE_PIC_RESULT_CODE:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        cropRawPhoto(mProviderUri);
+                    } else {
+                        cropRawPhoto(mUri);
+                    }
+                    break;
+                case SELECT_PIC_RESULT_CODE:
+                    cropRawPhoto(data.getData());
+                    break;
+                case UCrop.REQUEST_CROP:
+                    Snackbar.make(mBottomNavigation, String.valueOf(UCrop.getOutput(data)), Snackbar.LENGTH_LONG).show();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
@@ -258,5 +403,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        Toast.makeText(this, "没有权限可能会引起程序崩溃", Toast.LENGTH_SHORT).show();
     }
 }
