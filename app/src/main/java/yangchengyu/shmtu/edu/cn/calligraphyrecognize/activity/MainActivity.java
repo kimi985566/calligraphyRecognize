@@ -26,7 +26,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.OvershootInterpolator;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -57,14 +56,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private MainFragment mMainFragment;
     private MainViewPagerAdapter mMainViewPagerAdapter;
-    private Handler mHandler = new Handler();
+    private FloatingActionButton mFloatingActionButton;
 
     private AHBottomNavigation mBottomNavigation;
     private AHBottomNavigationAdapter navigationAdapter;
     private AHBottomNavigationViewPager mAHBottomNavigationViewPager;
-    private FloatingActionButton mFloatingActionButton;
     private ArrayList<AHBottomNavigationItem> mBottomNavigationItems = new ArrayList<>();
+
     private Window mWindow;
+    private Handler mHandler = new Handler();
 
     private Uri mProviderUri;
     private Uri mUri;
@@ -323,9 +323,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         UCrop.Options options = new UCrop.Options();
         // 修改标题栏颜色
-        options.setToolbarColor(getResources().getColor(R.color.colorPrimary));
+        options.setToolbarColor(getResources().getColor(R.color.color_tab_5));
         // 修改状态栏颜色
-        options.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        options.setStatusBarColor(getResources().getColor(R.color.color_tab_5));
         //设置裁剪图片可操作的手势
         options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.ALL);
         // 图片格式
@@ -412,6 +412,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        Toast.makeText(this, "没有权限可能会引起程序崩溃", Toast.LENGTH_SHORT).show();
+        Snackbar.make(mBottomNavigation, "没有权限可能会引起程序崩溃", Snackbar.LENGTH_LONG).show();
     }
 }

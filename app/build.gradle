@@ -30,6 +30,7 @@ android {
         }
     }
     buildToolsVersion '27.0.3'
+    sourceSets { main { jni.srcDirs = ['src/main/jni', 'src/main/jni/'] } }
 }
 
 dependencies {
