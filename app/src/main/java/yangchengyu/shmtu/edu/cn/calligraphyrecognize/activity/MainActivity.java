@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -20,7 +21,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,7 +32,10 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.SnackbarUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.Utils;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
@@ -40,17 +43,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainViewPagerAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainViewPagerAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.PathUtils;
 
 import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.R.color.color_tab_1;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
-    public long exitTime;
+    private boolean mIsExit;
     private int[] tabColors;
     private boolean useMenuResource = true;
 
@@ -84,13 +88,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .getBoolean("translucentNavigation", false);
         setTheme(enabledTranslucentNavigation ? R.style.AppTheme_TranslucentNavigation : R.style.AppTheme);
         setContentView(R.layout.activity_main);
-        if (EasyPermissions.hasPermissions(this, mPerms)) {
-        } else {
-            // 如果用户拒绝权限，第二次打开才会显示提示文字
-            EasyPermissions.requestPermissions(this, "使用拍照功能需要拍照权限！", PERMISSIONS_REQUEST_CODE, mPerms);
-        }
+        Utils.init(this);
+        ask_perms();
         mWindow = this.getWindow();
         initUI();
+    }
+
+    private void ask_perms() {
+        if (EasyPermissions.hasPermissions(this, mPerms)) {
+            LogUtils.i(this.getClass().getSimpleName() + " : permissions are granted");
+        } else {
+            LogUtils.i(this.getClass().getSimpleName() + ": these permissions are denied , " +
+                    "ready to request this permission");
+            EasyPermissions.requestPermissions(this, "使用拍照功能需要拍照权限",
+                    PERMISSIONS_REQUEST_CODE, mPerms);
+        }
     }
 
     private void initUI() {
@@ -292,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         startActivityForResult(pickIntent, SELECT_PIC_RESULT_CODE);
+        LogUtils.i("select image");
     }
 
     private void openCamera() {
@@ -317,10 +330,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } catch (ActivityNotFoundException anf) {
             ToastUtils.showShort("摄像头未准备好！");
         }
+        LogUtils.i("open camera");
     }
 
     public void cropRawPhoto(Uri uri) {
-
         UCrop.Options options = new UCrop.Options();
         // 修改标题栏颜色
         options.setToolbarColor(getResources().getColor(R.color.color_tab_5));
@@ -340,8 +353,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         FileUtils.createOrExistsDir(PathUtils.SAVE_REAL_PATH);
 
+        File file = new File(PathUtils.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
         // 设置源uri及目标uri
-        UCrop.of(uri, Uri.fromFile(new File(PathUtils.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg")))
+        UCrop.of(uri, Uri.fromFile(file))
                 // 长宽比
                 .withAspectRatio(1, 1)
                 // 图片大小
@@ -349,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 // 配置参数
                 .withOptions(options)
                 .start(this);
+        LogUtils.i(file.getName());
     }
 
     private void bindView() {
@@ -378,6 +393,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     break;
                 case UCrop.REQUEST_CROP:
                     Snackbar.make(mBottomNavigation, String.valueOf(UCrop.getOutput(data)), Snackbar.LENGTH_LONG).show();
+                    LogUtils.i(String.valueOf(UCrop.getOutput(data)));
                     break;
                 default:
                     break;
@@ -393,12 +409,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        LogUtils.i(this.getClass().getSimpleName() + ": onKeyDown");
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (System.currentTimeMillis() - exitTime > 1000) {
-                Snackbar.make(mBottomNavigation, "再按一次退出程序", Snackbar.LENGTH_SHORT).show();
-                exitTime = System.currentTimeMillis();
+            if (mIsExit) {
+                this.finish();
             } else {
-                MainActivity.this.finish();
+                SnackbarUtils.with(mBottomNavigation)
+                        .setMessage("再按一次退出程序")
+                        .setDuration(SnackbarUtils.LENGTH_SHORT)
+                        .showWarning();
+                mIsExit = true;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mIsExit = false;
+                    }
+                }, 2000);
             }
             return true;
         }
@@ -406,12 +432,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
 
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        LogUtils.i("EasyPermission CallBack onPermissionsGranted() : " + perms.get(0) +
+                " request granted , to do something...");
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        Snackbar.make(mBottomNavigation, "没有权限可能会引起程序崩溃", Snackbar.LENGTH_LONG).show();
+        LogUtils.i("EasyPermission CallBack onPermissionsDenied():" + requestCode + ":" + perms.size());
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
     }
 }
