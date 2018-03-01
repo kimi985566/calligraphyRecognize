@@ -1,25 +1,10 @@
 <resources>
-    <string name="intro_message">
-        <![CDATA[
-
-
-            This sample demonstrates the basic use of Camera2 API. Check the source code to see how
-            you can display camera preview and take pictures.
-
-
-        ]]>
-    </string>
     <string name="app_name">Calligraphy Recognize</string>
-    <string name="tv_login">登陆</string>
-    <string name="tv_register">新用户注册</string>
     <string name="tv_app_name">书法风格识别</string>
     <string name="item_hot">热门</string>
     <string name="item_content">内容</string>
     <string name="item_setting">设置</string>
-    <string name="picture">Picture</string>
-    <string name="description_info">Info</string>
     <string name="request_permission">This APP needs camera permission.</string>
-    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="camera_for_recognize">拍照识别</string>
     <string name="album_for_crop">从相册中选取</string>
 </resources>
