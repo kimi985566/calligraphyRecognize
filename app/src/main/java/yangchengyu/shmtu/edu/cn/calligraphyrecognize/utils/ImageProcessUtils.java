@@ -5,8 +5,10 @@ import android.graphics.Bitmap;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 /**
@@ -17,10 +19,14 @@ public class ImageProcessUtils {
 
     private static Mat sSrc = new Mat();
     private static Mat sDst = new Mat();
+    private static Mat sKernel;
+    private static Mat sStrElement;
+
     private static int sWidth; //width
     private static int sHeight;  //height
     private static int sRow; //Row--height
     private static int sCol; //col--width
+    private static int sPixel = 0;
     private static int sIndex;
 
     //ARGB values
@@ -28,8 +34,8 @@ public class ImageProcessUtils {
     private static int sR = 0;
     private static int sG = 0;
     private static int sB = 0;
+
     private static int[] sPixels;
-    private static int sPixel = 0;
 
     public static Bitmap covert2Gray(Bitmap bitmap) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
@@ -43,7 +49,6 @@ public class ImageProcessUtils {
     public static Bitmap invertMat(Bitmap bitmap) {
 
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-
         //pixel operation
         //width of mat
         sWidth = sSrc.cols();
@@ -117,7 +122,7 @@ public class ImageProcessUtils {
 
     public static void mat_operation(Bitmap bitmap) {
         sDst = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4, Scalar.all(127));
-        //learn CV_8UC4,CV_8UC3,8UC2 and other figures
+        //learn CV_8UC4,CV_8UC3,8UC1 and other figures
         org.opencv.android.Utils.matToBitmap(sDst, bitmap);
         sDst.release();
     }
@@ -136,6 +141,72 @@ public class ImageProcessUtils {
         sSrc.release();
         return roiMap;
 
+    }
+
+    /**
+     * These things should be in Imgproc, but I couldn't find them.
+     * So these figures are based on official website of OpenCV.
+     * <p>
+     * public static final int	BORDER_DEFAULT	4
+     * public static final int	BORDER_ISOLATED	16
+     * public static final int	BORDER_REFLECT	2
+     * public static final int	BORDER_REFLECT_101	4
+     * public static final int	BORDER_REFLECT101	4
+     * public static final int	BORDER_REPLICATE	1
+     * public static final int	BORDER_TRANSPARENT	5
+     * public static final int	BORDER_WRAP	3
+     **/
+
+    public static void boxBlur(Bitmap bitmap) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
+        Imgproc.blur(sSrc, sDst, new Size(15, 15), new Point(-1, -1), 4);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        sSrc.release();
+        sDst.release();
+    }
+
+    public static void gaussianBlur(Bitmap bitmap) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
+        Imgproc.GaussianBlur(sSrc, sDst, new Size(5, 5), 0, 0, 4);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        sSrc.release();
+        sDst.release();
+    }
+
+    public static void bilBlur(Bitmap bitmap) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2BGR);
+        Imgproc.bilateralFilter(sSrc, sDst, 15, 150, 15, 4);
+        sKernel = new Mat(3, 3, CvType.CV_16S);
+        sKernel.put(0, 0, 0, -1, 0, -1, 5, -1, 0, -1, 0);
+        Imgproc.filter2D(sDst, sDst, -1, sKernel, new Point(-1, -1), 0.0, 4);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        sKernel.release();
+        sSrc.release();
+        sDst.release();
+    }
+
+    public static void lineDetection(Bitmap bitmap) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(sSrc, sSrc, 0, 255,
+                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+        sStrElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+                new Size(35, 1), new Point(-1, -1));
+        Imgproc.morphologyEx(sSrc, sDst, Imgproc.MORPH_OPEN, sStrElement);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        sStrElement.release();
+        sSrc.release();
+        sDst.release();
+    }
+
+    public static void manualThresholdImg(int t, Bitmap bitmap) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(sSrc, sDst, t, 255, Imgproc.THRESH_BINARY);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        sSrc.release();
+        sDst.release();
     }
 
 
