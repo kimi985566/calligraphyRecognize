@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             if (mIsExit) {
                 this.finish();
             } else {
-                SnackbarUtils.with(mBottomNavigation)
+                SnackbarUtils.with(mFloatingActionButton)
                         .setMessage("再按一次退出程序")
                         .setDuration(SnackbarUtils.LENGTH_SHORT)
                         .showWarning();

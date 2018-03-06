@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -37,176 +35,61 @@ public class ImageProcessUtils {
 
     private static int[] sPixels;
 
-    public static Bitmap covert2Gray(Bitmap bitmap) {
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
-        Imgproc.cvtColor(sSrc, sDst, Imgproc.COLOR_BGRA2GRAY);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
-        sSrc.release();
-        sDst.release();
-        return bitmap;
-    }
-
-    public static Bitmap invertMat(Bitmap bitmap) {
-
+    public static void binImg(String command, Bitmap bitmap) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        //pixel operation
-        //width of mat
-        sWidth = sSrc.cols();
-        //height of mat
-        sHeight = sSrc.rows();
-        int cnum = sSrc.channels();//Get channel
-
-        byte[] bgra = new byte[cnum];//ARGB(Bitmap)-->BGRA(mat)
-
-        for (sRow = 0; sRow < sHeight; sRow++) {
-            for (sCol = 0; sCol < sWidth; sCol++) {
-                sSrc.get(sRow, sCol, bgra);
-                for (sIndex = 0; sIndex < cnum; sIndex++) {
-                    bgra[sIndex] = (byte) (255 - bgra[sIndex] & 0xff);
-                }
-                sSrc.put(sRow, sCol, bgra);
-            }
-        }
-        org.opencv.android.Utils.matToBitmap(sSrc, bitmap);
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(sSrc, sDst, 0, 255,
+                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
         sSrc.release();
-
-        return bitmap;
+        sDst.release();
     }
 
-    public static Bitmap invertBitmap(Bitmap bitmap) {
-        sWidth = bitmap.getWidth();
-        sHeight = bitmap.getHeight();
-        sPixels = new int[sWidth * sHeight];
-        bitmap.getPixels(sPixels, 0, sWidth, 0, 0, sWidth, sHeight);
-
-        sIndex = 0;
-        for (sRow = 0; sRow < sHeight; sRow++) {
-            sIndex = sRow * sWidth;
-            for (sCol = 0; sCol < sWidth; sCol++) {
-                sPixel = sPixels[sIndex];
-                sA = (sPixel >> 24) & 0xff;
-                sR = (sPixel >> 16) & 0xff;
-                sG = (sPixel >> 8) & 0xff;
-                sB = sPixel & 0xff;
-
-                sR = 255 - sR;
-                sG = 255 - sG;
-                sB = 255 - sB;
-
-                sPixel = ((sA & 0xff) << 24 | (sR & 0xff) << 16 | (sG & 0xff) << 8 | sB & 0xff);
-
-                sPixels[sIndex] = sPixel;
-
-                sIndex++;
-            }
-        }
-        bitmap.setPixels(sPixels, 0, sWidth, 0, 0, sWidth, sHeight);
-        return bitmap;
-    }
-
-    public static void contrast_ratio_adjust(Bitmap bitmap) {
+    public static void cannyProcess(Bitmap bitmap) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        //This operation enables you to adjust CM in a float number.
-        sSrc.convertTo(sSrc, CvType.CV_32F);
-        Mat whiteImage = new Mat(sSrc.size(), sSrc.type(), Scalar.all(1.25));//Contrast Ratio
-        Mat bwImage = new Mat(sSrc.size(), sSrc.type(), Scalar.all(30));//Brightness+30
-        Core.multiply(whiteImage, sSrc, sSrc);
-        Core.add(bwImage, sSrc, sSrc);
-        sSrc.convertTo(sSrc, CvType.CV_8U);
-        org.opencv.android.Utils.matToBitmap(sSrc, bitmap);
-        //Don't forget to release.
-        bwImage.release();
-        whiteImage.release();
-        sSrc.release();
-    }
-
-    public static void mat_operation(Bitmap bitmap) {
-        sDst = new Mat(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC4, Scalar.all(127));
-        //learn CV_8UC4,CV_8UC3,8UC1 and other figures
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
-        sDst.release();
-    }
-
-    public static Bitmap getRoi(Bitmap bitmap) {
-        Rect roi = new Rect(200, 150, 200, 300);
-        Bitmap roiMap = Bitmap.createBitmap(roi.width, roi.height, Bitmap.Config.ARGB_8888);
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Mat roiMat = sSrc.submat(roi);
-        Mat roiDstMat = new Mat();
-        Imgproc.cvtColor(roiMat, roiDstMat, Imgproc.COLOR_BGRA2GRAY);
-        org.opencv.android.Utils.matToBitmap(roiDstMat, roiMap);
-
-        roiDstMat.release();
-        roiMat.release();
-        sSrc.release();
-        return roiMap;
-
-    }
-
-    /**
-     * These things should be in Imgproc, but I couldn't find them.
-     * So these figures are based on official website of OpenCV.
-     * <p>
-     * public static final int	BORDER_DEFAULT	4
-     * public static final int	BORDER_ISOLATED	16
-     * public static final int	BORDER_REFLECT	2
-     * public static final int	BORDER_REFLECT_101	4
-     * public static final int	BORDER_REFLECT101	4
-     * public static final int	BORDER_REPLICATE	1
-     * public static final int	BORDER_TRANSPARENT	5
-     * public static final int	BORDER_WRAP	3
-     **/
-
-    public static void boxBlur(Bitmap bitmap) {
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
-        Imgproc.blur(sSrc, sDst, new Size(15, 15), new Point(-1, -1), 4);
+        Imgproc.GaussianBlur(sSrc, sSrc, new Size(3, 3), 0, 0, 4);
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.Canny(sSrc, sDst, 185, 185 * 2, 3, false);
+        Core.convertScaleAbs(sDst, sDst);
+        Imgproc.threshold(sDst, sDst, 0, 255, Imgproc.THRESH_BINARY_INV);
         org.opencv.android.Utils.matToBitmap(sDst, bitmap);
         sSrc.release();
         sDst.release();
     }
 
-    public static void gaussianBlur(Bitmap bitmap) {
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
-        Imgproc.GaussianBlur(sSrc, sDst, new Size(5, 5), 0, 0, 4);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
-        sSrc.release();
-        sDst.release();
-    }
-
-    public static void bilBlur(Bitmap bitmap) {
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//convert Bitmap to mat
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2BGR);
-        Imgproc.bilateralFilter(sSrc, sDst, 15, 150, 15, 4);
-        sKernel = new Mat(3, 3, CvType.CV_16S);
-        sKernel.put(0, 0, 0, -1, 0, -1, 5, -1, 0, -1, 0);
-        Imgproc.filter2D(sDst, sDst, -1, sKernel, new Point(-1, -1), 0.0, 4);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
-        sKernel.release();
-        sSrc.release();
-        sDst.release();
-    }
-
-    public static void lineDetection(Bitmap bitmap) {
+    public static void skeletonProcess(Bitmap bitmap, int value) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
         Imgproc.threshold(sSrc, sSrc, 0, 255,
-                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-        sStrElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
-                new Size(35, 1), new Point(-1, -1));
-        Imgproc.morphologyEx(sSrc, sDst, Imgproc.MORPH_OPEN, sStrElement);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+
+        Mat ske = new Mat(sSrc.size(), CvType.CV_8UC1, new Scalar(0, 0, 0));
+        Mat temp = new Mat(sSrc.size(), CvType.CV_8UC1);
+        Mat erode = new Mat();
+
+        sStrElement = Imgproc.getStructuringElement(Imgproc.MORPH_CROSS, new Size(3, 3));
+
+        boolean done;
+        do {
+            Imgproc.erode(sSrc, erode, sStrElement);
+            Imgproc.dilate(erode, temp, sStrElement);
+            Core.subtract(sSrc, temp, temp);
+            Core.bitwise_or(ske, temp, ske);
+            erode.copyTo(sSrc);
+            done = (Core.countNonZero(sSrc) == 0);
+        } while (!done);
+
+        Imgproc.GaussianBlur(ske, ske, new Size(5, 5), 0, 0, 4);
+        Imgproc.threshold(ske, ske, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        org.opencv.android.Utils.matToBitmap(ske, bitmap);
+
+        ske.release();
+        temp.release();
+        erode.release();
         sStrElement.release();
         sSrc.release();
-        sDst.release();
-    }
 
-    public static void manualThresholdImg(int t, Bitmap bitmap) {
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.threshold(sSrc, sDst, t, 255, Imgproc.THRESH_BINARY);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
-        sSrc.release();
-        sDst.release();
     }
 
 
