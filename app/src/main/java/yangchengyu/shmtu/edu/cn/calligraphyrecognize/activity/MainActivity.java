@@ -48,7 +48,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainViewPagerAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.PathUtils;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 
 import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.R.color.color_tab_1;
 
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void openCamera() {
-        File file = new File(PathUtils.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
+        File file = new File(Config.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
@@ -351,9 +351,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         // 不显示网格线
         options.setShowCropGrid(false);
 
-        FileUtils.createOrExistsDir(PathUtils.SAVE_REAL_PATH);
+        FileUtils.createOrExistsDir(Config.SAVE_REAL_PATH);
 
-        File file = new File(PathUtils.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
+        File file = new File(Config.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
         // 设置源uri及目标uri
         UCrop.of(uri, Uri.fromFile(file))
                 // 长宽比

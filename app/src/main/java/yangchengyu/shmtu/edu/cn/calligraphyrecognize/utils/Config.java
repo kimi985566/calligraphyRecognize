@@ -2,7 +2,7 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils;
 
 import android.os.Environment;
 
-public class PathUtils {
+public class Config {
 
     /**
      * 图片路径
