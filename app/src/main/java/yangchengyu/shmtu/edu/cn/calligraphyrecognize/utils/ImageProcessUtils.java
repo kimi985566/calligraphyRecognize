@@ -92,5 +92,15 @@ public class ImageProcessUtils {
 
     }
 
+    public void gThin(Bitmap bitmap, int intera) {
 
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(sSrc, sSrc, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        sSrc.convertTo(sSrc, CvType.CV_8UC1);
+
+        sDst = sSrc.clone();
+
+    }
 }
