@@ -40,6 +40,7 @@ public class ImageProcessUtils {
 
     private static int[] sPixels;
 
+    //二值化图片
     public static Bitmap binImg(Bitmap bitmap) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
@@ -48,10 +49,10 @@ public class ImageProcessUtils {
         org.opencv.android.Utils.matToBitmap(sDst, bitmap);
         sSrc.release();
         sDst.release();
-
         return bitmap;
     }
 
+    //边缘选取
     public static void cannyProcess(Bitmap bitmap) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.GaussianBlur(sSrc, sSrc, new Size(3, 3), 0, 0, 4);
@@ -64,6 +65,22 @@ public class ImageProcessUtils {
         sDst.release();
     }
 
+    //Native层方法骨架化
+    public static Bitmap skeletonFromJNI(Bitmap bitmap) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(sSrc, sSrc, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        gThin(sSrc.getNativeObjAddr(), sDst.getNativeObjAddr());
+        Imgproc.threshold(sDst, sDst, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        sSrc.release();
+        sDst.release();
+        return bitmap;
+    }
+
+    //Java层的骨架化，备用方案
     public static void skeletonProcess(Bitmap bitmap, int value) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
@@ -98,20 +115,7 @@ public class ImageProcessUtils {
         sSrc.release();
     }
 
-    public static Bitmap grayPicFromJNI(Bitmap bitmap) {
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.threshold(sSrc, sSrc, 0, 255,
-                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        gThin(sSrc.getNativeObjAddr(), sDst.getNativeObjAddr());
-        Imgproc.threshold(sDst, sDst, 0, 255,
-                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
-        sSrc.release();
-        sDst.release();
-        return bitmap;
-    }
-
+    //Native方法：骨架化具体实现
     public static native void gThin(long matSrcAddr, long matDstAddr);
 
 }

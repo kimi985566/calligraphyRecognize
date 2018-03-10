@@ -129,7 +129,7 @@ public class MainFragment extends Fragment
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_content_process:
-                mBmp = ImageProcessUtils.grayPicFromJNI(mBmp);
+                mBmp = ImageProcessUtils.skeletonFromJNI(mBmp);
                 mIv_content.setImageBitmap(mBmp);
                 break;
             case R.id.btn_content_select:
