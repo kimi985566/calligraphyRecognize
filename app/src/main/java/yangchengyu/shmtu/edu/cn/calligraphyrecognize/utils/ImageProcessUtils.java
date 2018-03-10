@@ -112,8 +112,6 @@ public class ImageProcessUtils {
         return bitmap;
     }
 
-    public static native int[] grayPic(int[] Pixel, int w, int h);
-
     public static native void gThin(long matSrcAddr, long matDstAddr);
 
 }

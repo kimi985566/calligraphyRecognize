@@ -89,8 +89,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setTheme(enabledTranslucentNavigation ? R.style.AppTheme_TranslucentNavigation : R.style.AppTheme);
         setContentView(R.layout.activity_main);
         Utils.init(this);
-        ask_perms();
         mWindow = this.getWindow();
+        ask_perms();//获取系统权限
         initUI();
     }
 
@@ -235,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 return true;
             }
 
+            //装载页面
             private void change_status_action_bar_color(int position) {
                 switch (position) {
                     case 0:
@@ -262,12 +263,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        mAHBottomNavigationViewPager.setOffscreenPageLimit(3);
+        mAHBottomNavigationViewPager.setOffscreenPageLimit(2);
         mMainViewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
         mAHBottomNavigationViewPager.setAdapter(mMainViewPagerAdapter);
 
         mMainFragment = mMainViewPagerAdapter.getCurrentFragment();
 
+        //fab的监听
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -294,11 +296,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         bottomSheetDialog.dismiss();
                     }
                 });
-
             }
         });
     }
 
+    //选择图片
     private void selectImg() {
         Intent pickIntent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -307,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         LogUtils.i("select image");
     }
 
+    //拍照
     private void openCamera() {
         File file = new File(Config.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
         if (!file.getParentFile().exists()) {
@@ -333,6 +336,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         LogUtils.i("open camera");
     }
 
+    //裁剪图片
     public void cropRawPhoto(Uri uri) {
         UCrop.Options options = new UCrop.Options();
         // 修改标题栏颜色
@@ -407,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mHandler.removeCallbacksAndMessages(null);
     }
 
+    //双击退出
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         LogUtils.i(this.getClass().getSimpleName() + ": onKeyDown");

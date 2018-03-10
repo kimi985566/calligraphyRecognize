@@ -19,6 +19,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private ArrayList<String> mDataset = new ArrayList<>();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
         public TextView mTextView;
 
         public ViewHolder(View itemView) {

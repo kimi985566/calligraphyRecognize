@@ -7,4 +7,7 @@ import android.app.Activity;
  */
 
 public class ResultActivity extends Activity {
+
+    //TODO：实现结果显示的页面
+
 }

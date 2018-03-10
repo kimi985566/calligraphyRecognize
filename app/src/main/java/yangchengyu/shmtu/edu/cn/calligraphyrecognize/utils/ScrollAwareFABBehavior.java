@@ -17,7 +17,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 
 
 /**
- * Created by kimi9 on 2018/2/17.
+ * FAB的行为
  */
 
 public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {

@@ -38,6 +38,7 @@ public class StartActivity extends AppCompatActivity {
         mtvAppName = findViewById(R.id.tv_app_name);
         mivLogo = findViewById(R.id.iv_logo);
         Typeface typeface;
+        //判断系统
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             typeface = getResources().getFont(R.font.lixukefonts);
         } else {
@@ -94,6 +95,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void gotoMainActivity() {
+        //跳转到主界面
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -106,6 +108,7 @@ public class StartActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //若启动中点击返回，则退出
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             System.exit(0);
         }
