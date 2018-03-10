@@ -40,14 +40,16 @@ public class ImageProcessUtils {
 
     private static int[] sPixels;
 
-    public static void binImg(String command, Bitmap bitmap) {
+    public static Bitmap binImg(Bitmap bitmap) {
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
         Imgproc.threshold(sSrc, sDst, 0, 255,
-                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
         org.opencv.android.Utils.matToBitmap(sDst, bitmap);
         sSrc.release();
         sDst.release();
+
+        return bitmap;
     }
 
     public static void cannyProcess(Bitmap bitmap) {
@@ -97,15 +99,21 @@ public class ImageProcessUtils {
     }
 
     public static Bitmap grayPicFromJNI(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        int[] result = grayPic(pixels, width, height);
-        Bitmap resultImg = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        resultImg.setPixels(result, 0, width, 0, 0, width, height);
-        return resultImg;
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(sSrc, sSrc, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        gThin(sSrc.getNativeObjAddr(), sDst.getNativeObjAddr());
+        Imgproc.threshold(sDst, sDst, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        sSrc.release();
+        sDst.release();
+        return bitmap;
     }
 
     public static native int[] grayPic(int[] Pixel, int w, int h);
+
+    public static native void gThin(long matSrcAddr, long matDstAddr);
+
 }
