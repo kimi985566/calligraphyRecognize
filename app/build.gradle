@@ -11,7 +11,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags "-frtti -fexceptions"
+                cppFlags "-std=c++11 -frtti -fexceptions"
+                abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips', 'mips64'
             }
         }
     }
@@ -30,7 +31,12 @@ android {
         }
     }
     buildToolsVersion '27.0.3'
-    sourceSets { main { jni.srcDirs = ['src/main/jni', 'src/main/jni/'] } }
+    sourceSets {
+        main {
+            jni.srcDirs = ['D:\\Android\\workplace\\calligraphyRecognize\\app\\src\\main\\jniLibs']
+        }
+    }
+
 }
 
 dependencies {

@@ -1,29 +1,27 @@
-# For more information about using CMake with Android Studio, read the
-# documentation: https://d.android.com/studio/projects/add-native-code.html
+#工程目录
+set(pathToProject D:\\Android\\workplace\\calligraphyRecognize)
+#OpenCV目录
+set(pathToOpenCv D:\\Android\\OpenCV-android-sdk)
 
-# Sets the minimum version of CMake required to build the native library.
-
+#CMake版本信息
 cmake_minimum_required(VERSION 3.4.1)
+#支持-std=gnu++11
+set(CMAKE_VERBOSE_MAKEFILE on)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
+#配置加载native依赖
+include_directories(${pathToOpenCv}/sdk/native/jni/include)
 
-add_library( # Sets the name of the library.
-             native-lib
+#CPP文件夹下带编译的cpp文件
+add_library( native-lib SHARED src/main/cpp/native-lib.cpp )
 
-             # Sets the library as a shared library.
-             SHARED
+#动态方式加载
+add_library( lib_opencv SHARED IMPORTED )
 
-             # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp )
-
-# Searches for a specified prebuilt library and stores the path as a
-# variable. Because CMake includes system libraries in the search path by
-# default, you only need to specify the name of the public NDK library
-# you want to add. CMake verifies that the library exists before
-# completing its build.
+#引入libopencv_java3.so文件
+set_target_properties(lib_opencv
+                      PROPERTIES IMPORTED_LOCATION
+                      ${pathToProject}/app/src/main/jniLibs/${ANDROID_ABI}/libopencv_java3.so)
 
 find_library( # Sets the name of the path variable.
               log-lib
@@ -32,13 +30,8 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
+target_link_libraries( native-lib
 
-target_link_libraries( # Specifies the target library.
-                       native-lib
+                       ${log-lib}
 
-                       # Links the target library to the log library
-                       # included in the NDK.
-                       ${log-lib} )
+                       lib_opencv)

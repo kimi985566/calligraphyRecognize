@@ -14,7 +14,6 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/bn_Main"
         android:layout_weight="1"
-        android:fitsSystemWindows="true"
         />
 
     <android.support.design.widget.FloatingActionButton

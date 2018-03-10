@@ -15,6 +15,11 @@ import org.opencv.imgproc.Imgproc;
 
 public class ImageProcessUtils {
 
+    static {
+        System.loadLibrary("native-lib");
+        System.loadLibrary("opencv_java3");
+    }
+
     private static Mat sSrc = new Mat();
     private static Mat sDst = new Mat();
     private static Mat sKernel;
@@ -89,18 +94,18 @@ public class ImageProcessUtils {
         erode.release();
         sStrElement.release();
         sSrc.release();
-
     }
 
-    public void gThin(Bitmap bitmap, int intera) {
-
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.threshold(sSrc, sSrc, 0, 255,
-                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        sSrc.convertTo(sSrc, CvType.CV_8UC1);
-
-        sDst = sSrc.clone();
-
+    public static Bitmap grayPicFromJNI(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[] pixels = new int[width * height];
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+        int[] result = grayPic(pixels, width, height);
+        Bitmap resultImg = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        resultImg.setPixels(result, 0, width, 0, 0, width, height);
+        return resultImg;
     }
+
+    public static native int[] grayPic(int[] Pixel, int w, int h);
 }

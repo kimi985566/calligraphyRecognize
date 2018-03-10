@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,12 +21,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 
 public class MainFragment extends Fragment
@@ -41,6 +47,14 @@ public class MainFragment extends Fragment
     private RecyclerView.LayoutManager mLayoutManager;
 
     private int mState = STATE_PREVIEW;
+
+    static {
+        System.loadLibrary("native-lib");
+    }
+
+    private ImageView mIv_content;
+    private Bitmap mBmp;
+    private Button mBtn_content_process;
 
     public static MainFragment newInstance(int index) {
         Bundle args = new Bundle();
@@ -85,7 +99,14 @@ public class MainFragment extends Fragment
     }
 
     private void initMainCamera(View view) {
-        requestCameraPermission();
+        TextView tv_test = view.findViewById(R.id.tv_content);
+        tv_test.setText(stringFromJNI());
+        mIv_content = view.findViewById(R.id.iv_content);
+        mBmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_image_test);
+        mIv_content.setImageBitmap(mBmp);
+
+        mBtn_content_process = view.findViewById(R.id.btn_content_process);
+        mBtn_content_process.setOnClickListener(this);
     }
 
 
@@ -95,7 +116,12 @@ public class MainFragment extends Fragment
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.btn_content_process:
+                mBmp = ImageProcessUtils.grayPicFromJNI(mBmp);
+                mIv_content.setImageBitmap(mBmp);
+                break;
+        }
     }
 
     public void refresh() {
@@ -153,4 +179,7 @@ public class MainFragment extends Fragment
                     .create();
         }
     }
+
+
+    public native String stringFromJNI();
 }
