@@ -56,14 +56,21 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_gThin
     width = src.cols - 1;
     height = src.rows - 1;
     int step = src.step;
-    int p2, p3, p4, p5, p6, p7, p8, p9;
+
+    /**
+     * p4 p3 p2
+     * p5 p0 p1
+     * p6 p7 p8
+     * */
+
+    int p1, p2, p3, p4, p5, p6, p7, p8;
     uchar *img;
     bool ifEnd;
     cv::Mat tmpimg;
     int dir[4] = {-step, step, 1, -1};
 
     while (1) {
-        //分四个子迭代过程，分别对应北，南，东，西四个边界点的情况
+        //分四个子迭代过程，分别对应上、下、左、右四个边界点的情况
         ifEnd = false;
         for (n = 0; n < 4; n++) {
             dst.copyTo(tmpimg);
@@ -72,51 +79,50 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_gThin
                 img += step;
                 for (j = 1; j < width; j++) {
                     uchar *p = img + j;
-                    //如果p点是背景点或者且为方向边界点，依次为北南东西，继续循环
+                    //如果p点是背景点或者且为方向边界点，依次为上下右左，继续循环
                     if (p[0] == 0 || p[dir[n]] > 0) continue;
-                    p2 = p[-step] > 0 ? 1 : 0;
-                    p3 = p[-step + 1] > 0 ? 1 : 0;
-                    p4 = p[1] > 0 ? 1 : 0;
-                    p5 = p[step + 1] > 0 ? 1 : 0;
-                    p6 = p[step] > 0 ? 1 : 0;
-                    p7 = p[step - 1] > 0 ? 1 : 0;
-                    p8 = p[-1] > 0 ? 1 : 0;
-                    p9 = p[-step - 1] > 0 ? 1 : 0;
+                    p1 = p[-step] > 0 ? 1 : 0;
+                    p2 = p[-step + 1] > 0 ? 1 : 0;
+                    p3 = p[1] > 0 ? 1 : 0;
+                    p4 = p[step + 1] > 0 ? 1 : 0;
+                    p5 = p[step] > 0 ? 1 : 0;
+                    p6 = p[step - 1] > 0 ? 1 : 0;
+                    p7 = p[-1] > 0 ? 1 : 0;
+                    p8 = p[-step - 1] > 0 ? 1 : 0;
                     //8 simple判定
                     int is8simple = 1;
-                    if (p2 == 0 && p6 == 0) {
-                        if ((p9 == 1 || p8 == 1 || p7 == 1) && (p3 == 1 || p4 == 1 || p5 == 1))
+                    if (p1 == 0 && p5 == 0) {
+                        if ((p8 == 1 || p7 == 1 || p6 == 1) && (p2 == 1 || p3 == 1 || p4 == 1))
                             is8simple = 0;
                     }
-                    if (p4 == 0 && p8 == 0) {
-                        if ((p9 == 1 || p2 == 1 || p3 == 1) && (p5 == 1 || p6 == 1 || p7 == 1))
+                    if (p3 == 0 && p7 == 0) {
+                        if ((p8 == 1 || p1 == 1 || p2 == 1) && (p4 == 1 || p5 == 1 || p6 == 1))
                             is8simple = 0;
                     }
-                    if (p8 == 0 && p2 == 0) {
-                        if (p9 == 1 && (p3 == 1 || p4 == 1 || p5 == 1 || p6 == 1 || p7 == 1))
+                    if (p7 == 0 && p1 == 0) {
+                        if (p8 == 1 && (p2 == 1 || p3 == 1 || p4 == 1 || p5 == 1 || p6 == 1))
                             is8simple = 0;
                     }
-                    if (p4 == 0 && p2 == 0) {
-                        if (p3 == 1 && (p5 == 1 || p6 == 1 || p7 == 1 || p8 == 1 || p9 == 1))
+                    if (p3 == 0 && p1 == 0) {
+                        if (p2 == 1 && (p4 == 1 || p5 == 1 || p6 == 1 || p7 == 1 || p8 == 1))
                             is8simple = 0;
                     }
-                    if (p8 == 0 && p6 == 0) {
-                        if (p7 == 1 && (p3 == 9 || p2 == 1 || p3 == 1 || p4 == 1 || p5 == 1))
+                    if (p7 == 0 && p5 == 0) {
+                        if (p6 == 1 && (p2 == 9 || p1 == 1 || p2 == 1 || p3 == 1 || p4 == 1))
                             is8simple = 0;
                     }
-                    if (p4 == 0 && p6 == 0) {
-                        if (p5 == 1 && (p7 == 1 || p8 == 1 || p9 == 1 || p2 == 1 || p3 == 1))
+                    if (p3 == 0 && p5 == 0) {
+                        if (p4 == 1 && (p6 == 1 || p7 == 1 || p8 == 1 || p1 == 1 || p2 == 1))
                             is8simple = 0;
                     }
                     int adjsum;
-                    adjsum = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
+                    adjsum = p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8;
                     //判断是否是邻接点或孤立点,0,1分别对于那个孤立点和端点
                     if (adjsum != 1 && adjsum != 0 && is8simple == 1) {
                         //满足删除条件，设置当前像素为0
                         dst.at<uchar>(i, j) = 0;
                         ifEnd = true;
                     }
-
                 }
             }
         }

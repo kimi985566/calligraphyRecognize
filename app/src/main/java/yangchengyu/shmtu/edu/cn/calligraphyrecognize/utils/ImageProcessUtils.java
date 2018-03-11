@@ -25,32 +25,36 @@ public class ImageProcessUtils {
     private static Mat sStrElement;
 
     //二值化图片
-    public static Bitmap binImg(Bitmap bitmap) {
+    public static Bitmap binProcess(Bitmap bitmap) {
+        Bitmap result = bitmap;
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
         Imgproc.threshold(sSrc, sDst, 0, 255,
-                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+        org.opencv.android.Utils.matToBitmap(sDst, result);
         sSrc.release();
         sDst.release();
-        return bitmap;
+        return result;
     }
 
     //边缘选取
-    public static void cannyProcess(Bitmap bitmap) {
+    public static Bitmap edgeProcess(Bitmap bitmap) {
+        Bitmap result = bitmap;
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.GaussianBlur(sSrc, sSrc, new Size(3, 3), 0, 0, 4);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
         Imgproc.Canny(sSrc, sDst, 185, 185 * 2, 3, false);
         Core.convertScaleAbs(sDst, sDst);
         Imgproc.threshold(sDst, sDst, 0, 255, Imgproc.THRESH_BINARY_INV);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        org.opencv.android.Utils.matToBitmap(sDst, result);
         sSrc.release();
         sDst.release();
+        return result;
     }
 
     //Native层方法骨架化
     public static Bitmap skeletonFromJNI(Bitmap bitmap) {
+        Bitmap result = bitmap;
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
         Imgproc.threshold(sSrc, sSrc, 0, 255,
@@ -58,14 +62,26 @@ public class ImageProcessUtils {
         gThin(sSrc.getNativeObjAddr(), sDst.getNativeObjAddr());
         Imgproc.threshold(sDst, sDst, 0, 255,
                 Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        org.opencv.android.Utils.matToBitmap(sDst, bitmap);
+        org.opencv.android.Utils.matToBitmap(sDst, result);
         sSrc.release();
         sDst.release();
-        return bitmap;
+        return result;
+    }
+
+    public static Bitmap getStrokes(Bitmap bitmap) {
+        Bitmap result = bitmap;
+        Bitmap binBitmap = binProcess(bitmap);//二值化图像
+        Bitmap edgeBitmap = edgeProcess(bitmap);//书法字边缘图像
+        Bitmap skeletonBitmap = skeletonFromJNI(bitmap);//骨架化图像
+        //TODO: pick strokes from Bitmap
+
+
+        return result;
     }
 
     //Java层的骨架化，备用方案
-    public static void skeletonProcess(Bitmap bitmap, int value) {
+    public static Bitmap skeletonProcess(Bitmap bitmap) {
+        Bitmap result = bitmap;
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
         Imgproc.threshold(sSrc, sSrc, 0, 255,
@@ -90,13 +106,14 @@ public class ImageProcessUtils {
         Imgproc.GaussianBlur(ske, ske, new Size(5, 5), 0, 0, 4);
         Imgproc.threshold(ske, ske, 0, 255,
                 Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        org.opencv.android.Utils.matToBitmap(ske, bitmap);
+        org.opencv.android.Utils.matToBitmap(ske, result);
 
         ske.release();
         temp.release();
         erode.release();
         sStrElement.release();
         sSrc.release();
+        return result;
     }
 
     //Native方法：骨架化具体实现

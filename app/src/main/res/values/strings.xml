@@ -7,4 +7,8 @@
     <string name="request_permission">This APP needs camera permission.</string>
     <string name="camera_for_recognize">拍照识别</string>
     <string name="album_for_crop">从相册中选取</string>
+    <string name="binProcess">二值化</string>
+    <string name="edgeProcess">边缘提取</string>
+    <string name="skeProcess">骨架化</string>
+    <string name="selectPic">选择图片</string>
 </resources>

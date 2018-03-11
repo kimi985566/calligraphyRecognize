@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:text="选择图片"/>
+                android:text="@string/selectPic"/>
 
             <Button
                 android:id="@+id/btn_content_process"
@@ -29,8 +29,44 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:text="处理图片"/>
+                android:text="处理图像"/>
+
         </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/rg_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_bin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="@string/binProcess"/>
+
+            <RadioButton
+                android:id="@+id/rb_edge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="@string/edgeProcess"/>
+
+            <RadioButton
+                android:id="@+id/rb_ske"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="@string/skeProcess"/>
+
+        </RadioGroup>
 
         <TextView
             android:id="@+id/tv_content"

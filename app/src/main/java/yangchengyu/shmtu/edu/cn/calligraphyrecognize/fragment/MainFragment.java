@@ -17,9 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.FileNotFoundException;
@@ -36,12 +41,8 @@ import static android.app.Activity.RESULT_OK;
 //装在多个Fragment
 
 public class MainFragment extends Fragment
-        implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+        implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback, RadioGroup.OnCheckedChangeListener {
 
-    private static final int REQUEST_CAMERA_PERMISSION = 1;
-    private static final String FRAGMENT_DIALOG = "dialog";
-
-    private static final int STATE_PREVIEW = 0;
     public static final int SELECT_PIC_RESULT_CODE = 202;
     private int maxSize = 1024;
 
@@ -49,15 +50,14 @@ public class MainFragment extends Fragment
     private RecyclerView mFragmentMainRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    //装在JNI方法
-    static {
-        System.loadLibrary("native-lib");
-    }
-
-    private ImageView mIv_content;
     private Bitmap mBmp;
-    private Button mBtn_content_process;
+    private Bitmap mTemp;
     private Button mBtn_content_select;
+    private Button mBtn_content_process;
+    private TextView mTv_test;
+    private ImageView mIv_content;
+    private RadioGroup mRg_content;
+
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -108,18 +108,17 @@ public class MainFragment extends Fragment
 
     //第二页的加载
     private void initMainContent(View view) {
-        TextView tv_test = view.findViewById(R.id.tv_content);
-        tv_test.setText(stringFromJNI());
-        mBmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_image_calligraph);
+        mTv_test = view.findViewById(R.id.tv_content);
         mIv_content = view.findViewById(R.id.iv_content);
-        mIv_content.setImageBitmap(mBmp);
 
-        mBtn_content_process = view.findViewById(R.id.btn_content_process);
+        mRg_content = view.findViewById(R.id.rg_content);
+
         mBtn_content_select = view.findViewById(R.id.btn_content_select);
-        mBtn_content_process.setOnClickListener(this);
         mBtn_content_select.setOnClickListener(this);
+        mBtn_content_process = view.findViewById(R.id.btn_content_process);
+        mBtn_content_process.setOnClickListener(this);
+        mRg_content.setOnCheckedChangeListener(this);
     }
-
 
     private void initSetting(View view) {
         //TODO：设置页
@@ -128,12 +127,24 @@ public class MainFragment extends Fragment
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_content_process:
-                mBmp = ImageProcessUtils.skeletonFromJNI(mBmp);
-                mIv_content.setImageBitmap(mBmp);
-                break;
             case R.id.btn_content_select:
                 selectImage();
+                break;
+            case R.id.btn_content_process:
+                switch (mRg_content.getCheckedRadioButtonId()) {
+                    case R.id.rb_bin:
+                        mTemp = ImageProcessUtils.binProcess(mBmp);
+                        mIv_content.setImageBitmap(mTemp);
+                        break;
+                    case R.id.rb_edge:
+                        mTemp = ImageProcessUtils.edgeProcess(mBmp);
+                        mIv_content.setImageBitmap(mTemp);
+                        break;
+                    case R.id.rb_ske:
+                        mTemp = ImageProcessUtils.skeletonFromJNI(mBmp);
+                        mIv_content.setImageBitmap(mTemp);
+                        break;
+                }
                 break;
         }
     }
@@ -167,15 +178,11 @@ public class MainFragment extends Fragment
         }
     }
 
-    public native String stringFromJNI();//will be remove
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_PIC_RESULT_CODE && resultCode == RESULT_OK && data != null) {
-
             initImageView(data);
-
         }
     }
 
@@ -211,6 +218,24 @@ public class MainFragment extends Fragment
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (group.getCheckedRadioButtonId()) {
+            case R.id.rb_bin:
+                mBtn_content_process.setText(R.string.binProcess);
+                mTv_test.setText(R.string.binProcess);
+                break;
+            case R.id.rb_edge:
+                mBtn_content_process.setText(R.string.edgeProcess);
+                mTv_test.setText(R.string.edgeProcess);
+                break;
+            case R.id.rb_ske:
+                mBtn_content_process.setText(R.string.skeProcess);
+                mTv_test.setText(R.string.skeProcess);
+                break;
         }
     }
 }
