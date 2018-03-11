@@ -22,23 +22,7 @@ public class ImageProcessUtils {
 
     private static Mat sSrc = new Mat();
     private static Mat sDst = new Mat();
-    private static Mat sKernel;
     private static Mat sStrElement;
-
-    private static int sWidth; //width
-    private static int sHeight;  //height
-    private static int sRow; //Row--height
-    private static int sCol; //col--width
-    private static int sPixel = 0;
-    private static int sIndex;
-
-    //ARGB values
-    private static int sA = 0;
-    private static int sR = 0;
-    private static int sG = 0;
-    private static int sB = 0;
-
-    private static int[] sPixels;
 
     //二值化图片
     public static Bitmap binImg(Bitmap bitmap) {
