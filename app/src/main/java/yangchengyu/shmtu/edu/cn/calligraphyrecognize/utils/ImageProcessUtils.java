@@ -22,20 +22,20 @@ public class ImageProcessUtils {
     }
 
     //全局变量，mat容器
-    private static Mat sSrc = new Mat();
-    private static Mat sDst = new Mat();
     private static Mat sStrElement;
 
     //二值化图片
     public static Bitmap binProcess(Bitmap bitmap) {
+        Mat src = new Mat();
+        Mat dst = new Mat();
         Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//将bitmap转化为mat
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);//灰度化
-        Imgproc.threshold(sSrc, sDst, 0, 255,
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);//将bitmap转化为mat
+        Imgproc.cvtColor(src, dst, Imgproc.COLOR_BGRA2GRAY);//灰度化
+        Imgproc.threshold(dst, dst, 0, 255,
                 Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);//二值化
-        org.opencv.android.Utils.matToBitmap(sDst, result);//转回bitmap
-        sSrc.release();//释放mat
-        sDst.release();
+        org.opencv.android.Utils.matToBitmap(dst, result);//转回bitmap
+        src.release();//释放mat
+        dst.release();
         return result;
     }
 
@@ -55,57 +55,63 @@ public class ImageProcessUtils {
 
     //边缘选取
     public static Bitmap edgeProcess(Bitmap bitmap) {
+        Mat src = new Mat();
+        Mat dst = new Mat();
         Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Imgproc.GaussianBlur(sSrc, sSrc, new Size(3, 3), 0, 0, 4);
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.Canny(sSrc, sDst, 185, 185 * 2, 3, false);
-        Core.convertScaleAbs(sDst, sDst);
-        Imgproc.threshold(sDst, sDst, 0, 255, Imgproc.THRESH_BINARY_INV);
-        org.opencv.android.Utils.matToBitmap(sDst, result);
-        sSrc.release();
-        sDst.release();
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);
+        Imgproc.GaussianBlur(src, src, new Size(3, 3), 0, 0, 4);
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.Canny(src, dst, 185, 185 * 2, 3, false);
+        Core.convertScaleAbs(dst, dst);
+        Imgproc.threshold(dst, dst, 0, 255, Imgproc.THRESH_BINARY_INV);
+        org.opencv.android.Utils.matToBitmap(dst, result);
+        src.release();
+        dst.release();
         return result;
     }
 
     //Native层方法骨架化
     public static Bitmap skeletonFromJNI(Bitmap bitmap) {
+        Mat src = new Mat();
+        Mat dst = new Mat();
         Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.threshold(sSrc, sSrc, 0, 255,
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(src, src, 0, 255,
                 Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        gThin(sSrc.getNativeObjAddr(), sDst.getNativeObjAddr());
-        Imgproc.threshold(sDst, sDst, 0, 255,
+        gThin(src.getNativeObjAddr(), dst.getNativeObjAddr());
+        Imgproc.threshold(dst, dst, 0, 255,
                 Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        org.opencv.android.Utils.matToBitmap(sDst, result);
-        sSrc.release();
-        sDst.release();
+        org.opencv.android.Utils.matToBitmap(dst, result);
+        src.release();
+        dst.release();
         return result;
     }
 
     //Java层的骨架化，备用方案
     public static Bitmap skeletonProcess(Bitmap bitmap) {
+        Mat src = new Mat();
+        Mat dst = new Mat();
         Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.threshold(sSrc, sSrc, 0, 255,
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(src, src, 0, 255,
                 Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
 
-        Mat ske = new Mat(sSrc.size(), CvType.CV_8UC1, new Scalar(0, 0, 0));
-        Mat temp = new Mat(sSrc.size(), CvType.CV_8UC1);
+        Mat ske = new Mat(src.size(), CvType.CV_8UC1, new Scalar(0, 0, 0));
+        Mat temp = new Mat(src.size(), CvType.CV_8UC1);
         Mat erode = new Mat();
 
         sStrElement = Imgproc.getStructuringElement(Imgproc.MORPH_CROSS, new Size(3, 3));
 
         boolean done;
         do {
-            Imgproc.erode(sSrc, erode, sStrElement);
+            Imgproc.erode(src, erode, sStrElement);
             Imgproc.dilate(erode, temp, sStrElement);
-            Core.subtract(sSrc, temp, temp);
+            Core.subtract(src, temp, temp);
             Core.bitwise_or(ske, temp, ske);
-            erode.copyTo(sSrc);
-            done = (Core.countNonZero(sSrc) == 0);
+            erode.copyTo(src);
+            done = (Core.countNonZero(src) == 0);
         } while (!done);
 
         Imgproc.GaussianBlur(ske, ske, new Size(5, 5), 0, 0, 4);
@@ -117,11 +123,13 @@ public class ImageProcessUtils {
         temp.release();
         erode.release();
         sStrElement.release();
-        sSrc.release();
+        src.release();
         return result;
     }
 
     public static Bitmap getStrokes(Bitmap bitmap) {
+        Mat src = new Mat();
+        Mat dst = new Mat();
         Bitmap result = bitmap;
         Bitmap binBitmap = binProcess(bitmap);//二值化图像
         Bitmap edgeBitmap = edgeProcess(bitmap);//书法字边缘图像

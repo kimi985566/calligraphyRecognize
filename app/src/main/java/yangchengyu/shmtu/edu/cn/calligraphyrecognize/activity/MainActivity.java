@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private String[] mPerms = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
     private File mOriginalFile;
+    private File mCropFile;
 
 
     @Override
@@ -329,9 +330,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         FileUtils.createOrExistsDir(Config.CROP_IMG);
 
-        File file = new File(Config.CROP_IMG, System.currentTimeMillis() + ".jpg");
+        mCropFile = new File(Config.CROP_IMG, System.currentTimeMillis() + ".jpg");
         // 设置源uri及目标uri
-        UCrop.of(uri, Uri.fromFile(file))
+        UCrop.of(uri, Uri.fromFile(mCropFile))
                 // 长宽比
                 .withAspectRatio(1, 1)
                 // 图片大小
@@ -339,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 // 配置参数
                 .withOptions(options)
                 .start(this);
-        LogUtils.i(file.getName() + " has cropped");
+        LogUtils.i(mCropFile.getName() + " has cropped");
     }
 
     private void bindView() {
@@ -370,9 +371,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 case UCrop.REQUEST_CROP:
                     Snackbar.make(mBottomNavigation, String.valueOf(UCrop.getOutput(data)), Snackbar.LENGTH_LONG).show();
                     LogUtils.i(String.valueOf(UCrop.getOutput(data)));
-                    if (mOriginalFile.exists()) {
-                        mOriginalFile.delete();
-                    }
+                    Intent intent = new Intent(this, ResultActivity.class);
+                    intent.putExtra("cropFilePath", mCropFile.getPath());
+                    startActivity(intent);
                     break;
                 default:
                     break;

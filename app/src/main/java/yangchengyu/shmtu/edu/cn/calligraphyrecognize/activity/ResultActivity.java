@@ -1,16 +1,33 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.jude.rollviewpager.RollPagerView;
+import com.jude.rollviewpager.adapter.StaticPagerAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.ResultSimilarFragment;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
  * Created by kimi9 on 2018/3/6.
@@ -22,14 +39,48 @@ public class ResultActivity extends AppCompatActivity {
     private TabLayout mTab_result;
     private ViewPager mVp_result;
     private RollPagerView mRpv_result;
+    private String mCroppedImgPath;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private NestedScrollView mNsv_result;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        translucentSetting();
         setContentView(R.layout.activity_result);
         initUI();
-        translucentSetting();
         setActionBar();
+        collapsingToolbarSetting();
+
+        List<Bitmap> bitmapList = getBitmapList();
+        mRpv_result.setAdapter(new RollViewPagerAdapter(bitmapList));
+
+        mNsv_result.setFillViewport(true);
+
+        mTab_result.setupWithViewPager(mVp_result);
+
+
+    }
+
+    @NonNull
+    private List<Bitmap> getBitmapList() {
+        mCroppedImgPath = this.getIntent().getStringExtra("cropFilePath");
+        Bitmap croppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
+
+        Bitmap bintemp = BitmapFactory.decodeFile(mCroppedImgPath);
+        Bitmap edgetemp = BitmapFactory.decodeFile(mCroppedImgPath);
+        Bitmap sketemp = BitmapFactory.decodeFile(mCroppedImgPath);
+
+        Bitmap binImg = ImageProcessUtils.binProcess(bintemp);
+        Bitmap edgeImg = ImageProcessUtils.edgeProcess(edgetemp);
+        Bitmap skeletonImg = ImageProcessUtils.skeletonFromJNI(sketemp);
+
+        List<Bitmap> bitmapList = new ArrayList<>();
+        bitmapList.add(croppedImg);
+        bitmapList.add(binImg);
+        bitmapList.add(edgeImg);
+        bitmapList.add(skeletonImg);
+        return bitmapList;
     }
 
     private void initUI() {
@@ -37,6 +88,9 @@ public class ResultActivity extends AppCompatActivity {
         mTab_result = findViewById(R.id.tab_result);
         mVp_result = findViewById(R.id.viewpager_result);
         mRpv_result = findViewById(R.id.rpv_result);
+        mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
+        mNsv_result = findViewById(R.id.nsv_result);
+
     }
 
     private void setActionBar() {
@@ -53,5 +107,9 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 
+    private void collapsingToolbarSetting() {
+        mCollapsingToolbarLayout.setExpandedTitleColor(Color.BLACK);
+        mCollapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
+    }
 
 }
