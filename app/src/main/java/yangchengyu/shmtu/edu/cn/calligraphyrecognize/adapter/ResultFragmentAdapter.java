@@ -3,9 +3,11 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.ResultFragment;
 
 /**
  * Created by kimi9 on 2018/3/14.
@@ -13,24 +15,36 @@ import java.util.List;
 
 public class ResultFragmentAdapter extends FragmentPagerAdapter {
 
-    List<Fragment> mFragments = new ArrayList<>();
-
-    public ResultFragmentAdapter(FragmentManager fm, List<Fragment> fragments) {
-        super(fm);
-        mFragments = fragments;
-    }
+    private ArrayList<ResultFragment> fragments = new ArrayList<>();
+    private ResultFragment currentFragment;
 
     public ResultFragmentAdapter(FragmentManager fm) {
         super(fm);
+
+        fragments.clear();
+        fragments.add(ResultFragment.newInstance(0));
+        fragments.add(ResultFragment.newInstance(1));
     }
 
     @Override
     public Fragment getItem(int position) {
-        return mFragments.get(position);
+        return fragments.get(position);
     }
 
     @Override
     public int getCount() {
-        return mFragments.size();
+        return fragments.size();
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        if (getCurrentFragment() != object) {
+            currentFragment = ((ResultFragment) object);
+        }
+        super.setPrimaryItem(container, position, object);
+    }
+
+    public ResultFragment getCurrentFragment() {
+        return currentFragment;
     }
 }
