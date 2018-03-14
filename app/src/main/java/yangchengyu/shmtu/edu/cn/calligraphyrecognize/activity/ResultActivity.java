@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.ResultFragmentAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.ResultFragment;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
@@ -36,6 +38,7 @@ public class ResultActivity extends AppCompatActivity {
     private String mCroppedImgPath;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private NestedScrollView mNsv_result;
+    private ResultFragmentAdapter mResultFragmentAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,8 +55,8 @@ public class ResultActivity extends AppCompatActivity {
         mNsv_result.setFillViewport(true);
 
         mTab_result.setupWithViewPager(mVp_result);
-
-
+        mResultFragmentAdapter = new ResultFragmentAdapter(getSupportFragmentManager());
+        mVp_result.setAdapter(mResultFragmentAdapter);
     }
 
     @NonNull
