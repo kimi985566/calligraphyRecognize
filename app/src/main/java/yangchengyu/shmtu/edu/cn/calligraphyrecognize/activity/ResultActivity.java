@@ -14,8 +14,12 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.jude.rollviewpager.RollPagerView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +27,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.ResultFragmentAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.ResultFragment;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
@@ -61,7 +66,10 @@ public class ResultActivity extends AppCompatActivity {
 
     @NonNull
     private List<Bitmap> getBitmapList() {
+
+        List<Bitmap> bitmapList = new ArrayList<>();
         mCroppedImgPath = this.getIntent().getStringExtra("cropFilePath");
+
         Bitmap croppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
 
         Bitmap bintemp = BitmapFactory.decodeFile(mCroppedImgPath);
@@ -72,11 +80,11 @@ public class ResultActivity extends AppCompatActivity {
         Bitmap edgeImg = ImageProcessUtils.edgeProcess(edgetemp);
         Bitmap skeletonImg = ImageProcessUtils.skeletonFromJNI(sketemp);
 
-        List<Bitmap> bitmapList = new ArrayList<>();
         bitmapList.add(croppedImg);
         bitmapList.add(binImg);
         bitmapList.add(edgeImg);
         bitmapList.add(skeletonImg);
+
         return bitmapList;
     }
 
@@ -107,6 +115,26 @@ public class ResultActivity extends AppCompatActivity {
     private void collapsingToolbarSetting() {
         mCollapsingToolbarLayout.setExpandedTitleColor(Color.BLACK);
         mCollapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
+    }
+
+    public void storeImage(Bitmap bitmap) {
+        File file = new File(Config.BINARY_IMG, "BINARY-IMG" + System.currentTimeMillis() + ".jpg");
+        LogUtils.i("storeImage: " + file.exists());
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

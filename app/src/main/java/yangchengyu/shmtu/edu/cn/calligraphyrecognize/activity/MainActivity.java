@@ -321,10 +321,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         // 图片格式
         options.setCompressionFormat(Bitmap.CompressFormat.PNG);
         // 设置图片压缩质量
-        options.setCompressionQuality(100);
+        options.setCompressionQuality(85);
         // 是否让用户调整范围(默认false)，如果开启，可能会造成剪切的图片的长宽比不是设定的
         // 如果不开启，用户不能拖动选框，只能缩放图片
-        options.setFreeStyleCropEnabled(false);
+        options.setFreeStyleCropEnabled(true);
         // 不显示网格线
         options.setShowCropGrid(false);
 
@@ -333,10 +333,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mCropFile = new File(Config.CROP_IMG, System.currentTimeMillis() + ".jpg");
         // 设置源uri及目标uri
         UCrop.of(uri, Uri.fromFile(mCropFile))
-                // 长宽比
-                .withAspectRatio(1, 1)
-                // 图片大小
-                .withMaxResultSize(1024, 1024)
                 // 配置参数
                 .withOptions(options)
                 .start(this);

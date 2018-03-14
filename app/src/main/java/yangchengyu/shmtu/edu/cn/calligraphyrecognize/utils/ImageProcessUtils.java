@@ -25,15 +25,21 @@ public class ImageProcessUtils {
     private static Mat sStrElement;
 
     //二值化图片
-    public static Bitmap binProcess(Bitmap bitmap) {
-        Mat src = new Mat();
-        Mat dst = new Mat();
-        Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, src);//将bitmap转化为mat
-        Imgproc.cvtColor(src, dst, Imgproc.COLOR_BGRA2GRAY);//灰度化
-        Imgproc.threshold(dst, dst, 0, 255,
-                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);//二值化
-        org.opencv.android.Utils.matToBitmap(dst, result);//转回bitmap
+    public static Bitmap binProcess(final Bitmap bitmap) {
+        final Mat src = new Mat();
+        final Mat dst = new Mat();
+        final Bitmap result = bitmap;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                org.opencv.android.Utils.bitmapToMat(bitmap, src);//将bitmap转化为mat
+                Imgproc.cvtColor(src, dst, Imgproc.COLOR_BGRA2GRAY);//灰度化
+                Imgproc.threshold(dst, dst, 0, 255,
+                        Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);//二值化
+                org.opencv.android.Utils.matToBitmap(dst, result);//转回bitmap
+            }
+        }).start();
+
         src.release();//释放mat
         dst.release();
         return result;
@@ -54,35 +60,47 @@ public class ImageProcessUtils {
      **/
 
     //边缘选取
-    public static Bitmap edgeProcess(Bitmap bitmap) {
-        Mat src = new Mat();
-        Mat dst = new Mat();
-        Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, src);
-        Imgproc.GaussianBlur(src, src, new Size(3, 3), 0, 0, 4);
-        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.Canny(src, dst, 185, 185 * 2, 3, false);
-        Core.convertScaleAbs(dst, dst);
-        Imgproc.threshold(dst, dst, 0, 255, Imgproc.THRESH_BINARY_INV);
-        org.opencv.android.Utils.matToBitmap(dst, result);
+    public static Bitmap edgeProcess(final Bitmap bitmap) {
+        final Mat src = new Mat();
+        final Mat dst = new Mat();
+        final Bitmap result = bitmap;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                org.opencv.android.Utils.bitmapToMat(bitmap, src);
+                Imgproc.GaussianBlur(src, src, new Size(3, 3), 0, 0, 4);
+                Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+                Imgproc.Canny(src, dst, 185, 185 * 2, 3, false);
+                Core.convertScaleAbs(dst, dst);
+                Imgproc.threshold(dst, dst, 0, 255, Imgproc.THRESH_BINARY_INV);
+                org.opencv.android.Utils.matToBitmap(dst, result);
+            }
+        }).start();
+
         src.release();
         dst.release();
         return result;
     }
 
     //Native层方法骨架化
-    public static Bitmap skeletonFromJNI(Bitmap bitmap) {
-        Mat src = new Mat();
-        Mat dst = new Mat();
-        Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, src);
-        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.threshold(src, src, 0, 255,
-                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        gThin(src.getNativeObjAddr(), dst.getNativeObjAddr());
-        Imgproc.threshold(dst, dst, 0, 255,
-                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-        org.opencv.android.Utils.matToBitmap(dst, result);
+    public static Bitmap skeletonFromJNI(final Bitmap bitmap) {
+        final Mat src = new Mat();
+        final Mat dst = new Mat();
+        final Bitmap result = bitmap;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                org.opencv.android.Utils.bitmapToMat(bitmap, src);
+                Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+                Imgproc.threshold(src, src, 0, 255,
+                        Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+                gThin(src.getNativeObjAddr(), dst.getNativeObjAddr());
+                Imgproc.threshold(dst, dst, 0, 255,
+                        Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+                org.opencv.android.Utils.matToBitmap(dst, result);
+            }
+        }).start();
+
         src.release();
         dst.release();
         return result;
