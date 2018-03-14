@@ -15,11 +15,13 @@ import org.opencv.imgproc.Imgproc;
 
 public class ImageProcessUtils {
 
+    //读取本地库文件，获取Native层的处理方法
     static {
         System.loadLibrary("native-lib");
         System.loadLibrary("opencv_java3");
     }
 
+    //全局变量，mat容器
     private static Mat sSrc = new Mat();
     private static Mat sDst = new Mat();
     private static Mat sStrElement;
@@ -27,15 +29,29 @@ public class ImageProcessUtils {
     //二值化图片
     public static Bitmap binProcess(Bitmap bitmap) {
         Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
-        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);
+        org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);//将bitmap转化为mat
+        Imgproc.cvtColor(sSrc, sSrc, Imgproc.COLOR_BGRA2GRAY);//灰度化
         Imgproc.threshold(sSrc, sDst, 0, 255,
-                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-        org.opencv.android.Utils.matToBitmap(sDst, result);
-        sSrc.release();
+                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);//二值化
+        org.opencv.android.Utils.matToBitmap(sDst, result);//转回bitmap
+        sSrc.release();//释放mat
         sDst.release();
         return result;
     }
+
+    /**
+     * These things should be in Imgproc, but I couldn't find them.
+     * So these figures are based on official website of OpenCV.
+     * <p>
+     * public static final int	BORDER_DEFAULT	4
+     * public static final int	BORDER_ISOLATED	16
+     * public static final int	BORDER_REFLECT	2
+     * public static final int	BORDER_REFLECT_101	4
+     * public static final int	BORDER_REFLECT101	4
+     * public static final int	BORDER_REPLICATE	1
+     * public static final int	BORDER_TRANSPARENT	5
+     * public static final int	BORDER_WRAP	3
+     **/
 
     //边缘选取
     public static Bitmap edgeProcess(Bitmap bitmap) {
@@ -65,17 +81,6 @@ public class ImageProcessUtils {
         org.opencv.android.Utils.matToBitmap(sDst, result);
         sSrc.release();
         sDst.release();
-        return result;
-    }
-
-    public static Bitmap getStrokes(Bitmap bitmap) {
-        Bitmap result = bitmap;
-        Bitmap binBitmap = binProcess(bitmap);//二值化图像
-        Bitmap edgeBitmap = edgeProcess(bitmap);//书法字边缘图像
-        Bitmap skeletonBitmap = skeletonFromJNI(bitmap);//骨架化图像
-        //TODO: pick strokes from Bitmap
-
-
         return result;
     }
 
@@ -113,6 +118,16 @@ public class ImageProcessUtils {
         erode.release();
         sStrElement.release();
         sSrc.release();
+        return result;
+    }
+
+    public static Bitmap getStrokes(Bitmap bitmap) {
+        Bitmap result = bitmap;
+        Bitmap binBitmap = binProcess(bitmap);//二值化图像
+        Bitmap edgeBitmap = edgeProcess(bitmap);//书法字边缘图像
+        Bitmap skeletonBitmap = skeletonFromJNI(bitmap);//骨架化图像
+        //TODO: pick strokes from Bitmap
+
         return result;
     }
 

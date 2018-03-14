@@ -46,7 +46,7 @@ import java.util.List;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainViewPagerAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainFragmentAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private boolean useMenuResource = true;
 
     private MainFragment mMainFragment;
-    private MainViewPagerAdapter mMainViewPagerAdapter;
+    private MainFragmentAdapter mMainFragmentAdapter;
     private FloatingActionButton mFloatingActionButton;
 
     private AHBottomNavigation mBottomNavigation;
@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private String[] mPerms = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+    private File mOriginalFile;
 
 
     @Override
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 change_status_action_bar_color(position);
 
                 if (mMainFragment == null) {
-                    mMainFragment = mMainViewPagerAdapter.getCurrentFragment();
+                    mMainFragment = mMainFragmentAdapter.getCurrentFragment();
                 }
 
                 if (wasSelected) {
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     return true;
                 }
 
-                mMainFragment = mMainViewPagerAdapter.getCurrentFragment();
+                mMainFragment = mMainFragmentAdapter.getCurrentFragment();
                 mMainFragment.willBeDisplayed();
 
                 if (position == 0) {
@@ -264,40 +265,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         });
 
         mAHBottomNavigationViewPager.setOffscreenPageLimit(2);
-        mMainViewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
-        mAHBottomNavigationViewPager.setAdapter(mMainViewPagerAdapter);
+        mMainFragmentAdapter = new MainFragmentAdapter(getSupportFragmentManager());
+        mAHBottomNavigationViewPager.setAdapter(mMainFragmentAdapter);
 
-        mMainFragment = mMainViewPagerAdapter.getCurrentFragment();
+        mMainFragment = mMainFragmentAdapter.getCurrentFragment();
 
         //fab的监听
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
-                bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet);
-                bottomSheetDialog.show();
-                bottomSheetDialog.findViewById(R.id.bs_bt_cancel).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        bottomSheetDialog.dismiss();
-                    }
-                });
-                bottomSheetDialog.findViewById(R.id.bs_bt_camera).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openCamera();
-                        bottomSheetDialog.dismiss();
-                    }
-                });
-                bottomSheetDialog.findViewById(R.id.bs_bt_album).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        selectImg();
-                        bottomSheetDialog.dismiss();
-                    }
-                });
-            }
-        });
+        FabListener();
     }
 
     //选择图片
@@ -311,21 +285,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     //拍照
     private void openCamera() {
-        File file = new File(Config.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        }
+        FileUtils.createOrExistsDir(Config.ORIGINAL_IMG);
+        mOriginalFile = new File(Config.ORIGINAL_IMG, System.currentTimeMillis() + ".jpg");
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Android7.0以上URI
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //通过FileProvider创建一个content类型的Uri
             mProviderUri = FileProvider.getUriForFile(this.getApplicationContext(),
-                    "yangchengyu.shmtu.edu.cn.calligraphyrecognize.fileprovider", file);
+                    "yangchengyu.shmtu.edu.cn.calligraphyrecognize.fileprovider", mOriginalFile);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, mProviderUri);
             //添加这一句表示对目标应用临时授权该Uri所代表的文件
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } else {
-            mUri = Uri.fromFile(file);
+            mUri = Uri.fromFile(mOriginalFile);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
         }
         try {
@@ -355,9 +327,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         // 不显示网格线
         options.setShowCropGrid(false);
 
-        FileUtils.createOrExistsDir(Config.SAVE_REAL_PATH);
+        FileUtils.createOrExistsDir(Config.CROP_IMG);
 
-        File file = new File(Config.SAVE_REAL_PATH, System.currentTimeMillis() + ".jpg");
+        File file = new File(Config.CROP_IMG, System.currentTimeMillis() + ".jpg");
         // 设置源uri及目标uri
         UCrop.of(uri, Uri.fromFile(file))
                 // 长宽比
@@ -367,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 // 配置参数
                 .withOptions(options)
                 .start(this);
-        LogUtils.i(file.getName());
+        LogUtils.i(file.getName() + " has cropped");
     }
 
     private void bindView() {
@@ -398,6 +370,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 case UCrop.REQUEST_CROP:
                     Snackbar.make(mBottomNavigation, String.valueOf(UCrop.getOutput(data)), Snackbar.LENGTH_LONG).show();
                     LogUtils.i(String.valueOf(UCrop.getOutput(data)));
+                    if (mOriginalFile.exists()) {
+                        mOriginalFile.delete();
+                    }
                     break;
                 default:
                     break;
@@ -405,10 +380,35 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mHandler.removeCallbacksAndMessages(null);
+    private void FabListener() {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+                bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet);
+                bottomSheetDialog.show();
+                bottomSheetDialog.findViewById(R.id.bs_bt_cancel).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.bs_bt_camera).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openCamera();
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.bs_bt_album).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        selectImg();
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+            }
+        });
     }
 
     //双击退出
@@ -454,5 +454,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             new AppSettingsDialog.Builder(this).build().show();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
     }
 }

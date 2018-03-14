@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 
 /**
- * Created by kimi9 on 2018/1/26.
+ * 用于主界面里的fragment的添加与绑定
  */
 
-public class MainViewPagerAdapter extends FragmentPagerAdapter {
+public class MainFragmentAdapter extends FragmentPagerAdapter {
 
     private ArrayList<MainFragment> fragments = new ArrayList<>();
     private MainFragment currentFragment;
 
-    public MainViewPagerAdapter(FragmentManager fm) {
+    public MainFragmentAdapter(FragmentManager fm) {
         super(fm);
 
         fragments.clear();

@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 
 /**
- * Created by kimi9 on 2018/1/25.
+ * 用于主界面第一个页面的item绑定
  */
 
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
+public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHolder> {
 
     private ArrayList<String> mDataset = new ArrayList<>();
 
@@ -28,13 +28,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         }
     }
 
-    public MainAdapter(ArrayList<String> dataset) {
+    public MainItemAdapter(ArrayList<String> dataset) {
         mDataset.clear();
         mDataset.addAll(dataset);
     }
 
     @Override
-    public MainAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MainItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;

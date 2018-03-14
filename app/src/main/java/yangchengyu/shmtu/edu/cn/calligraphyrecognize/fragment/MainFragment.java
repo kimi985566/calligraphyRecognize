@@ -17,14 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.FileNotFoundException;
@@ -32,7 +28,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainItemAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 import static android.app.Activity.RESULT_OK;
@@ -78,7 +74,7 @@ public class MainFragment extends Fragment
             return view;
             //装在第二页
         } else if (getArguments().getInt("index", 0) == 1) {
-            View view = inflater.inflate(R.layout.fragment_content, container, false);
+            View view = inflater.inflate(R.layout.fragment_main_content, container, false);
             initMainContent(view);
             return view;
             //装在第三页
@@ -102,7 +98,7 @@ public class MainFragment extends Fragment
             itemsData.add("Fragment " + getArguments().getInt("index", -1) + " / Item " + i);
         }
 
-        MainAdapter mainAdapter = new MainAdapter(itemsData);
+        MainItemAdapter mainAdapter = new MainItemAdapter(itemsData);
         mFragmentMainRecyclerView.setAdapter(mainAdapter);
     }
 
