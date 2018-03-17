@@ -1,0 +1,83 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+	package
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:5:11-37
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:1-30:12
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:4:11-69
+uses-permission#android.permission.CAMERA
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:7:5-64
+	android:name
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:7:22-62
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:8:5-79
+	android:name
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:8:22-77
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:9:5-80
+	android:name
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:9:22-78
+uses-feature#android.hardware.camera2.full
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:11:5-65
+	android:name
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:11:19-63
+uses-feature#android.hardware.camera
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:12:5-59
+	android:name
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:12:19-57
+uses-feature#android.hardware.camera.autofocus
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:13:5-69
+	android:name
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:13:19-67
+application
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:15:5-28:19
+	android:supportsRtl
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:19:9-35
+	android:label
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:18:9-41
+	android:vmSafeMode
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:21:9-34
+	android:icon
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:17:9-43
+	android:allowBackup
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:16:9-35
+	android:theme
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:20:9-40
+activity#com.baidu.ocr.ui.camera.CameraActivity
+ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:23:9-26:79
+	android:configChanges
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:25:13-59
+	android:theme
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:26:13-77
+	android:name
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml:24:13-66
+uses-sdk
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+		ADDED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml
+		INJECTED from D:\Android\workplace\calligraphyRecognize\ocr_ui\src\main\AndroidManifest.xml

@@ -20,6 +20,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.KeyEvent;
@@ -31,6 +32,11 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
+import com.baidu.ocr.sdk.OCR;
+import com.baidu.ocr.sdk.OnResultListener;
+import com.baidu.ocr.sdk.exception.OCRError;
+import com.baidu.ocr.sdk.model.AccessToken;
+import com.baidu.ocr.ui.camera.CameraActivity;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
@@ -49,6 +55,8 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainFragmentAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.FileUtil;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.RecognizeService;
 
 import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.R.color.color_tab_1;
 
@@ -73,9 +81,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private Uri mProviderUri;
     private Uri mUri;
 
+    private AlertDialog.Builder alertDialog;
+
+    private boolean hasGotToken = false;
+
     public static final int PERMISSIONS_REQUEST_CODE = 101;
     public static final int TAKE_PIC_RESULT_CODE = 201;
     public static final int SELECT_PIC_RESULT_CODE = 202;
+    private static final int REQUEST_CODE_GENERAL = 105;
+    private static final int REQUEST_CODE_ACCURATE_BASIC = 107;
 
     private String[] mPerms = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
@@ -90,10 +104,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .getBoolean("translucentNavigation", false);
         setTheme(enabledTranslucentNavigation ? R.style.AppTheme_TranslucentNavigation : R.style.AppTheme);
         setContentView(R.layout.activity_main);
+        alertDialog = new AlertDialog.Builder(this);
         Utils.init(this);
         mWindow = this.getWindow();
         ask_perms();//获取系统权限
         initUI();
+        initAccessTokenWithAkSk();
+
     }
 
     private void ask_perms() {
@@ -354,22 +371,40 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case TAKE_PIC_RESULT_CODE:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        cropRawPhoto(mProviderUri);
-                    } else {
-                        cropRawPhoto(mUri);
-                    }
+//                case TAKE_PIC_RESULT_CODE:
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        cropRawPhoto(mProviderUri);
+//                    } else {
+//                        cropRawPhoto(mUri);
+//                    }
+//                    break;
+//                case SELECT_PIC_RESULT_CODE:
+//                    cropRawPhoto(data.getData());
+//                    break;
+//                case UCrop.REQUEST_CROP:
+//                    Snackbar.make(mBottomNavigation, String.valueOf(UCrop.getOutput(data)), Snackbar.LENGTH_LONG).show();
+//                    LogUtils.i(String.valueOf(UCrop.getOutput(data)));
+//                    Intent intent = new Intent(this, ResultActivity.class);
+//                    intent.putExtra("cropFilePath", mCropFile.getPath());
+//                    startActivity(intent);
+//                    break;
+                case REQUEST_CODE_GENERAL:
+                    RecognizeService.recGeneral(FileUtil.getSaveFile(getApplicationContext()).getAbsolutePath(),
+                            new RecognizeService.ServiceListener() {
+                                @Override
+                                public void onResult(String result) {
+                                    infoPopText(result);
+                                }
+                            });
                     break;
-                case SELECT_PIC_RESULT_CODE:
-                    cropRawPhoto(data.getData());
-                    break;
-                case UCrop.REQUEST_CROP:
-                    Snackbar.make(mBottomNavigation, String.valueOf(UCrop.getOutput(data)), Snackbar.LENGTH_LONG).show();
-                    LogUtils.i(String.valueOf(UCrop.getOutput(data)));
-                    Intent intent = new Intent(this, ResultActivity.class);
-                    intent.putExtra("cropFilePath", mCropFile.getPath());
-                    startActivity(intent);
+                case REQUEST_CODE_ACCURATE_BASIC:
+                    RecognizeService.recAccurateBasic(FileUtil.getSaveFile(getApplicationContext()).getAbsolutePath(),
+                            new RecognizeService.ServiceListener() {
+                                @Override
+                                public void onResult(String result) {
+                                    infoPopText(result);
+                                }
+                            });
                     break;
                 default:
                     break;
@@ -377,33 +412,43 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 
+    private void infoPopText(final String result) {
+        alertText("", result);
+    }
+
     private void FabListener() {
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
-                bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet);
-                bottomSheetDialog.show();
-                bottomSheetDialog.findViewById(R.id.bs_bt_cancel).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        bottomSheetDialog.dismiss();
-                    }
-                });
-                bottomSheetDialog.findViewById(R.id.bs_bt_camera).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openCamera();
-                        bottomSheetDialog.dismiss();
-                    }
-                });
-                bottomSheetDialog.findViewById(R.id.bs_bt_album).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        selectImg();
-                        bottomSheetDialog.dismiss();
-                    }
-                });
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
+                        FileUtil.getSaveFile(getApplication()).getAbsolutePath());
+                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
+                        CameraActivity.CONTENT_TYPE_GENERAL);
+                startActivityForResult(intent, REQUEST_CODE_ACCURATE_BASIC);
+//                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+//                bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet);
+//                bottomSheetDialog.show();
+//                bottomSheetDialog.findViewById(R.id.bs_bt_cancel).setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        bottomSheetDialog.dismiss();
+//                    }
+//                });
+//                bottomSheetDialog.findViewById(R.id.bs_bt_camera).setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        openCamera();
+//                        bottomSheetDialog.dismiss();
+//                    }
+//                });
+//                bottomSheetDialog.findViewById(R.id.bs_bt_album).setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        selectImg();
+//                        bottomSheetDialog.dismiss();
+//                    }
+//                });
             }
         });
     }
@@ -453,9 +498,38 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 
+    private void alertText(final String title, final String message) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                alertDialog.setTitle(title)
+                        .setMessage(message)
+                        .setPositiveButton("确定", null)
+                        .show();
+            }
+        });
+    }
+
+    private void initAccessTokenWithAkSk() {
+        OCR.getInstance().initAccessTokenWithAkSk(new OnResultListener<AccessToken>() {
+            @Override
+            public void onResult(AccessToken result) {
+                String token = result.getAccessToken();
+                hasGotToken = true;
+            }
+
+            @Override
+            public void onError(OCRError error) {
+                error.printStackTrace();
+                alertText("AK，SK方式获取token失败", error.getMessage());
+            }
+        }, getApplicationContext(), Config.API_KEY, Config.SECRET_KEY);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        OCR.getInstance().release();
         mHandler.removeCallbacksAndMessages(null);
     }
 }

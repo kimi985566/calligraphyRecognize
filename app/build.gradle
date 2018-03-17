@@ -65,11 +65,9 @@ dependencies {
     compile 'com.blankj:utilcode:1.12.6'
     //rollviewpager
     implementation 'com.jude:rollviewpager:1.4.6'
-    //glide
-    implementation 'com.github.bumptech.glide:glide:4.6.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
     //OCR for recognize
     compile files('libs/ocr-sdk.jar')
+    compile project(path: ':ocr_ui')
 }
 
 task nativeLibsToJar(type: Jar, description: 'create a jar archive of the native libs') {
