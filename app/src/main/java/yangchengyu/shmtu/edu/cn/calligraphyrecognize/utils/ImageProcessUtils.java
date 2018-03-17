@@ -87,19 +87,16 @@ public class ImageProcessUtils {
         final Mat src = new Mat();
         final Mat dst = new Mat();
         final Bitmap result = bitmap;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                org.opencv.android.Utils.bitmapToMat(bitmap, src);
-                Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
-                Imgproc.threshold(src, src, 0, 255,
-                        Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-                gThin(src.getNativeObjAddr(), dst.getNativeObjAddr());
-                Imgproc.threshold(dst, dst, 0, 255,
-                        Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
-                org.opencv.android.Utils.matToBitmap(dst, result);
-            }
-        }).start();
+
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        Imgproc.threshold(src, src, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        gThin(src.getNativeObjAddr(), dst.getNativeObjAddr());
+        Imgproc.threshold(dst, dst, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+        org.opencv.android.Utils.matToBitmap(dst, result);
+
 
         src.release();
         dst.release();
@@ -159,5 +156,8 @@ public class ImageProcessUtils {
 
     //Native方法：骨架化具体实现
     public static native void gThin(long matSrcAddr, long matDstAddr);
+
+    //获取书法字链码
+    public static native void strokeLinked(long matSrcAddr, String[] link);
 
 }

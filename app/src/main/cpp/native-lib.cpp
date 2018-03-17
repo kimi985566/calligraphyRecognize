@@ -131,4 +131,35 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_gThin
         if (!ifEnd) break;
     }
 
+}extern "C"
+JNIEXPORT void JNICALL
+Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_strokeLinked(JNIEnv *env,
+                                                                                        jclass type,
+                                                                                        jlong matSrcAddr,
+                                                                                        jobjectArray link) {
+
+    Mat &src = *(Mat *) matSrcAddr;//通过指针获取Java层对应空间的原始图片mat
+
+    int i, j, n;
+    int w, h;
+    //方便处理8邻域，防止越界
+    w = src.cols - 1;
+    h = src.rows - 1;
+    int step = src.step;
+
+    /**
+     * p4 p3 p2
+     * p5 p0 p1
+     * p6 p7 p8
+     * */
+
+    int p1, p2, p3, p4, p5, p6, p7, p8;
+    uchar *img;
+    bool ifEnd;
+    cv::Mat tmpimg;
+    int dir[4] = {-step, step, 1, -1};
+
+
+
+
 }
