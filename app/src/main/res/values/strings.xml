@@ -11,4 +11,5 @@
     <string name="edgeProcess">边缘提取</string>
     <string name="skeProcess">骨架化</string>
     <string name="selectPic">选择图片</string>
+    <string name="result_character_recognize_error">抱歉，未识别出文字信息</string>
 </resources>

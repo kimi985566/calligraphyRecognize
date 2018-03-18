@@ -52,6 +52,7 @@ public class ResultActivity extends AppCompatActivity {
     private TextView mTv_word_height;
     private TextView mTv_word_x;
     private TextView mTv_word_y;
+    private CardView mCardView_character_error;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,18 +68,21 @@ public class ResultActivity extends AppCompatActivity {
         initRollViewPager();
 
         initCharRecognize();
-
-
     }
 
     private void initCharRecognize() {
         decodeJSON();
 
-        mTextView_word.setText(mChar_word);
-        mTv_word_width.setText(String.valueOf(mWidth));
-        mTv_word_height.setText(String.valueOf(mHeight));
-        mTv_word_x.setText(String.valueOf(mX));
-        mTv_word_y.setText(String.valueOf(mY));
+        if (mChar_word.equals("1001")) {
+            mCardView_character.setVisibility(View.GONE);
+            mCardView_character_error.setVisibility(View.VISIBLE);
+        } else {
+            mTextView_word.setText(mChar_word);
+            mTv_word_width.setText("文字宽度: " + String.valueOf(mWidth));
+            mTv_word_height.setText("文字高度: " + String.valueOf(mHeight));
+            mTv_word_x.setText("横轴坐标: " + String.valueOf(mX));
+            mTv_word_y.setText("纵轴坐标: " + String.valueOf(mY + mHeight / 2));
+        }
     }
 
     private void initRollViewPager() {
@@ -92,7 +96,6 @@ public class ResultActivity extends AppCompatActivity {
         LogUtils.json(JSON);
         try {
             JSONObject jsonObject = new JSONObject(JSON);
-            int direction = jsonObject.getInt("direction");
             JSONArray word_result = jsonObject.getJSONArray("words_result");
             JSONArray char_detail = word_result.getJSONObject(0).getJSONArray("chars");
             JSONObject chars = char_detail.getJSONObject(0);
@@ -105,6 +108,7 @@ public class ResultActivity extends AppCompatActivity {
             LogUtils.i(mChar_word, mWidth, mHeight, mX, mY);
         } catch (JSONException e) {
             e.printStackTrace();
+            mChar_word = String.valueOf(1001);
         }
     }
 
@@ -115,6 +119,7 @@ public class ResultActivity extends AppCompatActivity {
         mNsv_result = findViewById(R.id.nsv_result);
 
         mCardView_character = findViewById(R.id.cardView_character);
+        mCardView_character_error = findViewById(R.id.cardView_character_error);
         mTextView_word = findViewById(R.id.tv_result_word_recognize);
         mTv_word_width = findViewById(R.id.tv_result_char_width);
         mTv_word_height = findViewById(R.id.tv_result_char_height);
