@@ -44,6 +44,7 @@
                 app:title="识别结果"
                 app:titleMarginTop="15dp"/>
         </android.support.design.widget.CollapsingToolbarLayout>
+
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
@@ -55,4 +56,5 @@
         <include layout="@layout/result_content"/>
 
     </android.support.v4.widget.NestedScrollView>
+
 </android.support.design.widget.CoordinatorLayout>

@@ -10,11 +10,17 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
 import com.jude.rollviewpager.RollPagerView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +40,17 @@ public class ResultActivity extends AppCompatActivity {
     private String mCroppedImgPath;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private NestedScrollView mNsv_result;
+    private CardView mCardView_character;
+    private TextView mTextView_word;
+    private String mChar_word;
+    private int mWidth;
+    private int mHeight;
+    private int mX;
+    private int mY;
+    private TextView mTv_word_width;
+    private TextView mTv_word_height;
+    private TextView mTv_word_x;
+    private TextView mTv_word_y;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,17 +58,64 @@ public class ResultActivity extends AppCompatActivity {
         translucentSetting();
         setContentView(R.layout.activity_result);
         Utils.init(this);
+
         initUI();
         setActionBar();
         collapsingToolbarSetting();
 
-        List<Bitmap> bitmapList = getBitmapList();
+        initRollViewPager();
 
+        decodeJSON();
+
+        mTextView_word.setText(mChar_word);
+
+        mTv_word_width.setText(mWidth);
+        mTv_word_height.setText(mHeight);
+        mTv_word_x.setText(mX);
+        mTv_word_x.setText(mY);
+
+    }
+
+    private void initRollViewPager() {
+        List<Bitmap> bitmapList = getBitmapList();
         mRpv_result.setAdapter(new RollViewPagerAdapter(bitmapList));
         mNsv_result.setFillViewport(true);
+    }
 
+    private void decodeJSON() {
         String JSON = this.getIntent().getStringExtra("JSON");
         LogUtils.json(JSON);
+        try {
+            JSONObject jsonObject = new JSONObject(JSON);
+            int direction = jsonObject.getInt("direction");
+            JSONArray word_result = jsonObject.getJSONArray("words_result");
+            JSONArray char_detail = word_result.getJSONObject(0).getJSONArray("chars");
+            JSONObject chars = char_detail.getJSONObject(0);
+            mChar_word = chars.getString("char");
+            JSONObject location = chars.getJSONObject("location");
+            mWidth = location.getInt("width");
+            mHeight = location.getInt("height");
+            mX = location.getInt("left");
+            mY = location.getInt("top");
+
+            LogUtils.i(mChar_word, mWidth, mHeight, mX, mY);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initUI() {
+        mToolbar_result = findViewById(R.id.toolBar_result);
+        mRpv_result = findViewById(R.id.rpv_result);
+        mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
+        mNsv_result = findViewById(R.id.nsv_result);
+
+        mCardView_character = findViewById(R.id.cardView_character);
+        mTextView_word = findViewById(R.id.tv_result_word_recognize);
+        mTv_word_width = findViewById(R.id.tv_result_char_width);
+        mTv_word_height = findViewById(R.id.tv_result_char_height);
+        mTv_word_x = findViewById(R.id.tv_result_char_left);
+        mTv_word_y = findViewById(R.id.tv_result_char_top);
 
     }
 
@@ -77,13 +141,6 @@ public class ResultActivity extends AppCompatActivity {
         bitmapList.add(skeletonImg);
 
         return bitmapList;
-    }
-
-    private void initUI() {
-        mToolbar_result = findViewById(R.id.toolBar_result);
-        mRpv_result = findViewById(R.id.rpv_result);
-        mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
-        mNsv_result = findViewById(R.id.nsv_result);
     }
 
     private void setActionBar() {
