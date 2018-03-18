@@ -11,6 +11,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -65,15 +66,19 @@ public class ResultActivity extends AppCompatActivity {
 
         initRollViewPager();
 
+        initCharRecognize();
+
+
+    }
+
+    private void initCharRecognize() {
         decodeJSON();
 
         mTextView_word.setText(mChar_word);
-
-        mTv_word_width.setText(mWidth);
-        mTv_word_height.setText(mHeight);
-        mTv_word_x.setText(mX);
-        mTv_word_x.setText(mY);
-
+        mTv_word_width.setText(String.valueOf(mWidth));
+        mTv_word_height.setText(String.valueOf(mHeight));
+        mTv_word_x.setText(String.valueOf(mX));
+        mTv_word_y.setText(String.valueOf(mY));
     }
 
     private void initRollViewPager() {
@@ -97,7 +102,6 @@ public class ResultActivity extends AppCompatActivity {
             mHeight = location.getInt("height");
             mX = location.getInt("left");
             mY = location.getInt("top");
-
             LogUtils.i(mChar_word, mWidth, mHeight, mX, mY);
         } catch (JSONException e) {
             e.printStackTrace();
