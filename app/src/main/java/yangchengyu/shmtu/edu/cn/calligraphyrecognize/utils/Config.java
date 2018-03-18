@@ -20,7 +20,7 @@ public class Config {
     public static final String SKELETON_IMG = MODEL_DIR + "/Skeleton";
     public static final String BASE64_IMG = MODEL_DIR + "/BASE64";
 
-    public static final String API_KEY="VvaKsj8Gc0sGjnHNH7IBRmfF";
-    public static final String SECRET_KEY="VIAPb8byovY4FrGsF7s1YSSlPcwW2vbO";
+    public static final String API_KEY = "VvaKsj8Gc0sGjnHNH7IBRmfF";
+    public static final String SECRET_KEY = "VIAPb8byovY4FrGsF7s1YSSlPcwW2vbO";
 
 }

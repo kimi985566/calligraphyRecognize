@@ -8,26 +8,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.Utils;
 import com.jude.rollviewpager.RollPagerView;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.ResultFragmentAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.ResultFragment;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
@@ -37,38 +30,36 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 public class ResultActivity extends AppCompatActivity {
 
     private android.support.v7.widget.Toolbar mToolbar_result;
-    private TabLayout mTab_result;
-    private ViewPager mVp_result;
     private RollPagerView mRpv_result;
     private String mCroppedImgPath;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private NestedScrollView mNsv_result;
-    private ResultFragmentAdapter mResultFragmentAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         translucentSetting();
         setContentView(R.layout.activity_result);
+        Utils.init(this);
         initUI();
         setActionBar();
         collapsingToolbarSetting();
 
         List<Bitmap> bitmapList = getBitmapList();
-        mRpv_result.setAdapter(new RollViewPagerAdapter(bitmapList));
 
+        mRpv_result.setAdapter(new RollViewPagerAdapter(bitmapList));
         mNsv_result.setFillViewport(true);
 
-        mTab_result.setupWithViewPager(mVp_result);
-        mResultFragmentAdapter = new ResultFragmentAdapter(getSupportFragmentManager());
-        mVp_result.setAdapter(mResultFragmentAdapter);
+        String JSON = this.getIntent().getStringExtra("JSON");
+        LogUtils.json(JSON);
+
     }
 
     @NonNull
     private List<Bitmap> getBitmapList() {
 
         List<Bitmap> bitmapList = new ArrayList<>();
-        mCroppedImgPath = this.getIntent().getStringExtra("cropFilePath");
+        mCroppedImgPath = this.getIntent().getStringExtra("cropImgPath");
 
         Bitmap croppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
 
@@ -90,12 +81,9 @@ public class ResultActivity extends AppCompatActivity {
 
     private void initUI() {
         mToolbar_result = findViewById(R.id.toolBar_result);
-        mTab_result = findViewById(R.id.tab_result);
-        mVp_result = findViewById(R.id.viewpager_result);
         mRpv_result = findViewById(R.id.rpv_result);
         mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
         mNsv_result = findViewById(R.id.nsv_result);
-
     }
 
     private void setActionBar() {
@@ -117,24 +105,8 @@ public class ResultActivity extends AppCompatActivity {
         mCollapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
     }
 
-    public void storeImage(Bitmap bitmap) {
-        File file = new File(Config.BINARY_IMG, "BINARY-IMG" + System.currentTimeMillis() + ".jpg");
-        LogUtils.i("storeImage: " + file.exists());
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
-
 }

@@ -3,15 +3,6 @@
  */
 package com.baidu.ocr.ui.camera;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import com.baidu.idcardquality.IDcardQualityProcess;
-import com.baidu.ocr.ui.R;
-import com.baidu.ocr.ui.crop.CropView;
-import com.baidu.ocr.ui.crop.FrameOverlayView;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
@@ -24,6 +15,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -33,6 +25,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.baidu.idcardquality.IDcardQualityProcess;
+import com.baidu.ocr.ui.R;
+import com.baidu.ocr.ui.crop.CropView;
+import com.baidu.ocr.ui.crop.FrameOverlayView;
+import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.Utils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class CameraActivity extends Activity {
 
     public static final String KEY_OUTPUT_FILE_PATH = "outputFilePath";
@@ -40,6 +45,7 @@ public class CameraActivity extends Activity {
     public static final String KEY_NATIVE_TOKEN = "nativeToken";
     public static final String KEY_NATIVE_ENABLE = "nativeEnable";
     public static final String KEY_NATIVE_MANUAL = "nativeEnableManual";
+    public static final String KEY_CROPPED_IMG_PATH = "cropFilePath";
 
     public static final String CONTENT_TYPE_GENERAL = "general";
     public static final String CONTENT_TYPE_ID_CARD_FRONT = "IDCardFront";
@@ -71,11 +77,15 @@ public class CameraActivity extends Activity {
         @Override
         public boolean onRequestPermission() {
             ActivityCompat.requestPermissions(CameraActivity.this,
-                    new String[] {Manifest.permission.CAMERA},
+                    new String[]{Manifest.permission.CAMERA},
                     PERMISSIONS_REQUEST_CAMERA);
             return false;
         }
     };
+
+    public static final File SD_CARD_DIR = Environment.getExternalStorageDirectory();
+    public static final String MODEL_DIR = SD_CARD_DIR + "/CalligraphyRecognize";
+    public static final String CROP_IMG = MODEL_DIR + "/Crop";
 
 
     @Override
@@ -84,6 +94,7 @@ public class CameraActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bd_ocr_activity_camera);
 
+        Utils.init(this);
         takePictureContainer = (OCRCameraLayout) findViewById(R.id.take_picture_container);
         confirmResultContainer = (OCRCameraLayout) findViewById(R.id.confirm_result_container);
 
@@ -185,11 +196,11 @@ public class CameraActivity extends Activity {
     private void initNative(final String token) {
         CameraNativeHelper.init(CameraActivity.this, token,
                 new CameraNativeHelper.CameraNativeInitCallback() {
-            @Override
-            public void onError(int errorCode, Throwable e) {
-                cameraView.setInitNativeStatus(errorCode);
-            }
-        });
+                    @Override
+                    public void onError(int errorCode, Throwable e) {
+                        cameraView.setInitNativeStatus(errorCode);
+                    }
+                });
     }
 
     private void showTakePicture() {
@@ -234,7 +245,7 @@ public class CameraActivity extends Activity {
                     != PackageManager.PERMISSION_GRANTED) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     ActivityCompat.requestPermissions(CameraActivity.this,
-                            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             PERMISSIONS_EXTERNAL_STORAGE);
                     return;
                 }
@@ -357,6 +368,7 @@ public class CameraActivity extends Activity {
                     FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
                     Bitmap bitmap = ((BitmapDrawable) displayImageView.getDrawable()).getBitmap();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    fileOutputStream.flush();
                     fileOutputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -409,7 +421,7 @@ public class CameraActivity extends Activity {
         }
         return result;
     }
-    
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -480,7 +492,6 @@ public class CameraActivity extends Activity {
 
     /**
      * 做一些收尾工作
-     *
      */
     private void doClear() {
         CameraThreadPool.cancelAutoFocusTimer();
