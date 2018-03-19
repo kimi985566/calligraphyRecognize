@@ -54,7 +54,6 @@ public class MainFragment extends Fragment
     private ImageView mIv_content;
     private RadioGroup mRg_content;
 
-
     //单例模式
     public static MainFragment newInstance(int index) {
         Bundle args = new Bundle();
@@ -83,6 +82,11 @@ public class MainFragment extends Fragment
             initSetting(view);
             return view;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     //第一页的加载

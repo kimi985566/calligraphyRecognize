@@ -340,9 +340,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     });
                     break;
                 default:
-                    SnackbarUtils.with(mFloatingActionButton)
-                            .setMessage("错误")
-                            .showError();
                     break;
             }
         }
@@ -412,14 +409,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             public void onResult(AccessToken result) {
                 String token = result.getAccessToken();
                 hasGotToken = true;
+                LogUtils.d("init Access Token AK SK");
             }
 
             @Override
             public void onError(OCRError error) {
                 error.printStackTrace();
                 alertText("AK，SK方式获取token失败", error.getMessage());
+                LogUtils.e("Error in get Token AK SK");
             }
         }, getApplicationContext(), Config.API_KEY, Config.SECRET_KEY);
+
     }
 
     @Override

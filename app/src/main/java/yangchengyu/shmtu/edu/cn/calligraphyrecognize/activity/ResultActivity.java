@@ -26,8 +26,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
@@ -53,21 +55,24 @@ public class ResultActivity extends AppCompatActivity {
     private TextView mTv_word_x;
     private TextView mTv_word_y;
     private CardView mCardView_character_error;
+    private int mId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LogUtils.i("onCreate");
         translucentSetting();
         setContentView(R.layout.activity_result);
         Utils.init(this);
-
         initUI();
+        initRollViewPager();
+        initCharRecognize();
+    }
+
+    private void initUI() {
+        initContent();
         setActionBar();
         collapsingToolbarSetting();
-
-        initRollViewPager();
-
-        initCharRecognize();
     }
 
     private void initCharRecognize() {
@@ -76,13 +81,31 @@ public class ResultActivity extends AppCompatActivity {
         if (mChar_word.equals("1001")) {
             mCardView_character.setVisibility(View.GONE);
             mCardView_character_error.setVisibility(View.VISIBLE);
+            LogUtils.i("Nothing get from JSON");
         } else {
             mTextView_word.setText(mChar_word);
             mTv_word_width.setText("文字宽度: " + String.valueOf(mWidth));
             mTv_word_height.setText("文字高度: " + String.valueOf(mHeight));
             mTv_word_x.setText("横轴坐标: " + String.valueOf(mX));
-            mTv_word_y.setText("纵轴坐标: " + String.valueOf(mY + mHeight / 2));
+            mTv_word_y.setText("纵轴坐标: " + String.valueOf(mY));
+
+            saveWord();
         }
+    }
+
+    private void saveWord() {
+        WordInfo wordInfo = new WordInfo();
+        wordInfo.setId(mId);
+        wordInfo.setWord(mChar_word);
+        wordInfo.setWidth(mWidth);
+        wordInfo.setHeight(mHeight);
+        wordInfo.setX_array(mX);
+        wordInfo.setY_array(mY);
+        wordInfo.setPic_path(mCroppedImgPath);
+        //TODO: get the real style
+        wordInfo.setStyle("楷体");
+        WordDBhelper dBhelper = new WordDBhelper(getApplicationContext());
+        dBhelper.addWord(wordInfo);
     }
 
     private void initRollViewPager() {
@@ -96,6 +119,7 @@ public class ResultActivity extends AppCompatActivity {
         LogUtils.json(JSON);
         try {
             JSONObject jsonObject = new JSONObject(JSON);
+            mId = jsonObject.getInt("log_id");
             JSONArray word_result = jsonObject.getJSONArray("words_result");
             JSONArray char_detail = word_result.getJSONObject(0).getJSONArray("chars");
             JSONObject chars = char_detail.getJSONObject(0);
@@ -105,14 +129,14 @@ public class ResultActivity extends AppCompatActivity {
             mHeight = location.getInt("height");
             mX = location.getInt("left");
             mY = location.getInt("top");
-            LogUtils.i(mChar_word, mWidth, mHeight, mX, mY);
+            LogUtils.i(mId, mChar_word, mWidth, mHeight, mX, mY);
         } catch (JSONException e) {
             e.printStackTrace();
             mChar_word = String.valueOf(1001);
         }
     }
 
-    private void initUI() {
+    private void initContent() {
         mToolbar_result = findViewById(R.id.toolBar_result);
         mRpv_result = findViewById(R.id.rpv_result);
         mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
@@ -125,12 +149,10 @@ public class ResultActivity extends AppCompatActivity {
         mTv_word_height = findViewById(R.id.tv_result_char_height);
         mTv_word_x = findViewById(R.id.tv_result_char_left);
         mTv_word_y = findViewById(R.id.tv_result_char_top);
-
     }
 
     @NonNull
     private List<Bitmap> getBitmapList() {
-
         List<Bitmap> bitmapList = new ArrayList<>();
         mCroppedImgPath = this.getIntent().getStringExtra("cropImgPath");
 
