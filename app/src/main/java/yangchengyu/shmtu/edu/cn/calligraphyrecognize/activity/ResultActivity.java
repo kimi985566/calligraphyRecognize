@@ -84,10 +84,10 @@ public class ResultActivity extends AppCompatActivity {
             LogUtils.i("Nothing get from JSON");
         } else {
             mTextView_word.setText(mChar_word);
-            mTv_word_width.setText("文字宽度: " + String.valueOf(mWidth));
-            mTv_word_height.setText("文字高度: " + String.valueOf(mHeight));
-            mTv_word_x.setText("横轴坐标: " + String.valueOf(mX));
-            mTv_word_y.setText("纵轴坐标: " + String.valueOf(mY));
+            mTv_word_width.setText(getString(R.string.result_character_recognize_width) + String.valueOf(mWidth));
+            mTv_word_height.setText(getString(R.string.result_character_recognize_height) + String.valueOf(mHeight));
+            mTv_word_x.setText(getString(R.string.result_character_recognize_x) + String.valueOf(mX));
+            mTv_word_y.setText(getString(R.string.result_character_recognize_y) + String.valueOf(mY));
 
             saveWord();
         }
@@ -155,6 +155,7 @@ public class ResultActivity extends AppCompatActivity {
     private List<Bitmap> getBitmapList() {
         List<Bitmap> bitmapList = new ArrayList<>();
         mCroppedImgPath = this.getIntent().getStringExtra("cropImgPath");
+        LogUtils.i(mCroppedImgPath);
 
         Bitmap croppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
 

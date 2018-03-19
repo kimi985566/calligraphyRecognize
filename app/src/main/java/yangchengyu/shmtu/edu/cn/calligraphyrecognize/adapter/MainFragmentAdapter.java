@@ -20,7 +20,6 @@ public class MainFragmentAdapter extends FragmentPagerAdapter {
 
     public MainFragmentAdapter(FragmentManager fm) {
         super(fm);
-
         fragments.clear();
         fragments.add(MainFragment.newInstance(0));
         fragments.add(MainFragment.newInstance(1));

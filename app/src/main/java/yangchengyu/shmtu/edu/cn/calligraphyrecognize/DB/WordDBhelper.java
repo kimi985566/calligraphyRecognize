@@ -66,6 +66,7 @@ public class WordDBhelper extends SQLiteOpenHelper {
         values.put(KEY_X_ARRAY, wordInfo.getX_array());
         values.put(KEY_Y_ARRAY, wordInfo.getY_array());
         values.put(KEY_STYLE, wordInfo.getStyle());
+        values.put(KEY_PATH, wordInfo.getPic_path());
         try {
             db.insert(SQLITE_TABLE, null, values);
             Log.i(TAG, "Add into DB success");

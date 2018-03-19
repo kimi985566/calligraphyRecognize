@@ -6,10 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,7 +21,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -27,8 +29,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainItemAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 import static android.app.Activity.RESULT_OK;
@@ -37,13 +42,13 @@ import static android.app.Activity.RESULT_OK;
 //装在多个Fragment
 
 public class MainFragment extends Fragment
-        implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback, RadioGroup.OnCheckedChangeListener {
+        implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback, RadioGroup.OnCheckedChangeListener, SwipeRefreshLayout.OnRefreshListener {
 
     public static final int SELECT_PIC_RESULT_CODE = 202;
     private int maxSize = 1024;
 
-    private FrameLayout mFragmentMainContainer;
-    private RecyclerView mFragmentMainRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private Bitmap mBmp;
@@ -53,6 +58,9 @@ public class MainFragment extends Fragment
     private TextView mTv_test;
     private ImageView mIv_content;
     private RadioGroup mRg_content;
+    private WordDBhelper mWordDBhelper;
+    private ArrayList<WordInfo> mItemsData = new ArrayList<>();
+    private MainItemAdapter mMainAdapter;
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -91,19 +99,36 @@ public class MainFragment extends Fragment
 
     //第一页的加载
     private void initMainList(View view) {
-        mFragmentMainContainer = view.findViewById(R.id.fragment_main_container);
-        mFragmentMainRecyclerView = view.findViewById(R.id.fragment_main_recycle_view);
-        mFragmentMainRecyclerView.setHasFixedSize(true);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_main_container);
+        mRecyclerView = view.findViewById(R.id.fragment_main_recycle_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mFragmentMainRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeRefreshLayout.setColorSchemeResources(
+                R.color.color_tab_1, R.color.color_tab_2,
+                R.color.color_tab_3, R.color.color_tab_4);
+        initDBData();
+        mMainAdapter = new MainItemAdapter(getContext(), mItemsData);
+        mMainAdapter.setOnCardViewItemListener(new OnCardViewItemListener() {
+            @Override
+            public void onCardViewItemClick(View view, int position) {
 
-        ArrayList<String> itemsData = new ArrayList<>();
-        for (int i = 0; i < 25; i++) {
-            itemsData.add("Fragment " + getArguments().getInt("index", -1) + " / Item " + i);
+            }
+        });
+        mRecyclerView.setAdapter(mMainAdapter);
+
+    }
+
+    private void initDBData() {
+        if (mItemsData.size() != 0) {
+            mItemsData.clear();
         }
-
-        MainItemAdapter mainAdapter = new MainItemAdapter(itemsData);
-        mFragmentMainRecyclerView.setAdapter(mainAdapter);
+        mWordDBhelper = new WordDBhelper(getContext());
+        mItemsData = mWordDBhelper.getALLWord();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     //第二页的加载
@@ -159,22 +184,22 @@ public class MainFragment extends Fragment
     }
 
     public void refresh() {
-        if (getArguments().getInt("index", 0) > 0 && mFragmentMainRecyclerView != null) {
-            mFragmentMainRecyclerView.smoothScrollToPosition(0);
+        if (getArguments().getInt("index", 0) > 0 && mRecyclerView != null) {
+            mRecyclerView.smoothScrollToPosition(0);
         }
     }
 
     public void willBeDisplayed() {
-        if (mFragmentMainContainer != null) {
+        if (mSwipeRefreshLayout != null) {
             Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
-            mFragmentMainContainer.startAnimation(fadeIn);
+            mSwipeRefreshLayout.startAnimation(fadeIn);
         }
     }
 
     public void willBeHidden() {
-        if (mFragmentMainContainer != null) {
+        if (mSwipeRefreshLayout != null) {
             Animation fadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
-            mFragmentMainContainer.startAnimation(fadeOut);
+            mSwipeRefreshLayout.startAnimation(fadeOut);
         }
     }
 
@@ -237,5 +262,15 @@ public class MainFragment extends Fragment
                 mTv_test.setText(R.string.skeProcess);
                 break;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initDBData();
+            }
+        }, 2000);
     }
 }
