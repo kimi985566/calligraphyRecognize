@@ -321,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                             Intent intent = new Intent(MainActivity.this, ResultActivity.class);
                             intent.putExtra("JSON", result);
                             intent.putExtra("cropImgPath", mCropImg.getPath());
+                            intent.putExtra(MainFragment.FROMWHERE, "recognize");
                             startActivity(intent);
                         }
 

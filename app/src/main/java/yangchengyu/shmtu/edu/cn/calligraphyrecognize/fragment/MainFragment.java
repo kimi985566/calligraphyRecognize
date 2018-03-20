@@ -1,6 +1,7 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.ResultActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainItemAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
@@ -42,9 +44,18 @@ import static android.app.Activity.RESULT_OK;
 //装在多个Fragment
 
 public class MainFragment extends Fragment
-        implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback, RadioGroup.OnCheckedChangeListener, SwipeRefreshLayout.OnRefreshListener {
+        implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback,
+        RadioGroup.OnCheckedChangeListener, SwipeRefreshLayout.OnRefreshListener,OnCardViewItemListener {
 
     public static final int SELECT_PIC_RESULT_CODE = 202;
+    public static final String WORD = "word";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+    public static final String X_ARRAY = "x_array";
+    public static final String Y_ARRAY = "y_array";
+    public static final String PIC_PATH = "path";
+    public static final String STYLE = "style";
+    public static final String FROMWHERE = "fromwhere";
     private int maxSize = 1024;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -59,8 +70,8 @@ public class MainFragment extends Fragment
     private ImageView mIv_content;
     private RadioGroup mRg_content;
     private WordDBhelper mWordDBhelper;
-    private ArrayList<WordInfo> mItemsData = new ArrayList<>();
-    private MainItemAdapter mMainAdapter;
+    private ArrayList<WordInfo> mWordInfo = new ArrayList<>();
+    private MainItemAdapter mMainCardViewItemAdapter;
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -98,37 +109,29 @@ public class MainFragment extends Fragment
     }
 
     //第一页的加载
+    @SuppressLint("ResourceAsColor")
     private void initMainList(View view) {
         mSwipeRefreshLayout = view.findViewById(R.id.swipe_main_container);
-        mRecyclerView = view.findViewById(R.id.fragment_main_recycle_view);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setRefreshing(true);
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.color_tab_1, R.color.color_tab_2,
                 R.color.color_tab_3, R.color.color_tab_4);
-        initDBData();
-        mMainAdapter = new MainItemAdapter(getContext(), mItemsData);
-        mMainAdapter.setOnCardViewItemListener(new OnCardViewItemListener() {
-            @Override
-            public void onCardViewItemClick(View view, int position) {
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mRecyclerView = view.findViewById(R.id.fragment_main_recycle_view);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-            }
-        });
-        mRecyclerView.setAdapter(mMainAdapter);
+        getDBData(view);
+
+        mMainCardViewItemAdapter = new MainItemAdapter(view.getContext(), mWordInfo);
+        mMainCardViewItemAdapter.setOnCardViewItemListener(this);
+        mRecyclerView.setAdapter(mMainCardViewItemAdapter);
 
     }
 
-    private void initDBData() {
-        if (mItemsData.size() != 0) {
-            mItemsData.clear();
-        }
-        mWordDBhelper = new WordDBhelper(getContext());
-        mItemsData = mWordDBhelper.getALLWord();
-        mSwipeRefreshLayout.setRefreshing(false);
+    private void getDBData(View view) {
+        mWordDBhelper = new WordDBhelper(view.getContext());
+        mWordInfo = mWordDBhelper.getALLWord();
     }
 
     //第二页的加载
@@ -269,8 +272,25 @@ public class MainFragment extends Fragment
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                initDBData();
+                mWordInfo = mWordDBhelper.getALLWord();
+                mMainCardViewItemAdapter.updateData(mWordInfo);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         }, 2000);
+    }
+
+    @Override
+    public void onCardViewItemClick(View view, int position) {
+        WordInfo wordInfo = mWordInfo.get(position);
+        Intent intent = new Intent(view.getContext(), ResultActivity.class);
+        intent.putExtra(WORD, wordInfo.getWord());
+        intent.putExtra(WIDTH, wordInfo.getWidth());
+        intent.putExtra(HEIGHT, wordInfo.getHeight());
+        intent.putExtra(X_ARRAY, wordInfo.getX_array());
+        intent.putExtra(Y_ARRAY, wordInfo.getY_array());
+        intent.putExtra(PIC_PATH, wordInfo.getPic_path());
+        intent.putExtra(STYLE, wordInfo.getStyle());
+        intent.putExtra(FROMWHERE, "main");
+        startActivity(intent);
     }
 }

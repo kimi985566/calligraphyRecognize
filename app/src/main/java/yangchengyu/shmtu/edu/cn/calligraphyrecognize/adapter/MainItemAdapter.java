@@ -11,27 +11,33 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.LogUtils;
 import com.bumptech.glide.Glide;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.ItemTouchHelperListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
 
 /**
  * 用于主界面第一个页面的item绑定
  */
 
-public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHolder> implements View.OnClickListener {
+public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHolder>
+        implements View.OnClickListener, ItemTouchHelperListener {
 
-    public static String TAG = MainItemAdapter.class.getSimpleName();
-    private ArrayList<WordInfo> mDataset = new ArrayList<>();
+    private ArrayList<WordInfo> mWordInfos = new ArrayList<>();
     private OnCardViewItemListener mOnCardViewItemListener;
     private Context context;
 
     public MainItemAdapter(Context context, ArrayList<WordInfo> dataset) {
         this.context = context;
-        this.mDataset = dataset;
+        this.mWordInfos = dataset;
+    }
+
+    public void updateData(ArrayList<WordInfo> dataset) {
+        this.mWordInfos = dataset;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -45,13 +51,31 @@ public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHo
         this.mOnCardViewItemListener = listener;
     }
 
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(mWordInfos, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onItemDissmiss(int position) {
+        mWordInfos.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemRecover(int position, WordInfo wordInfo) {
+        mWordInfos.add(position, wordInfo);
+        notifyItemInserted(position);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
         public ImageView mImageView_image;
         public TextView mTv_word;
         public TextView mTv_height;
         public TextView mTv_width;
         public TextView mTv_style;
-
         public TextView mTv_cv;
 
         public ViewHolder(View itemView) {
@@ -63,7 +87,6 @@ public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHo
             mTv_style = itemView.findViewById(R.id.tv_cardView_main_word_style);
             mTv_cv = itemView.findViewById(R.id.tv_cardView_main_word_cv);
         }
-
     }
 
     @Override
@@ -77,19 +100,19 @@ public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        LogUtils.e(mDataset.get(position).getPic_path());
         Glide.with(context)
-                .load(mDataset.get(position).getPic_path())
+                .load(mWordInfos.get(position).getPic_path())
                 .into(holder.mImageView_image);
-        holder.mTv_word.setText(context.getString(R.string.result_character_cardView_word) + mDataset.get(position).getWord());
-        holder.mTv_style.setText(context.getString(R.string.result_character_cardView_style) + mDataset.get(position).getStyle());
-        holder.mTv_width.setText(context.getString(R.string.result_character_cardView_width) + String.valueOf(mDataset.get(position).getWidth()));
-        holder.mTv_height.setText(context.getString(R.string.result_character_cardView_height) + String.valueOf(mDataset.get(position).getHeight()));
+        holder.mTv_word.setText(context.getString(R.string.result_character_cardView_word) + mWordInfos.get(position).getWord());
+        holder.mTv_style.setText(context.getString(R.string.result_character_cardView_style) + mWordInfos.get(position).getStyle());
+        holder.mTv_width.setText(context.getString(R.string.result_character_cardView_width) + String.valueOf(mWordInfos.get(position).getWidth()));
+        holder.mTv_height.setText(context.getString(R.string.result_character_cardView_height) + String.valueOf(mWordInfos.get(position).getHeight()));
         holder.mTv_cv.setText(context.getString(R.string.result_character_cardView_cv) + String.valueOf(0.9));
+        holder.itemView.setTag(position);
     }
 
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return this.mWordInfos.size();
     }
 }

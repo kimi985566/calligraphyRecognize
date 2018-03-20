@@ -1,5 +1,6 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -30,6 +31,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
@@ -56,6 +58,7 @@ public class ResultActivity extends AppCompatActivity {
     private TextView mTv_word_y;
     private CardView mCardView_character_error;
     private int mId;
+    private String mFromwhere;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,8 +68,23 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
         Utils.init(this);
         initUI();
+        mFromwhere = this.getIntent().getStringExtra(MainFragment.FROMWHERE);
+        if (mFromwhere.equals("recognize")) {
+            initCharRecognize();
+        } else if (mFromwhere.equals("main")) {
+            initDetailFromFragment();
+        }
         initRollViewPager();
-        initCharRecognize();
+    }
+
+    private void initDetailFromFragment() {
+        mChar_word = this.getIntent().getStringExtra(MainFragment.WORD);
+        mWidth = this.getIntent().getIntExtra(MainFragment.WIDTH, 100);
+        mHeight = this.getIntent().getIntExtra(MainFragment.HEIGHT, 100);
+        mX = this.getIntent().getIntExtra(MainFragment.X_ARRAY, 0);
+        mX = this.getIntent().getIntExtra(MainFragment.Y_ARRAY, 0);
+        mCroppedImgPath = this.getIntent().getStringExtra(MainFragment.PIC_PATH);
+        initWordCard();
     }
 
     private void initUI() {
@@ -77,35 +95,22 @@ public class ResultActivity extends AppCompatActivity {
 
     private void initCharRecognize() {
         decodeJSON();
-
         if (mChar_word.equals("1001")) {
             mCardView_character.setVisibility(View.GONE);
             mCardView_character_error.setVisibility(View.VISIBLE);
             LogUtils.i("Nothing get from JSON");
         } else {
-            mTextView_word.setText(mChar_word);
-            mTv_word_width.setText(getString(R.string.result_character_recognize_width) + String.valueOf(mWidth));
-            mTv_word_height.setText(getString(R.string.result_character_recognize_height) + String.valueOf(mHeight));
-            mTv_word_x.setText(getString(R.string.result_character_recognize_x) + String.valueOf(mX));
-            mTv_word_y.setText(getString(R.string.result_character_recognize_y) + String.valueOf(mY));
-
+            initWordCard();
             saveWord();
         }
     }
 
-    private void saveWord() {
-        WordInfo wordInfo = new WordInfo();
-        wordInfo.setId(mId);
-        wordInfo.setWord(mChar_word);
-        wordInfo.setWidth(mWidth);
-        wordInfo.setHeight(mHeight);
-        wordInfo.setX_array(mX);
-        wordInfo.setY_array(mY);
-        wordInfo.setPic_path(mCroppedImgPath);
-        //TODO: get the real style
-        wordInfo.setStyle("楷体");
-        WordDBhelper dBhelper = new WordDBhelper(getApplicationContext());
-        dBhelper.addWord(wordInfo);
+    private void initWordCard() {
+        mTextView_word.setText(mChar_word);
+        mTv_word_width.setText(getString(R.string.result_character_recognize_width) + String.valueOf(mWidth));
+        mTv_word_height.setText(getString(R.string.result_character_recognize_height) + String.valueOf(mHeight));
+        mTv_word_x.setText(getString(R.string.result_character_recognize_x) + String.valueOf(mX));
+        mTv_word_y.setText(getString(R.string.result_character_recognize_y) + String.valueOf(mY));
     }
 
     private void initRollViewPager() {
@@ -115,6 +120,7 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void decodeJSON() {
+        mCroppedImgPath = this.getIntent().getStringExtra("cropImgPath");
         String JSON = this.getIntent().getStringExtra("JSON");
         LogUtils.json(JSON);
         try {
@@ -154,7 +160,7 @@ public class ResultActivity extends AppCompatActivity {
     @NonNull
     private List<Bitmap> getBitmapList() {
         List<Bitmap> bitmapList = new ArrayList<>();
-        mCroppedImgPath = this.getIntent().getStringExtra("cropImgPath");
+
         LogUtils.i(mCroppedImgPath);
 
         Bitmap croppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
@@ -179,6 +185,21 @@ public class ResultActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar_result);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
+    private void saveWord() {
+        WordInfo wordInfo = new WordInfo();
+        wordInfo.setId(mId);
+        wordInfo.setWord(mChar_word);
+        wordInfo.setWidth(mWidth);
+        wordInfo.setHeight(mHeight);
+        wordInfo.setX_array(mX);
+        wordInfo.setY_array(mY);
+        wordInfo.setPic_path(mCroppedImgPath);
+        //TODO: get the real style
+        wordInfo.setStyle("楷体");
+        WordDBhelper dBhelper = new WordDBhelper(getApplicationContext());
+        dBhelper.addWord(wordInfo);
     }
 
     private void translucentSetting() {
