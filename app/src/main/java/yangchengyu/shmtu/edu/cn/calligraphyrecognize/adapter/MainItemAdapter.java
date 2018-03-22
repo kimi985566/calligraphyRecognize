@@ -16,7 +16,6 @@ import java.util.Collections;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.ItemTouchHelperListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
 
 /**
@@ -24,7 +23,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemList
  */
 
 public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHolder>
-        implements View.OnClickListener, ItemTouchHelperListener {
+        implements View.OnClickListener, ItemTouchHelperAdapter {
 
     private ArrayList<WordInfo> mWordInfos = new ArrayList<>();
     private OnCardViewItemListener mOnCardViewItemListener;
@@ -58,7 +57,7 @@ public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHo
     }
 
     @Override
-    public void onItemDissmiss(int position) {
+    public void onItemDelete(int position) {
         mWordInfos.remove(position);
         notifyItemRemoved(position);
     }

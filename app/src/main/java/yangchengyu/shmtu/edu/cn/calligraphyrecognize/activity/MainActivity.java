@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private AHBottomNavigation mBottomNavigation;
     private AHBottomNavigationAdapter navigationAdapter;
-    private AHBottomNavigationViewPager mAHBottomNavigationViewPager;
+    private ViewPager mAHBottomNavigationViewPager;
     private ArrayList<AHBottomNavigationItem> mBottomNavigationItems = new ArrayList<>();
 
     private Window mWindow;
@@ -313,16 +314,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                             .getAbsolutePath();
                     RecognizeService.recAccurate(tempImgPath, new RecognizeService.ServiceListener() {
                         @Override
-                        public void onResult(String result) {
+                        public void onResult(final String result) {
                             Toast.makeText(MainActivity.this, "正在识别",
                                     Toast.LENGTH_SHORT)
                                     .show();
                             saveCropImg();
-                            Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-                            intent.putExtra("JSON", result);
-                            intent.putExtra("cropImgPath", mCropImg.getPath());
-                            intent.putExtra(MainFragment.FROMWHERE, "recognize");
-                            startActivity(intent);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                                    intent.putExtra("JSON", result);
+                                    intent.putExtra("cropImgPath", mCropImg.getPath());
+                                    intent.putExtra(MainFragment.FROMWHERE, "recognize");
+                                    startActivity(intent);
+                                }
+                            }).start();
                         }
 
                         private void saveCropImg() {

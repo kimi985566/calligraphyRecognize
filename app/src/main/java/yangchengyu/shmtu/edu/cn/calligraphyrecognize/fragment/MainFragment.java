@@ -16,6 +16,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainItemAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.MyItemTouchHelperCallBack;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -45,7 +47,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment
         implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback,
-        RadioGroup.OnCheckedChangeListener, SwipeRefreshLayout.OnRefreshListener,OnCardViewItemListener {
+        RadioGroup.OnCheckedChangeListener, SwipeRefreshLayout.OnRefreshListener, OnCardViewItemListener {
 
     public static final int SELECT_PIC_RESULT_CODE = 202;
     public static final String WORD = "word";
@@ -72,6 +74,7 @@ public class MainFragment extends Fragment
     private WordDBhelper mWordDBhelper;
     private ArrayList<WordInfo> mWordInfo = new ArrayList<>();
     private MainItemAdapter mMainCardViewItemAdapter;
+    private WordInfo mWordInfoTemp;
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -138,9 +141,7 @@ public class MainFragment extends Fragment
     private void initMainContent(View view) {
         mTv_test = view.findViewById(R.id.tv_content);
         mIv_content = view.findViewById(R.id.iv_content);
-
         mRg_content = view.findViewById(R.id.rg_content);
-
         mBtn_content_select = view.findViewById(R.id.btn_content_select);
         mBtn_content_select.setOnClickListener(this);
         mBtn_content_process = view.findViewById(R.id.btn_content_process);
@@ -280,17 +281,22 @@ public class MainFragment extends Fragment
     }
 
     @Override
-    public void onCardViewItemClick(View view, int position) {
-        WordInfo wordInfo = mWordInfo.get(position);
-        Intent intent = new Intent(view.getContext(), ResultActivity.class);
-        intent.putExtra(WORD, wordInfo.getWord());
-        intent.putExtra(WIDTH, wordInfo.getWidth());
-        intent.putExtra(HEIGHT, wordInfo.getHeight());
-        intent.putExtra(X_ARRAY, wordInfo.getX_array());
-        intent.putExtra(Y_ARRAY, wordInfo.getY_array());
-        intent.putExtra(PIC_PATH, wordInfo.getPic_path());
-        intent.putExtra(STYLE, wordInfo.getStyle());
-        intent.putExtra(FROMWHERE, "main");
-        startActivity(intent);
+    public void onCardViewItemClick(final View view, final int position) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                WordInfo wordInfo = mWordInfo.get(position);
+                Intent intent = new Intent(view.getContext(), ResultActivity.class);
+                intent.putExtra(WORD, wordInfo.getWord());
+                intent.putExtra(WIDTH, wordInfo.getWidth());
+                intent.putExtra(HEIGHT, wordInfo.getHeight());
+                intent.putExtra(X_ARRAY, wordInfo.getX_array());
+                intent.putExtra(Y_ARRAY, wordInfo.getY_array());
+                intent.putExtra(PIC_PATH, wordInfo.getPic_path());
+                intent.putExtra(STYLE, wordInfo.getStyle());
+                intent.putExtra(FROMWHERE, "main");
+                startActivity(intent);
+            }
+        }).start();
     }
 }
