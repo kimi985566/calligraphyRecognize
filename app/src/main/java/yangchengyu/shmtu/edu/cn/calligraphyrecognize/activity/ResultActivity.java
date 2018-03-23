@@ -15,9 +15,12 @@ import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.SnackbarUtils;
 import com.blankj.utilcode.util.Utils;
+import com.jude.rollviewpager.OnItemClickListener;
 import com.jude.rollviewpager.RollPagerView;
 
 import org.json.JSONArray;
@@ -38,7 +41,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
  * Created by kimi9 on 2018/3/6.
  */
 
-public class ResultActivity extends AppCompatActivity {
+public class ResultActivity extends AppCompatActivity implements OnItemClickListener {
 
     private android.support.v7.widget.Toolbar mToolbar_result;
     private RollPagerView mRpv_result;
@@ -59,6 +62,7 @@ public class ResultActivity extends AppCompatActivity {
     private CardView mCardView_character_error;
     private int mId;
     private String mFromwhere;
+    private List<Bitmap> mBitmapList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,8 +118,8 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void initRollViewPager() {
-        List<Bitmap> bitmapList = getBitmapList();
-        mRpv_result.setAdapter(new RollViewPagerAdapter(bitmapList));
+        mBitmapList = getBitmapList();
+        mRpv_result.setAdapter(new RollViewPagerAdapter(mBitmapList));
         mNsv_result.setFillViewport(true);
     }
 
@@ -145,6 +149,7 @@ public class ResultActivity extends AppCompatActivity {
     private void initContent() {
         mToolbar_result = findViewById(R.id.toolBar_result);
         mRpv_result = findViewById(R.id.rpv_result);
+        mRpv_result.setOnItemClickListener((OnItemClickListener) this);
         mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
         mNsv_result = findViewById(R.id.nsv_result);
 
@@ -159,12 +164,11 @@ public class ResultActivity extends AppCompatActivity {
 
     @NonNull
     private List<Bitmap> getBitmapList() {
-        List<Bitmap> bitmapList = new ArrayList<>();
+        final List<Bitmap> bitmapList = new ArrayList<>();
 
         LogUtils.i(mCroppedImgPath);
 
         Bitmap croppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
-
         Bitmap bintemp = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap edgetemp = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap sketemp = BitmapFactory.decodeFile(mCroppedImgPath);
@@ -188,18 +192,23 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void saveWord() {
-        WordInfo wordInfo = new WordInfo();
-        wordInfo.setId(mId);
-        wordInfo.setWord(mChar_word);
-        wordInfo.setWidth(mWidth);
-        wordInfo.setHeight(mHeight);
-        wordInfo.setX_array(mX);
-        wordInfo.setY_array(mY);
-        wordInfo.setPic_path(mCroppedImgPath);
-        //TODO: get the real style
-        wordInfo.setStyle("楷体");
-        WordDBhelper dBhelper = new WordDBhelper(getApplicationContext());
-        dBhelper.addWord(wordInfo);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                WordInfo wordInfo = new WordInfo();
+                wordInfo.setId(mId);
+                wordInfo.setWord(mChar_word);
+                wordInfo.setWidth(mWidth);
+                wordInfo.setHeight(mHeight);
+                wordInfo.setX_array(mX);
+                wordInfo.setY_array(mY);
+                wordInfo.setPic_path(mCroppedImgPath);
+                //TODO: get the real style
+                wordInfo.setStyle("楷体");
+                WordDBhelper dBhelper = new WordDBhelper(getApplicationContext());
+                dBhelper.addWord(wordInfo);
+            }
+        }).start();
     }
 
     private void translucentSetting() {
@@ -218,5 +227,23 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        switch (position) {
+            case 0:
+                Toast.makeText(this, "原图", Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                Toast.makeText(this, "二值化图像", Toast.LENGTH_SHORT).show();
+                break;
+            case 2:
+                Toast.makeText(this, "轮廓图像", Toast.LENGTH_SHORT).show();
+                break;
+            case 3:
+                Toast.makeText(this, "骨架化图像", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }

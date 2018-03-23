@@ -133,6 +133,18 @@ public class ImageProcessUtils {
         return result;
     }
 
+    public static Bitmap addWeight(Bitmap srcBitmap, Bitmap dstBitmap) {
+        Bitmap result = null;
+        srcBitmap = edgeProcess(srcBitmap);
+        dstBitmap = skeletonFromJNI(dstBitmap);
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        org.opencv.android.Utils.bitmapToMat(srcBitmap, src);
+        org.opencv.android.Utils.bitmapToMat(dstBitmap, dst);
+        result = addWeight(srcBitmap, dstBitmap);
+        return result;
+    }
+
     public static Bitmap getStrokes(Bitmap bitmap) {
         Mat src = new Mat();
         Mat dst = new Mat();

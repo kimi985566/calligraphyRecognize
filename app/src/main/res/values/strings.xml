@@ -21,4 +21,6 @@
     <string name="result_character_cardView_height">文字高度:  </string>
     <string name="result_character_cardView_style">书法风格: </string>
     <string name="result_character_cardView_cv">致信率: </string>
+    <string name="title_activity_setting">设置</string>
+    <string name="save_net_mode">1</string>
 </resources>

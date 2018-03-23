@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout="@layout/preference_item"
+    android:title="@string/title_activity_setting">
+
+    <PreferenceCategory
+        android:layout="@layout/preference_category_widget"
+        android:title="基本设置">
+        <CheckBoxPreference
+            android:key="@string/save_net_mode"
+            android:layout="@layout/preference_item"
+            android:summary="切换至夜间模式"
+            android:title="夜间模式"/>
+        <Preference
+            android:layout="@layout/preference_item"
+            android:summary="删除已缓存的文章内容及图片"
+            android:title="清空缓存"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout="@layout/preference_category_widget"
+        android:title="其他说明">
+        <Preference
+            android:layout="@layout/preference_item"
+            android:summary="V 1.0"
+            android:title="当前版本"/>
+        <Preference
+            android:layout="@layout/preference_item"
+            android:summary="Github:github.com/kimi985566"
+            android:title="杨澄昱"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>
