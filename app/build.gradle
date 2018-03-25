@@ -37,6 +37,7 @@ android {
         }
     }
 
+
 }
 
 dependencies {
@@ -70,6 +71,7 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.1.1'
     //Glide
     compile 'com.github.bumptech.glide:glide:4.6.1'
+
 }
 
 task nativeLibsToJar(type: Jar, description: 'create a jar archive of the native libs') {

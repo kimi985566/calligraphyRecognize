@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:title="@string/item_hot"
-        android:icon="@drawable/ic_menu_hot" />
+        android:icon="@drawable/ic_menu_hot"
+        android:title="@string/item_hot"/>
 
     <item
-        android:title="@string/item_content"
-        android:icon="@drawable/ic_menu_content" />
+        android:icon="@drawable/ic_menu_content"
+        android:title="@string/item_content"/>
 
     <item
-        android:title="@string/item_setting"
-        android:icon="@drawable/ic_menu_setting" />
+        android:icon="@drawable/ic_menu_select"
+        android:title="@string/item_select"/>
 
 </menu>

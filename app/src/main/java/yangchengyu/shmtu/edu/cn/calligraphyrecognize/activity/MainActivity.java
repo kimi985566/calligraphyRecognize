@@ -28,7 +28,6 @@ import android.widget.Toast;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 import com.baidu.ocr.sdk.OCR;
 import com.baidu.ocr.sdk.OnResultListener;
 import com.baidu.ocr.sdk.exception.OCRError;
@@ -130,11 +129,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             mBottomNavigation.setBehaviorTranslationEnabled(true);
         } else {
             AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, color_tab_1);
-            AHBottomNavigationItem item_camera = new AHBottomNavigationItem(R.string.item_content, R.drawable.ic_camera, R.color.color_tab_2);
-            AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_setting, R.color.color_tab_3);
+            AHBottomNavigationItem item_content = new AHBottomNavigationItem(R.string.item_content, R.drawable.ic_menu_content, R.color.color_tab_2);
+            AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_select, R.drawable.ic_menu_select, R.color.color_tab_3);
 
             mBottomNavigationItems.add(item_hot);
-            mBottomNavigationItems.add(item_camera);
+            mBottomNavigationItems.add(item_content);
             mBottomNavigationItems.add(item_setting);
 
             mBottomNavigation.addItems(mBottomNavigationItems);
@@ -264,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         mWindow.setStatusBarColor(color_content);
                         break;
                     case 2:
-                        getSupportActionBar().setTitle(R.string.item_setting);
+                        getSupportActionBar().setTitle(R.string.item_select);
                         int color_setting = Color.parseColor("#00886A");
                         ColorDrawable colorDrawable_setting = new ColorDrawable(color_setting);
                         getSupportActionBar().setBackgroundDrawable(colorDrawable_setting);

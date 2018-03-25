@@ -3,7 +3,7 @@
     <string name="tv_app_name">书法风格识别</string>
     <string name="item_hot">热门</string>
     <string name="item_content">内容</string>
-    <string name="item_setting">设置</string>
+    <string name="item_select">精选</string>
     <string name="request_permission">This APP needs camera permission.</string>
     <string name="camera_for_recognize">拍照识别</string>
     <string name="album_for_crop">从相册中选取</string>

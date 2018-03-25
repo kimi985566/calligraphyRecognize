@@ -2,7 +2,6 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment;
 
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,14 +10,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +26,6 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.blankj.utilcode.util.SnackbarUtils;
-import com.blankj.utilcode.util.ToastUtils;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -44,7 +38,6 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainItemAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.MyItemTouchHelperCallBack;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -106,7 +99,7 @@ public class MainFragment extends Fragment
             return view;
             //装在第三页
         } else {
-            View view = inflater.inflate(R.layout.fragment_setting, container, false);
+            View view = inflater.inflate(R.layout.fragment_select, container, false);
             initSetting(view);
             return view;
         }

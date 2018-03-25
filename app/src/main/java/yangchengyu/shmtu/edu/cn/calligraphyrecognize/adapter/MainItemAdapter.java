@@ -90,7 +90,7 @@ public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHo
 
     @Override
     public MainItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fragment_list_view, parent, false);
         ViewHolder vh = new ViewHolder(v);
         v.setOnClickListener(this);
         LogUtils.i("ViewHolder init success");
