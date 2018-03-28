@@ -27,8 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:fontFamily="@font/lixukefonts"
             android:padding="10dp"
-            tools:text="this is a simple"/>
+            tools:text="书法"/>
     </LinearLayout>
 
 

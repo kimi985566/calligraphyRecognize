@@ -1,4 +1,4 @@
-package yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter;
+package yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 
@@ -6,7 +6,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
  * Created by kimi9 on 2018/3/20.
  */
 
-public interface ItemTouchHelperAdapter {
+public interface ItemTouchHelperListener {
     //数据交换
     void onItemMove(int fromPosition, int toPosition);
 
@@ -15,5 +15,4 @@ public interface ItemTouchHelperAdapter {
 
     //恢复item
     void onItemRecover(int position, WordInfo wordInfo);
-
 }

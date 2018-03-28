@@ -23,4 +23,6 @@ public class Config {
     public static final String API_KEY = "VvaKsj8Gc0sGjnHNH7IBRmfF";
     public static final String SECRET_KEY = "VIAPb8byovY4FrGsF7s1YSSlPcwW2vbO";
 
+    public static final String picAddress = "http://192.168.3.100/Calligraphy/getCalligraphyJSON.php";
+
 }

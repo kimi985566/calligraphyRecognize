@@ -6,7 +6,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import java.util.ArrayList;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.ItemTouchHelperAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.ItemTouchHelperListener;
 
 /**
  * Created by kimi9 on 2018/3/20.
@@ -14,13 +14,13 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.ItemTouchHelperAdap
 
 public class MyItemTouchHelperCallBack extends ItemTouchHelper.Callback {
 
-    private ItemTouchHelperAdapter mItemTouchHelperAdapter;
+    private ItemTouchHelperListener mItemTouchHelperAdapter;
     private ArrayList<WordInfo> mWordInfos;
 
     public MyItemTouchHelperCallBack() {
     }
 
-    public MyItemTouchHelperCallBack(ItemTouchHelperAdapter itemTouchHelperAdapter, ArrayList<WordInfo> wordInfos) {
+    public MyItemTouchHelperCallBack(ItemTouchHelperListener itemTouchHelperAdapter, ArrayList<WordInfo> wordInfos) {
         mItemTouchHelperAdapter = itemTouchHelperAdapter;
         mWordInfos = wordInfos;
     }

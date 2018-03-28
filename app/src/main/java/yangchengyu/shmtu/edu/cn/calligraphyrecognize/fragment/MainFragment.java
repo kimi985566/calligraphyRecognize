@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +17,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,9 +41,13 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.ResultActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainItemAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainSelectAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.ImageInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.JSONUtils;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -72,8 +82,12 @@ public class MainFragment extends Fragment
     private RadioGroup mRg_content;
     private WordDBhelper mWordDBhelper;
     private ArrayList<WordInfo> mWordInfo = new ArrayList<>();
+    private ArrayList<ImageInfo> mImageInfos = new ArrayList<>();
     private MainItemAdapter mMainCardViewItemAdapter;
     private WordInfo mWordInfoTemp;
+    private SwipeRefreshLayout mSwipeRefreshLayout_select;
+    private RecyclerView mRecyclerView_select;
+    private MainSelectAdapter mMainSelectAdapter;
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -100,7 +114,7 @@ public class MainFragment extends Fragment
             //装在第三页
         } else {
             View view = inflater.inflate(R.layout.fragment_select, container, false);
-            initSetting(view);
+            initSelect(view);
             return view;
         }
     }
@@ -148,9 +162,60 @@ public class MainFragment extends Fragment
         mRg_content.setOnCheckedChangeListener(this);
     }
 
-    private void initSetting(View view) {
-        //TODO：设置页
+    //第三页的加载
+    private void initSelect(View view) {
+        mSwipeRefreshLayout_select = view.findViewById(R.id.fragment_select_swipe_refresh_layout);
+        mRecyclerView_select = view.findViewById(R.id.fragment_select_recycle_view);
+        mSwipeRefreshLayout_select.setColorSchemeResources(
+                R.color.color_tab_1, R.color.color_tab_2,
+                R.color.color_tab_3, R.color.color_tab_4);
+        mSwipeRefreshLayout_select.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONUtils.getImage(Config.picAddress, getImageHandler);
+                        mSwipeRefreshLayout_select.setRefreshing(false);
+                    }
+                }, 2000);
+
+            }
+        });
+        mRecyclerView_select.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView_select.setHasFixedSize(true);
+
+        StaggeredGridLayoutManager recyclerViewLayoutManager =
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView_select.setLayoutManager(recyclerViewLayoutManager);
+
+        mMainSelectAdapter = new MainSelectAdapter(getContext(), mImageInfos);
+        mRecyclerView_select.setAdapter(mMainSelectAdapter);
     }
+
+    @SuppressLint("HandlerLeak")
+    private Handler getImageHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            String JsonData = (String) msg.obj;
+            try {
+                mImageInfos.clear();
+                JSONArray jsonArray = new JSONArray(JsonData);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    int page_id = jsonObject.getInt("page_id");
+                    String style_name = jsonObject.getString("style_name");
+                    String works_name = jsonObject.getString("works_name");
+                    String page_path = jsonObject.getString("page_path");
+                    mImageInfos.add(new ImageInfo(page_id, style_name, works_name, page_path));
+                }
+                //mMainSelectAdapter.updateData(mImageInfos);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void onClick(View v) {
