@@ -18,7 +18,7 @@
         <ImageView
             android:id="@+id/iv_item_fragment_select"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_image_calligraph"/>
 
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:fontFamily="@font/lixukefonts"
+            android:textColor="@android:color/black"
             android:padding="10dp"
             tools:text="书法"/>
     </LinearLayout>

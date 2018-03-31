@@ -15,9 +15,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.blankj.utilcode.util.LogUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -185,9 +189,9 @@ public class MainFragment extends Fragment
         mRecyclerView_select.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView_select.setHasFixedSize(true);
 
-        StaggeredGridLayoutManager recyclerViewLayoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView_select.setLayoutManager(recyclerViewLayoutManager);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2,
+                GridLayoutManager.VERTICAL, false);
+        mRecyclerView_select.setLayoutManager(gridLayoutManager);
 
         mMainSelectAdapter = new MainSelectAdapter(getContext(), mImageInfos);
         mRecyclerView_select.setAdapter(mMainSelectAdapter);
@@ -207,10 +211,11 @@ public class MainFragment extends Fragment
                     int page_id = jsonObject.getInt("page_id");
                     String style_name = jsonObject.getString("style_name");
                     String works_name = jsonObject.getString("works_name");
-                    String page_path = jsonObject.getString("page_path");
+                    String page_path = Config.URLAddress + jsonObject.getString("page_path");
+                    LogUtils.d(style_name + " " + works_name + " " + page_path);
                     mImageInfos.add(new ImageInfo(page_id, style_name, works_name, page_path));
                 }
-                //mMainSelectAdapter.updateData(mImageInfos);
+                mMainSelectAdapter.updateData(mImageInfos);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

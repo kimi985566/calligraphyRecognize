@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
@@ -29,11 +30,13 @@ public class MainSelectAdapter extends RecyclerView.Adapter<MainSelectAdapter.Vi
     public MainSelectAdapter(Context context, ArrayList<ImageInfo> imageInfos) {
         this.context = context;
         this.mImageInfos = imageInfos;
+        LogUtils.i("MainSelectAdapter init success");
     }
 
     public void updateData(ArrayList<ImageInfo> arrayList) {
         this.mImageInfos = arrayList;
         notifyDataSetChanged();
+        LogUtils.i("update Data success");
     }
 
     @Override
@@ -56,12 +59,6 @@ public class MainSelectAdapter extends RecyclerView.Adapter<MainSelectAdapter.Vi
             super(itemView);
             mTv_select = itemView.findViewById(R.id.tv_item_fragment_select);
             mIv_select = itemView.findViewById(R.id.iv_item_fragment_select);
-            int width = ((Activity) mIv_select.getContext()).getWindowManager().getDefaultDisplay().getWidth();
-            ViewGroup.LayoutParams params = mIv_select.getLayoutParams();
-            //设置图片的相对于屏幕的宽高比
-            params.width = width / 2;
-            params.height = (int) (600 + Math.random() * 800);
-            mIv_select.setLayoutParams(params);
         }
     }
 
@@ -70,16 +67,19 @@ public class MainSelectAdapter extends RecyclerView.Adapter<MainSelectAdapter.Vi
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fragment_select, parent, false);
         ViewHolder vh = new ViewHolder(v);
         v.setOnClickListener(this);
-        Log.i(TAG, "ViewHolder init success");
+        Log.i(TAG, "MainSelectAdapter ViewHolder init success");
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Glide.with(context).load(mImageInfos.get(position).getImage_path()).into(holder.mIv_select);
+        Glide.with(context)
+                .asBitmap()
+                .load(mImageInfos.get(position).getImage_path())
+                .into(holder.mIv_select);
         holder.mTv_select.setText(mImageInfos.get(position).getImage_work_name());
         holder.itemView.setTag(position);
-        Log.i(TAG, "OnBindViewHolder success");
+        Log.i(TAG, "MainSelectAdapter OnBindViewHolder success");
     }
 
     @Override

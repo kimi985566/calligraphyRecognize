@@ -88,8 +88,7 @@
         android:layout_margin="10dp"
         android:elevation="4dp"
         android:visibility="gone"
-        app:cardCornerRadius="10dp"
-        >
+        app:cardCornerRadius="10dp">
 
         <TextView
             android:layout_width="match_parent"

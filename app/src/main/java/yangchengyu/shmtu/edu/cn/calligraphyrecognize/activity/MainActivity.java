@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        mAHBottomNavigationViewPager.setOffscreenPageLimit(2);
+        mAHBottomNavigationViewPager.setOffscreenPageLimit(3);
         mMainFragmentAdapter = new MainFragmentAdapter(getSupportFragmentManager());
         mAHBottomNavigationViewPager.setAdapter(mMainFragmentAdapter);
 
