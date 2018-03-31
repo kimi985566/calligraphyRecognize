@@ -61,7 +61,7 @@ dependencies {
     // easy permissions
     implementation 'pub.devrel:easypermissions:1.1.3'
     //utils
-    implementation 'com.blankj:utilcode:1.12.6'
+    implementation 'com.blankj:utilcode:1.13.6'
     //rollViewPager
     implementation 'com.jude:rollviewpager:1.4.6'
     //OCR for recognize

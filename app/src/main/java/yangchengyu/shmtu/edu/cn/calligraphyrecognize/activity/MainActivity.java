@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 import com.baidu.ocr.sdk.OCR;
 import com.baidu.ocr.sdk.OnResultListener;
 import com.baidu.ocr.sdk.exception.OCRError;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private AHBottomNavigation mBottomNavigation;
     private AHBottomNavigationAdapter navigationAdapter;
-    private ViewPager mAHBottomNavigationViewPager;
+    private AHBottomNavigationViewPager mAHBottomNavigationViewPager;
     private ArrayList<AHBottomNavigationItem> mBottomNavigationItems = new ArrayList<>();
 
     private Window mWindow;
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        mAHBottomNavigationViewPager.setOffscreenPageLimit(3);
+        mAHBottomNavigationViewPager.setOffscreenPageLimit(2);
         mMainFragmentAdapter = new MainFragmentAdapter(getSupportFragmentManager());
         mAHBottomNavigationViewPager.setAdapter(mMainFragmentAdapter);
 

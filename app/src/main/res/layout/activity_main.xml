@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     tools:context="yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.MainActivity">
 
-    <android.support.v4.view.ViewPager
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
         android:id="@+id/vp_Main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

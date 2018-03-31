@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.SnackbarUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -173,6 +174,16 @@ public class MainFragment extends Fragment
         mSwipeRefreshLayout_select.setColorSchemeResources(
                 R.color.color_tab_1, R.color.color_tab_2,
                 R.color.color_tab_3, R.color.color_tab_4);
+
+        mSwipeRefreshLayout_select.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout_select.setRefreshing(true);
+                JSONUtils.getImage(Config.picAddress, getImageHandler);
+                mSwipeRefreshLayout_select.setRefreshing(false);
+            }
+        },3000);
+
         mSwipeRefreshLayout_select.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -193,7 +204,16 @@ public class MainFragment extends Fragment
                 GridLayoutManager.VERTICAL, false);
         mRecyclerView_select.setLayoutManager(gridLayoutManager);
 
-        mMainSelectAdapter = new MainSelectAdapter(getContext(), mImageInfos);
+        mMainSelectAdapter = new MainSelectAdapter(view.getContext(), mImageInfos);
+        mMainSelectAdapter.setOnCardViewItemListener(new OnCardViewItemListener() {
+            @Override
+            public void onCardViewItemClick(View view, int position) {
+                SnackbarUtils.with(view)
+                        .setMessage(mImageInfos.get(position).getImage_style())
+                        .setDuration(SnackbarUtils.LENGTH_SHORT)
+                        .showSuccess();
+            }
+        });
         mRecyclerView_select.setAdapter(mMainSelectAdapter);
     }
 
