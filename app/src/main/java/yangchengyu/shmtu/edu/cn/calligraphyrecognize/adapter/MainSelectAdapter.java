@@ -1,6 +1,5 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;

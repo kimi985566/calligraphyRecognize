@@ -1,21 +1,23 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
-import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
@@ -27,58 +29,83 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.CNNListener;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.CaffeMobile;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
  * Created by kimi9 on 2018/3/6.
  */
 
-public class ResultActivity extends AppCompatActivity implements OnItemClickListener {
+public class ResultActivity extends AppCompatActivity implements OnItemClickListener, CNNListener {
 
     private android.support.v7.widget.Toolbar mToolbar_result;
-    private RollPagerView mRpv_result;
+    private String mFromwhere;
+    private String mChar_word;
     private String mCroppedImgPath;
+    private static String[] IMAGENET_CLASSES;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private NestedScrollView mNsv_result;
-    private CardView mCardView_character;
-    private TextView mTextView_word;
-    private String mChar_word;
+    private RollPagerView mRpv_result;
     private int mWidth;
     private int mHeight;
     private int mX;
     private int mY;
+    private int mId;
+    private float[] meanValues = {183, 184, 185};
+    private TextView mTextView_word;
     private TextView mTv_word_width;
     private TextView mTv_word_height;
     private TextView mTv_word_x;
     private TextView mTv_word_y;
+    private CardView mCardView_character;
     private CardView mCardView_character_error;
-    private int mId;
-    private String mFromwhere;
     private List<Bitmap> mBitmapList;
+    private CaffeMobile mCaffeMobile;
+
+    static {
+        System.loadLibrary("caffe");
+        System.loadLibrary("caffe_jni");
+    }
+
+    private Bitmap mBmp;
+    private CardView mCardView_style;
+    private TextView mTv_style;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogUtils.i("onCreate");
         translucentSetting();
         setContentView(R.layout.activity_result);
         Utils.init(this);
+        LogUtils.i("onCreate");
         initUI();
-        mFromwhere = this.getIntent().getStringExtra(MainFragment.FROMWHERE);
         if (mFromwhere.equals("recognize")) {
             initCharRecognize();
         } else if (mFromwhere.equals("main")) {
             initDetailFromFragment();
         }
         initRollViewPager();
+    }
+
+    private void initUI() {
+        mFromwhere = this.getIntent().getStringExtra(MainFragment.FROMWHERE);
+        initContent();
+        setActionBar();
+        collapsingToolbarSetting();
     }
 
     private void initDetailFromFragment() {
@@ -91,12 +118,6 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         initWordCard();
     }
 
-    private void initUI() {
-        initContent();
-        setActionBar();
-        collapsingToolbarSetting();
-    }
-
     private void initCharRecognize() {
         decodeJSON();
         if (mChar_word.equals("1001")) {
@@ -107,6 +128,12 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
             initWordCard();
             saveWord();
         }
+        recognizeImg();
+    }
+
+    private void recognizeImg() {
+        initCaffe();
+        executeImg();
     }
 
     private void initWordCard() {
@@ -149,17 +176,19 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private void initContent() {
         mToolbar_result = findViewById(R.id.toolBar_result);
         mRpv_result = findViewById(R.id.rpv_result);
-        mRpv_result.setOnItemClickListener((OnItemClickListener) this);
+        mRpv_result.setOnItemClickListener(this);
         mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
         mNsv_result = findViewById(R.id.nsv_result);
 
         mCardView_character = findViewById(R.id.cardView_character);
         mCardView_character_error = findViewById(R.id.cardView_character_error);
+        mCardView_style = findViewById(R.id.cardView_style);
         mTextView_word = findViewById(R.id.tv_result_word_recognize);
         mTv_word_width = findViewById(R.id.tv_result_char_width);
         mTv_word_height = findViewById(R.id.tv_result_char_height);
         mTv_word_x = findViewById(R.id.tv_result_char_left);
         mTv_word_y = findViewById(R.id.tv_result_char_top);
+        mTv_style = findViewById(R.id.tv_result_style);
     }
 
     @NonNull
@@ -211,6 +240,42 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }).start();
     }
 
+    private void initCaffe() {
+        mCaffeMobile = new CaffeMobile();
+        mCaffeMobile.setNumThreads(4);
+        mCaffeMobile.loadModel(Config.modelProto, Config.modelBinary);
+        mCaffeMobile.setMean(meanValues);
+
+        getWords();
+    }
+
+    private void getWords() {
+        AssetManager am = this.getAssets();
+        try {
+            InputStream is = am.open("words.txt");
+            Scanner sc = new Scanner(is);
+            List<String> lines = new ArrayList<>();
+            while (sc.hasNextLine()) {
+                final String temp = sc.nextLine();
+                lines.add(temp.substring(temp.indexOf(" ") + 1));
+            }
+            IMAGENET_CLASSES = lines.toArray(new String[0]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void executeImg() {
+        File imgFile = new File(mCroppedImgPath);
+        mBmp = BitmapFactory.decodeFile(imgFile.getPath());
+        CNNTask cnnTask = new CNNTask(ResultActivity.this);
+        if (imgFile.exists()) {
+            cnnTask.execute(imgFile.getPath());
+        } else {
+            LogUtils.e("file is not exist");
+        }
+    }
+
     private void translucentSetting() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -233,17 +298,57 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     public void onItemClick(int position) {
         switch (position) {
             case 0:
-                Toast.makeText(this, "原图", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.with(mCardView_character)
+                        .setMessage("原图")
+                        .setDuration(SnackbarUtils.LENGTH_SHORT)
+                        .showSuccess();
                 break;
             case 1:
-                Toast.makeText(this, "二值化图像", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.with(mCardView_character)
+                        .setMessage("二值化图像")
+                        .setDuration(SnackbarUtils.LENGTH_SHORT)
+                        .showSuccess();
                 break;
             case 2:
-                Toast.makeText(this, "轮廓图像", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.with(mCardView_character)
+                        .setMessage("轮廓图像")
+                        .setDuration(SnackbarUtils.LENGTH_SHORT)
+                        .showSuccess();
                 break;
             case 3:
-                Toast.makeText(this, "骨架化图像", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.with(mCardView_character)
+                        .setMessage("骨架化图像")
+                        .setDuration(SnackbarUtils.LENGTH_SHORT)
+                        .showSuccess();
                 break;
         }
+    }
+
+    private class CNNTask extends AsyncTask<String, Void, Integer> {
+
+        private CNNListener listener;
+        private long startTime;
+
+        public CNNTask(CNNListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            startTime = SystemClock.uptimeMillis();
+            return mCaffeMobile.predictImage(strings[0])[0];
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            LogUtils.i(String.format("elapsed wall time: %d ms", SystemClock.uptimeMillis() - startTime));
+            listener.onTaskCompleted(integer);
+            super.onPostExecute(integer);
+        }
+    }
+
+    @Override
+    public void onTaskCompleted(int result) {
+        mTv_style.setText(IMAGENET_CLASSES[result]);
     }
 }

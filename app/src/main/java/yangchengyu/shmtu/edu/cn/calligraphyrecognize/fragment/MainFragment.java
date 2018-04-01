@@ -18,8 +18,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -182,7 +180,7 @@ public class MainFragment extends Fragment
                 JSONUtils.getImage(Config.picAddress, getImageHandler);
                 mSwipeRefreshLayout_select.setRefreshing(false);
             }
-        },3000);
+        }, 3000);
 
         mSwipeRefreshLayout_select.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

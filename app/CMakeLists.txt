@@ -19,9 +19,16 @@ add_library( native-lib SHARED src/main/cpp/native-lib.cpp )
 add_library( lib_opencv SHARED IMPORTED )
 
 #引入libopencv_java3.so文件
-set_target_properties(lib_opencv
-                      PROPERTIES IMPORTED_LOCATION
-                      ${pathToProject}/app/src/main/jniLibs/${ANDROID_ABI}/libopencv_java3.so)
+set_target_properties(lib_opencv PROPERTIES IMPORTED_LOCATION ${pathToProject}/app/src/main/jniLibs/${ANDROID_ABI}/libopencv_java3.so)
+
+add_library(caffe_jni
+            SHARED
+            IMPORTED)
+
+set_target_properties(
+            caffe_jni
+            PROPERTIES IMPORTED_LOCATION
+            ${CMAKE_CURRENT_LIST_DIR}/src/main/jniLibs/${ANDROID_ABI}/libcaffe_jni.so)
 
 find_library( # Sets the name of the path variable.
               log-lib
@@ -31,7 +38,6 @@ find_library( # Sets the name of the path variable.
               log )
 
 target_link_libraries( native-lib
-
-                       ${log-lib}
-
-                       lib_opencv)
+                       caffe_jni
+                       lib_opencv
+                       ${log-lib})
