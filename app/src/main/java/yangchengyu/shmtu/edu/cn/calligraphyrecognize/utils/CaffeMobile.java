@@ -2,7 +2,19 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * CaffeMobile
+ * <p>
+ * 通过使用Caffe-android-lib动态生成手机上caffe的so文件
+ * 使用so文件可以减少体积同时达到实现caffe深度学习识别的效果
+ * 对于生成的库文件需要考虑cpu所使用的平台
+ * 例如arm64-v8a,x86_64等
+ * 主要是需要支持OpenBLAS
+ */
+
+
 public class CaffeMobile {
+
     private static byte[] stringToBytes(String s) {
         return s.getBytes(StandardCharsets.US_ASCII);
     }

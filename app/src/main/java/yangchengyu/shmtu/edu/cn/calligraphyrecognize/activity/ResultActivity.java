@@ -1,5 +1,7 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +9,8 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,7 +56,9 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 public class ResultActivity extends AppCompatActivity implements OnItemClickListener, CNNListener {
 
+    private static final int RECOGNIZE_COPLETE = 1010;
     private android.support.v7.widget.Toolbar mToolbar_result;
+    private Bitmap mBmp;
     private String mFromwhere;
     private String mChar_word;
     private String mCroppedImgPath;
@@ -71,19 +77,25 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private TextView mTv_word_height;
     private TextView mTv_word_x;
     private TextView mTv_word_y;
+    private TextView mTv_style;
     private CardView mCardView_character;
     private CardView mCardView_character_error;
+    private CardView mCardView_style;
     private List<Bitmap> mBitmapList;
     private CaffeMobile mCaffeMobile;
 
+    //加载动态库
     static {
         System.loadLibrary("caffe");
         System.loadLibrary("caffe_jni");
     }
 
-    private Bitmap mBmp;
-    private CardView mCardView_style;
-    private TextView mTv_style;
+    private String mStyle;
+    private ProgressDialog mProgressDialog;
+    private Bitmap mBinImg;
+    private Bitmap mEdgeImg;
+    private Bitmap mSkeletonImg;
+    private Bitmap mCroppedImg;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,6 +126,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mHeight = this.getIntent().getIntExtra(MainFragment.HEIGHT, 100);
         mX = this.getIntent().getIntExtra(MainFragment.X_ARRAY, 0);
         mX = this.getIntent().getIntExtra(MainFragment.Y_ARRAY, 0);
+        mStyle = this.getIntent().getStringExtra(MainFragment.STYLE);
         mCroppedImgPath = this.getIntent().getStringExtra(MainFragment.PIC_PATH);
         initWordCard();
     }
@@ -124,14 +137,21 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
             mCardView_character.setVisibility(View.GONE);
             mCardView_character_error.setVisibility(View.VISIBLE);
             LogUtils.i("Nothing get from JSON");
+            recognizeImg();
         } else {
             initWordCard();
-            saveWord();
+            recognizeImg();
         }
-        recognizeImg();
     }
 
     private void recognizeImg() {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);//转盘
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setTitle("提示");
+        mProgressDialog.setMessage("正在识别中");
+        mProgressDialog.show();
         initCaffe();
         executeImg();
     }
@@ -142,6 +162,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_word_height.setText(getString(R.string.result_character_recognize_height) + String.valueOf(mHeight));
         mTv_word_x.setText(getString(R.string.result_character_recognize_x) + String.valueOf(mX));
         mTv_word_y.setText(getString(R.string.result_character_recognize_y) + String.valueOf(mY));
+        mTv_style.setText(getString(R.string.result_character_style) + mStyle);
     }
 
     private void initRollViewPager() {
@@ -197,19 +218,19 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
         LogUtils.i(mCroppedImgPath);
 
-        Bitmap croppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
+        mCroppedImg = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap bintemp = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap edgetemp = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap sketemp = BitmapFactory.decodeFile(mCroppedImgPath);
 
-        Bitmap binImg = ImageProcessUtils.binProcess(bintemp);
-        Bitmap edgeImg = ImageProcessUtils.edgeProcess(edgetemp);
-        Bitmap skeletonImg = ImageProcessUtils.skeletonFromJNI(sketemp);
+        mBinImg = ImageProcessUtils.binProcess(bintemp);
+        mEdgeImg = ImageProcessUtils.edgeProcess(edgetemp);
+        mSkeletonImg = ImageProcessUtils.skeletonFromJNI(sketemp);
 
-        bitmapList.add(croppedImg);
-        bitmapList.add(binImg);
-        bitmapList.add(edgeImg);
-        bitmapList.add(skeletonImg);
+        bitmapList.add(mCroppedImg);
+        bitmapList.add(mBinImg);
+        bitmapList.add(mEdgeImg);
+        bitmapList.add(mSkeletonImg);
 
         return bitmapList;
     }
@@ -232,8 +253,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                 wordInfo.setX_array(mX);
                 wordInfo.setY_array(mY);
                 wordInfo.setPic_path(mCroppedImgPath);
-                //TODO: get the real style
-                wordInfo.setStyle("楷体");
+                wordInfo.setStyle(mStyle);
                 WordDBhelper dBhelper = new WordDBhelper(getApplicationContext());
                 dBhelper.addWord(wordInfo);
             }
@@ -349,6 +369,25 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     @Override
     public void onTaskCompleted(int result) {
-        mTv_style.setText(IMAGENET_CLASSES[result]);
+        mStyle = IMAGENET_CLASSES[result];
+        mTv_style.setText(getString(R.string.result_character_style) + mStyle);
+        mProgressDialog.dismiss();
+        Message message = new Message();
+        message.what = RECOGNIZE_COPLETE;
+        mHandler.sendMessage(message);
     }
+
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case RECOGNIZE_COPLETE:
+                    if (!mChar_word.equals("1001")) {
+                        saveWord();
+                    }
+                    break;
+            }
+        }
+    };
 }

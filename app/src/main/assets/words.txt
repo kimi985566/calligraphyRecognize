@@ -1,5 +1,4 @@
-0 seal
-1 official
-2 regular
-3 running
-4 cursive
+0 篆书
+1 隶书
+2 楷体
+3 草书

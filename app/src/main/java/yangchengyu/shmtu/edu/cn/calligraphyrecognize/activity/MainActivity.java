@@ -69,39 +69,35 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private AHBottomNavigationAdapter navigationAdapter;
     private AHBottomNavigationViewPager mAHBottomNavigationViewPager;
     private ArrayList<AHBottomNavigationItem> mBottomNavigationItems = new ArrayList<>();
+    private AlertDialog.Builder alertDialog;
 
     private Window mWindow;
     private Handler mHandler = new Handler();
 
-    private AlertDialog.Builder alertDialog;
-
     private boolean hasGotToken = false;
 
-    public static final int PERMISSIONS_REQUEST_CODE = 101;
-    public static final int TAKE_PIC_RESULT_CODE = 201;
-    public static final int SELECT_PIC_RESULT_CODE = 202;
-
     private static final int REQUEST_CODE_GENERAL = 105;
+    private static final int PERMISSIONS_REQUEST_CODE = 101;
 
     private String[] mPerms = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
     private File mCropImg;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTheme();//状态了沉浸式主题
+        setContentView(R.layout.activity_main);
+        Utils.init(this);
+        ask_perms();//获取系统权限
+        initUI();//UI空间加载
+        initAccessTokenWithAkSk();//加载OCR识别API_KEY
+    }
+
+    private void initTheme() {
         boolean enabledTranslucentNavigation = getSharedPreferences("shared", Context.MODE_PRIVATE)
                 .getBoolean("translucentNavigation", false);
         setTheme(enabledTranslucentNavigation ? R.style.AppTheme_TranslucentNavigation : R.style.AppTheme);
-        setContentView(R.layout.activity_main);
-        Utils.init(this);
-        alertDialog = new AlertDialog.Builder(this);
-        mWindow = this.getWindow();
-        ask_perms();//获取系统权限
-        initUI();
-        initAccessTokenWithAkSk();
-
     }
 
     private void ask_perms() {
@@ -119,6 +115,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         }
+
+        alertDialog = new AlertDialog.Builder(this);
+        mWindow = this.getWindow();
 
         bindView();
 

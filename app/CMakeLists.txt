@@ -21,6 +21,7 @@ add_library( lib_opencv SHARED IMPORTED )
 #引入libopencv_java3.so文件
 set_target_properties(lib_opencv PROPERTIES IMPORTED_LOCATION ${pathToProject}/app/src/main/jniLibs/${ANDROID_ABI}/libopencv_java3.so)
 
+#引入的Caffe动态库
 add_library(caffe_jni
             SHARED
             IMPORTED)

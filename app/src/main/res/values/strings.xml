@@ -23,4 +23,5 @@
     <string name="result_character_cardView_cv">致信率: </string>
     <string name="title_activity_setting">设置</string>
     <string name="save_net_mode">1</string>
+    <string name="result_character_style">使用Caffe深度学习框架识别出的书法风格：</string>
 </resources>
