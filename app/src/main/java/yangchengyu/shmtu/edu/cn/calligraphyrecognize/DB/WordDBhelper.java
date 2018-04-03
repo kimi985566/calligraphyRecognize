@@ -17,7 +17,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 
 public class WordDBhelper extends SQLiteOpenHelper {
 
-    public final String TAG = this.getClass().getSimpleName();
+    public static String TAG = WordDBhelper.class.getSimpleName();
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "WordDetailDB.db";
@@ -77,7 +77,7 @@ public class WordDBhelper extends SQLiteOpenHelper {
     }
 
     public void deleteWord(WordInfo wordInfo) {
-        String whereClause = "id=?";
+        String whereClause = KEY_ID + "=?";
         String[] whereArgs = {String.valueOf(wordInfo.getId())};
         SQLiteDatabase db = this.getWritableDatabase();
         try {

@@ -49,15 +49,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    tools:text="文字宽度："/>
+                    tools:text="文字宽高："/>
 
-                <TextView
-                    android:id="@+id/tv_result_char_height"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    tools:text="文字高度："/>
 
                 <TextView
                     android:id="@+id/tv_result_char_left"
@@ -65,15 +58,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    tools:text="横坐标："/>
+                    tools:text="文字坐标："/>
 
-                <TextView
-                    android:id="@+id/tv_result_char_top"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    tools:text="纵坐标："/>
 
             </LinearLayout>
 

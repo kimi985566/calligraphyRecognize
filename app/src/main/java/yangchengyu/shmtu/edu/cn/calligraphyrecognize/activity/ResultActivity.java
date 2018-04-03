@@ -18,7 +18,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -59,9 +58,10 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private static final int RECOGNIZE_COPLETE = 1010;
     private android.support.v7.widget.Toolbar mToolbar_result;
     private Bitmap mBmp;
-    private String mFromwhere;
+    private String mFromWhere;
     private String mChar_word;
     private String mCroppedImgPath;
+    private String mStyle;
     private static String[] IMAGENET_CLASSES;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private NestedScrollView mNsv_result;
@@ -73,10 +73,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private int mId;
     private float[] meanValues = {183, 184, 185};
     private TextView mTextView_word;
-    private TextView mTv_word_width;
-    private TextView mTv_word_height;
-    private TextView mTv_word_x;
-    private TextView mTv_word_y;
+    private TextView mTv_word_width_height;
+    private TextView mTv_word_x_y;
     private TextView mTv_style;
     private CardView mCardView_character;
     private CardView mCardView_character_error;
@@ -90,7 +88,6 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         System.loadLibrary("caffe_jni");
     }
 
-    private String mStyle;
     private ProgressDialog mProgressDialog;
     private Bitmap mBinImg;
     private Bitmap mEdgeImg;
@@ -105,16 +102,16 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         Utils.init(this);
         LogUtils.i("onCreate");
         initUI();
-        if (mFromwhere.equals("recognize")) {
+        if (mFromWhere.equals("recognize")) {
             initCharRecognize();
-        } else if (mFromwhere.equals("main")) {
+        } else if (mFromWhere.equals("main")) {
             initDetailFromFragment();
         }
         initRollViewPager();
     }
 
     private void initUI() {
-        mFromwhere = this.getIntent().getStringExtra(MainFragment.FROMWHERE);
+        mFromWhere = this.getIntent().getStringExtra(MainFragment.FROMWHERE);
         initContent();
         setActionBar();
         collapsingToolbarSetting();
@@ -125,7 +122,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mWidth = this.getIntent().getIntExtra(MainFragment.WIDTH, 100);
         mHeight = this.getIntent().getIntExtra(MainFragment.HEIGHT, 100);
         mX = this.getIntent().getIntExtra(MainFragment.X_ARRAY, 0);
-        mX = this.getIntent().getIntExtra(MainFragment.Y_ARRAY, 0);
+        mY = this.getIntent().getIntExtra(MainFragment.Y_ARRAY, 0);
         mStyle = this.getIntent().getStringExtra(MainFragment.STYLE);
         mCroppedImgPath = this.getIntent().getStringExtra(MainFragment.PIC_PATH);
         initWordCard();
@@ -158,10 +155,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     private void initWordCard() {
         mTextView_word.setText(mChar_word);
-        mTv_word_width.setText(getString(R.string.result_character_recognize_width) + String.valueOf(mWidth));
-        mTv_word_height.setText(getString(R.string.result_character_recognize_height) + String.valueOf(mHeight));
-        mTv_word_x.setText(getString(R.string.result_character_recognize_x) + String.valueOf(mX));
-        mTv_word_y.setText(getString(R.string.result_character_recognize_y) + String.valueOf(mY));
+        mTv_word_width_height.setText(getString(R.string.result_character_recognize_width) + String.valueOf(mWidth) + "*" + String.valueOf(mHeight));
+        mTv_word_x_y.setText(getString(R.string.result_character_recognize_x) + "(" + String.valueOf(mX) + "," + String.valueOf(mY) + ")");
         mTv_style.setText(getString(R.string.result_character_style) + mStyle);
     }
 
@@ -205,10 +200,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mCardView_character_error = findViewById(R.id.cardView_character_error);
         mCardView_style = findViewById(R.id.cardView_style);
         mTextView_word = findViewById(R.id.tv_result_word_recognize);
-        mTv_word_width = findViewById(R.id.tv_result_char_width);
-        mTv_word_height = findViewById(R.id.tv_result_char_height);
-        mTv_word_x = findViewById(R.id.tv_result_char_left);
-        mTv_word_y = findViewById(R.id.tv_result_char_top);
+        mTv_word_width_height = findViewById(R.id.tv_result_char_width);
+        mTv_word_x_y = findViewById(R.id.tv_result_char_left);
         mTv_style = findViewById(R.id.tv_result_style);
     }
 

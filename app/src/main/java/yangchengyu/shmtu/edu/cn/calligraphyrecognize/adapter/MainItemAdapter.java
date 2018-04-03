@@ -26,8 +26,8 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemList
 public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHolder>
         implements View.OnClickListener, ItemTouchHelperListener {
 
-    private ArrayList<WordInfo> mWordInfos = new ArrayList<>();
-    private OnCardViewItemListener mOnCardViewItemListener;
+    private ArrayList<WordInfo> mWordInfos;
+    private OnCardViewItemListener mOnCardViewItemListener = null;
     private Context context;
 
     public MainItemAdapter(Context context, ArrayList<WordInfo> dataset) {
@@ -59,8 +59,11 @@ public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHo
 
     @Override
     public void onItemDelete(int position) {
-        mWordInfos.remove(position);
+        this.mWordInfos.remove(position);
         notifyItemRemoved(position);
+        if (position != mWordInfos.size()) { // 如果移除的是最后一个，忽略
+            notifyItemRangeChanged(position, mWordInfos.size() - position);
+        }
     }
 
     @Override

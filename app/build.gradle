@@ -55,7 +55,7 @@ dependencies {
     //微信登陆API
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
     //底部导航栏
-    implementation 'com.aurelhubert:ahbottomnavigation:2.1.0'
+    api 'com.aurelhubert:ahbottomnavigation:2.1.0'
     //openCV for android
     implementation project(':openCVLibrary340')
     // easy permissions
@@ -83,4 +83,15 @@ task nativeLibsToJar(type: Jar, description: 'create a jar archive of the native
 }
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn(nativeLibsToJar)
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '27.0.2'
+            }
+        }
+    }
 }

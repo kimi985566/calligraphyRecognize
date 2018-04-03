@@ -12,9 +12,9 @@
     <string name="skeProcess">骨架化</string>
     <string name="selectPic">选择图片</string>
     <string name="result_character_recognize_error">抱歉，未识别出文字信息</string>
-    <string name="result_character_recognize_width">文字宽度: </string>
+    <string name="result_character_recognize_width">文字宽高: </string>
     <string name="result_character_recognize_height">文字高度:  </string>
-    <string name="result_character_recognize_x">横轴坐标: </string>
+    <string name="result_character_recognize_x">文字坐标: </string>
     <string name="result_character_recognize_y">纵轴坐标: </string>
     <string name="result_character_cardView_word">识别结果: </string>
     <string name="result_character_cardView_width">文字宽度: </string>

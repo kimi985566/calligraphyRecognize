@@ -5,12 +5,14 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,6 +20,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +50,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainItemAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainSelectAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.ImageInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.ItemTouchHelperListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
@@ -59,7 +63,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment
         implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback,
-        RadioGroup.OnCheckedChangeListener, SwipeRefreshLayout.OnRefreshListener, OnCardViewItemListener {
+        RadioGroup.OnCheckedChangeListener, SwipeRefreshLayout.OnRefreshListener,
+        OnCardViewItemListener {
 
     public static final int SELECT_PIC_RESULT_CODE = 202;
     public static final String WORD = "word";
@@ -74,7 +79,6 @@ public class MainFragment extends Fragment
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     private Bitmap mBmp;
     private Bitmap mTemp;
@@ -87,10 +91,10 @@ public class MainFragment extends Fragment
     private ArrayList<WordInfo> mWordInfo = new ArrayList<>();
     private ArrayList<ImageInfo> mImageInfos = new ArrayList<>();
     private MainItemAdapter mMainCardViewItemAdapter;
-    private WordInfo mWordInfoTemp;
     private SwipeRefreshLayout mSwipeRefreshLayout_select;
     private RecyclerView mRecyclerView_select;
     private MainSelectAdapter mMainSelectAdapter;
+    private WordInfo mWordInfoTemp;
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -144,6 +148,9 @@ public class MainFragment extends Fragment
 
         mMainCardViewItemAdapter = new MainItemAdapter(view.getContext(), mWordInfo);
         mMainCardViewItemAdapter.setOnCardViewItemListener(this);
+        ItemTouchHelper.Callback callback = new myItemTouchHelperCallBack(mMainCardViewItemAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(mRecyclerView);
         mRecyclerView.setAdapter(mMainCardViewItemAdapter);
 
     }
@@ -386,5 +393,95 @@ public class MainFragment extends Fragment
                 startActivity(intent);
             }
         }).start();
+    }
+
+    class myItemTouchHelperCallBack extends ItemTouchHelper.Callback {
+
+        private int mPosition;
+        private ItemTouchHelperListener mItemTouchHelperListener;
+
+        public myItemTouchHelperCallBack(ItemTouchHelperListener itemTouchHelperListener) {
+            this.mItemTouchHelperListener = itemTouchHelperListener;
+        }
+
+        public void setItemTouchHelperListener(ItemTouchHelperListener itemTouchHelperListener) {
+            mItemTouchHelperListener = itemTouchHelperListener;
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            //允许上下拖动
+            int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+            //允许从右向左滑动
+            int swipeFlags = ItemTouchHelper.LEFT;
+            return makeMovementFlags(dragFlags, swipeFlags);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            //onItemMove接口里的方法
+            mItemTouchHelperListener.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            //onItemDelete接口里的方法
+            mPosition = viewHolder.getAdapterPosition();
+            mWordInfoTemp = mWordInfo.get(mPosition);
+            mItemTouchHelperListener.onItemDelete(mPosition);
+
+            Snackbar snackbar = Snackbar.make(mRecyclerView, "是否撤销删除", Snackbar.LENGTH_LONG);
+            snackbar.setAction("Yes", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mItemTouchHelperListener.onItemRecover(mPosition, mWordInfoTemp);
+                }
+            });
+            snackbar.addCallback(new MySnackBarCallBack());
+            snackbar.show();
+        }
+
+        @Override
+        public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                //滑动时改变Item的透明度，以实现滑动过程中实现渐变效果
+                final float alpha = 1 - Math.abs(dX) / (float) viewHolder.itemView.getWidth();
+                viewHolder.itemView.setAlpha(alpha);
+                viewHolder.itemView.setTranslationX(dX);
+            } else {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        }
+
+        @Override
+        public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            super.clearView(recyclerView, viewHolder);
+
+        }
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            //该方法返回值为true时，表示支持长按ItemView拖动
+            return true;
+        }
+
+        @Override
+        public boolean isItemViewSwipeEnabled() {
+            //该方法返回true时，表示如果用户触摸并且左滑了view，那么可以执行滑动删除操作，就是可以调用onSwiped()方法
+            return true;
+        }
+    }
+
+    private class MySnackBarCallBack extends Snackbar.Callback {
+        @Override
+        public void onDismissed(Snackbar transientBottomBar, int event) {
+            super.onDismissed(transientBottomBar, event);
+            if (event == DISMISS_EVENT_SWIPE
+                    || event == DISMISS_EVENT_TIMEOUT
+                    || event == DISMISS_EVENT_CONSECUTIVE) {
+                mWordDBhelper.deleteWord(mWordInfoTemp);
+            }
+        }
     }
 }
