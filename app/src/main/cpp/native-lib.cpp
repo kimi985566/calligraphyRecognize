@@ -158,8 +158,4 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_strok
     bool ifEnd;
     cv::Mat tmpimg;
     int dir[4] = {-step, step, 1, -1};
-
-
-
-
 }
