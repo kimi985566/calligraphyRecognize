@@ -50,7 +50,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 /**
- * Created by kimi9 on 2018/3/6.
+ * 检验结果显示页面，用以展示书法识别结果
  */
 
 public class ResultActivity extends AppCompatActivity implements OnItemClickListener, CNNListener {
@@ -110,24 +110,27 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         initRollViewPager();
     }
 
+    //载入UI界面设置等
     private void initUI() {
-        mFromWhere = this.getIntent().getStringExtra(MainFragment.FROMWHERE);
+        mFromWhere = this.getIntent().getStringExtra(RecognizeActivity.FROMWHERE);
         initContent();
         setActionBar();
         collapsingToolbarSetting();
     }
 
+    //通过解析intent加载详情的文字信息
     private void initDetailFromFragment() {
-        mChar_word = this.getIntent().getStringExtra(MainFragment.WORD);
-        mWidth = this.getIntent().getIntExtra(MainFragment.WIDTH, 100);
-        mHeight = this.getIntent().getIntExtra(MainFragment.HEIGHT, 100);
-        mX = this.getIntent().getIntExtra(MainFragment.X_ARRAY, 0);
-        mY = this.getIntent().getIntExtra(MainFragment.Y_ARRAY, 0);
-        mStyle = this.getIntent().getStringExtra(MainFragment.STYLE);
-        mCroppedImgPath = this.getIntent().getStringExtra(MainFragment.PIC_PATH);
+        mChar_word = this.getIntent().getStringExtra(RecognizeActivity.WORD);
+        mWidth = this.getIntent().getIntExtra(RecognizeActivity.WIDTH, 100);
+        mHeight = this.getIntent().getIntExtra(RecognizeActivity.HEIGHT, 100);
+        mX = this.getIntent().getIntExtra(RecognizeActivity.X_ARRAY, 0);
+        mY = this.getIntent().getIntExtra(RecognizeActivity.Y_ARRAY, 0);
+        mStyle = this.getIntent().getStringExtra(RecognizeActivity.STYLE);
+        mCroppedImgPath = this.getIntent().getStringExtra(RecognizeActivity.PIC_PATH);
         initWordCard();
     }
 
+    //加载回调的检验结果
     private void initCharRecognize() {
         decodeJSON();
         if (mChar_word.equals("1001")) {
@@ -141,6 +144,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    //识别文字信息
     private void recognizeImg() {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);//转盘
@@ -153,6 +157,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         executeImg();
     }
 
+    //设置TextView文字信息
     private void initWordCard() {
         mTextView_word.setText(mChar_word);
         mTv_word_width_height.setText(getString(R.string.result_character_recognize_width) + String.valueOf(mWidth) + "*" + String.valueOf(mHeight));
@@ -160,12 +165,14 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_style.setText(getString(R.string.result_character_style) + mStyle);
     }
 
+    //加载滚动显示页面
     private void initRollViewPager() {
         mBitmapList = getBitmapList();
         mRpv_result.setAdapter(new RollViewPagerAdapter(mBitmapList));
         mNsv_result.setFillViewport(true);
     }
 
+    //解析JSON字符串
     private void decodeJSON() {
         mCroppedImgPath = this.getIntent().getStringExtra("cropImgPath");
         String JSON = this.getIntent().getStringExtra("JSON");
@@ -189,6 +196,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    //findViewById
     private void initContent() {
         mToolbar_result = findViewById(R.id.toolBar_result);
         mRpv_result = findViewById(R.id.rpv_result);
@@ -205,6 +213,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_style = findViewById(R.id.tv_result_style);
     }
 
+    //处理图片并显示
     @NonNull
     private List<Bitmap> getBitmapList() {
         final List<Bitmap> bitmapList = new ArrayList<>();
@@ -228,12 +237,14 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         return bitmapList;
     }
 
+    //设置ActionBar样式
     private void setActionBar() {
         setSupportActionBar(mToolbar_result);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
+    //保存图片
     private void saveWord() {
         new Thread(new Runnable() {
             @Override
@@ -253,6 +264,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }).start();
     }
 
+    //加载Caffe库文件
     private void initCaffe() {
         mCaffeMobile = new CaffeMobile();
         mCaffeMobile.setNumThreads(4);
@@ -262,6 +274,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         getWords();
     }
 
+    //读取分类信息文档
     private void getWords() {
         AssetManager am = this.getAssets();
         try {
@@ -278,6 +291,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    //分析识别图片
     private void executeImg() {
         File imgFile = new File(mCroppedImgPath);
         mBmp = BitmapFactory.decodeFile(imgFile.getPath());
@@ -289,6 +303,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    //状态栏透明设置
     private void translucentSetting() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -297,6 +312,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    //收缩状态栏的设置
     private void collapsingToolbarSetting() {
         mCollapsingToolbarLayout.setExpandedTitleColor(Color.BLACK);
         mCollapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
@@ -307,6 +323,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         super.onDestroy();
     }
 
+    //显示图片信息
     @Override
     public void onItemClick(int position) {
         switch (position) {

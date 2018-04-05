@@ -23,14 +23,14 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemList
  * 用于主界面第一个页面的item绑定
  */
 
-public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHolder>
+public class MainRecognizeItemAdapter extends RecyclerView.Adapter<MainRecognizeItemAdapter.ViewHolder>
         implements View.OnClickListener, ItemTouchHelperListener {
 
     private ArrayList<WordInfo> mWordInfos;
     private OnCardViewItemListener mOnCardViewItemListener = null;
     private Context context;
 
-    public MainItemAdapter(Context context, ArrayList<WordInfo> dataset) {
+    public MainRecognizeItemAdapter(Context context, ArrayList<WordInfo> dataset) {
         this.context = context;
         this.mWordInfos = dataset;
     }
@@ -93,8 +93,8 @@ public class MainItemAdapter extends RecyclerView.Adapter<MainItemAdapter.ViewHo
     }
 
     @Override
-    public MainItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fragment_list_view, parent, false);
+    public MainRecognizeItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_content_recognize, parent, false);
         ViewHolder vh = new ViewHolder(v);
         v.setOnClickListener(this);
         LogUtils.i("ViewHolder init success");

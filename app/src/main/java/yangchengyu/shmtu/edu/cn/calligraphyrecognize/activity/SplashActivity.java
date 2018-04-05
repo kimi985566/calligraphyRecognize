@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 
 /**
- * Created by kimi9 on 2018/1/22.
+ * 启动页面
+ *
+ * 用来显示启动时logo的背景，从而达到禁止启动白屏的效果
  */
 
 public class SplashActivity extends AppCompatActivity {

@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } else {
             AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, color_tab_1);
             AHBottomNavigationItem item_content = new AHBottomNavigationItem(R.string.item_content, R.drawable.ic_menu_content, R.color.color_tab_2);
-            AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_select, R.drawable.ic_menu_select, R.color.color_tab_3);
+            AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_select, R.color.color_tab_3);
 
             mBottomNavigationItems.add(item_hot);
             mBottomNavigationItems.add(item_content);
@@ -154,15 +154,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     mMainFragment = mMainFragmentAdapter.getCurrentFragment();
                 }
 
-                if (wasSelected) {
-                    mMainFragment.refresh();
-                    return true;
-                }
-
-                if (mMainFragment != null) {
-                    mMainFragment.willBeHidden();
-                }
-
                 mAHBottomNavigationViewPager.setCurrentItem(position, false);
 
                 if (mMainFragment == null) {
@@ -170,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
 
                 mMainFragment = mMainFragmentAdapter.getCurrentFragment();
-                mMainFragment.willBeDisplayed();
 
                 if (position == 0) {
                     mAHBottomNavigationViewPager.setCurrentItem(0);
@@ -262,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         mWindow.setStatusBarColor(color_content);
                         break;
                     case 2:
-                        getSupportActionBar().setTitle(R.string.item_select);
+                        getSupportActionBar().setTitle(R.string.item_setting);
                         int color_setting = Color.parseColor("#00886A");
                         ColorDrawable colorDrawable_setting = new ColorDrawable(color_setting);
                         getSupportActionBar().setBackgroundDrawable(colorDrawable_setting);
@@ -323,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                                     Intent intent = new Intent(MainActivity.this, ResultActivity.class);
                                     intent.putExtra("JSON", result);
                                     intent.putExtra("cropImgPath", mCropImg.getPath());
-                                    intent.putExtra(MainFragment.FROMWHERE, "recognize");
+                                    intent.putExtra(RecognizeActivity.FROMWHERE, "recognize");
                                     startActivity(intent);
                                 }
                             }).start();

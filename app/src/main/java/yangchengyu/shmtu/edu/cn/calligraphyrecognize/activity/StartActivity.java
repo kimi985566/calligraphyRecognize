@@ -20,6 +20,12 @@ import android.widget.TextView;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 
+/**
+ * 启动动画页面
+ * <p>
+ * 承接Splash Activivty,用以显示logo与文字动画
+ */
+
 public class StartActivity extends AppCompatActivity {
 
     private ImageView mivLogo;
