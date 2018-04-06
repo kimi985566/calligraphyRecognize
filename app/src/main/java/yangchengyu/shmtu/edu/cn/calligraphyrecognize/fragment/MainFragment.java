@@ -21,6 +21,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.jude.rollviewpager.RollPagerView;
 
 import java.io.FileNotFoundException;
@@ -28,7 +30,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.AboutMeActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.DisplayActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.RecognizeActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainFragmentFunctionAdapter;
@@ -38,6 +43,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemList
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 import static android.app.Activity.RESULT_OK;
+import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 
 
 //装在多个Fragment
@@ -61,6 +67,8 @@ public class MainFragment extends Fragment
 
     private ArrayList<FunctionInfo> mFunctionInfos = new ArrayList<>();
     private MainFragmentFunctionAdapter mMainFragmentFunctionAdapter;
+    private ImageView mIv_setting_background;
+    private ImageView mIv_setting_avater;
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -86,7 +94,7 @@ public class MainFragment extends Fragment
             return view;
             //装在第三页
         } else {
-            View view = inflater.inflate(R.layout.fragment_setting, container, false);
+            View view = inflater.inflate(R.layout.fragment_main_setting, container, false);
             initSetting(view);
             return view;
         }
@@ -146,6 +154,22 @@ public class MainFragment extends Fragment
 
     //第三页的加载
     private void initSetting(View view) {
+        mIv_setting_background = view.findViewById(R.id.iv_setting_blur);
+        mIv_setting_avater = view.findViewById(R.id.iv_setting_avatar);
+
+        initPic();
+
+        mIv_setting_avater.setOnClickListener(this);
+    }
+
+    private void initPic() {
+        Glide.with(this).load(R.drawable.ic_image_aboutme)
+                .apply(bitmapTransform(new BlurTransformation(25)))
+                .into(mIv_setting_background);
+
+        Glide.with(this).load(R.drawable.ic_image_aboutme)
+                .apply(bitmapTransform(new CropCircleTransformation()))
+                .into(mIv_setting_avater);
     }
 
 
@@ -170,6 +194,10 @@ public class MainFragment extends Fragment
                         mIv_content.setImageBitmap(mTemp);
                         break;
                 }
+                break;
+            case R.id.iv_setting_avatar:
+                Intent intent = new Intent(this.getContext(), AboutMeActivity.class);
+                startActivity(intent);
                 break;
         }
     }

@@ -94,7 +94,7 @@ public class MainRecognizeItemAdapter extends RecyclerView.Adapter<MainRecognize
 
     @Override
     public MainRecognizeItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_content_recognize, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_activity_recognize, parent, false);
         ViewHolder vh = new ViewHolder(v);
         v.setOnClickListener(this);
         LogUtils.i("ViewHolder init success");

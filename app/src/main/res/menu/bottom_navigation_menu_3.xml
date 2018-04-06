@@ -9,7 +9,7 @@
         android:title="@string/item_content"/>
 
     <item
-        android:icon="@drawable/ic_function_select"
+        android:icon="@drawable/ic_menu_setting"
         android:title="@string/item_setting"/>
 
 </menu>

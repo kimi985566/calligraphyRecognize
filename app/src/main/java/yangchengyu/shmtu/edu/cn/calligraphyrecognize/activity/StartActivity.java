@@ -60,7 +60,7 @@ public class StartActivity extends AppCompatActivity {
         //将注册、登录的控件alpha属性从0变到1
         ObjectAnimator alphaAppName = ObjectAnimator.ofFloat(mtvAppName, "alpha", 0, 1);
         final AnimatorSet bottomAnim = new AnimatorSet();
-        bottomAnim.setDuration(1200);
+        bottomAnim.setDuration(1500);
         //同时执行控件平移和alpha渐变动画
         bottomAnim.play(tranAppName).with(alphaAppName);
 
@@ -109,7 +109,7 @@ public class StartActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 1200);
+        }, 1500);
     }
 
     @Override
