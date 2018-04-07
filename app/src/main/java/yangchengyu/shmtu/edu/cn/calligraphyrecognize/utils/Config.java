@@ -28,8 +28,6 @@ public class Config {
     public static final String SECRET_KEY = "VIAPb8byovY4FrGsF7s1YSSlPcwW2vbO";
 
     //精选页面的网址
-    //public static final String URLAddress = "http://192.168.3.100"; //Huawei-309
-    //public static final String URLAddress = "http://192.168.43.250";//OnePlus 3
-    public static final String URLAddress = "http://192.168.3.35";//Huawei_home
+    public static final String URLAddress = "http://119.28.224.38";//Tencent Cloud
     public static final String picAddress = URLAddress + "/Calligraphy/getCalligraphyJSON.php";
 }

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
 
 import org.json.JSONArray;
@@ -64,7 +65,9 @@ public class DisplayActivity extends AppCompatActivity implements SwipeRefreshLa
                 mSwipeRefreshLayout_select.setRefreshing(true);
                 JSONUtils.getImage(Config.picAddress, getImageHandler);
                 mSwipeRefreshLayout_select.setRefreshing(false);
-                SnackbarUtils.with(mRecyclerView_select).setMessage("加载成功").showSuccess();
+                SnackbarUtils.with(mRecyclerView_select)
+                        .setMessage("当前网络：" + String.valueOf(NetworkUtils.getNetworkType()))
+                        .showSuccess();
             }
         });
 
