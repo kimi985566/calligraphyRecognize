@@ -1,7 +1,5 @@
 #include <jni.h>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include <opencv2/opencv.hpp>

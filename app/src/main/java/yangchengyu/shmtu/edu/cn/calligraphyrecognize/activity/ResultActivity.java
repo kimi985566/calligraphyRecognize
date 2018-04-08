@@ -43,7 +43,6 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment.MainFragment;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.CNNListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.CaffeMobile;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
