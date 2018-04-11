@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         break;
                     case 1:
                         getSupportActionBar().setTitle(R.string.item_content);
-                        int color_content = Color.parseColor("#303F9F");
+                        int color_content = Color.parseColor("#388FFF");
                         ColorDrawable colorDrawable_content = new ColorDrawable(color_content);
                         getSupportActionBar().setBackgroundDrawable(colorDrawable_content);
                         mWindow.setStatusBarColor(color_content);

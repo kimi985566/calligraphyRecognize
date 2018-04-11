@@ -75,6 +75,7 @@ public class MainSelectAdapter extends RecyclerView.Adapter<MainSelectAdapter.Vi
         Glide.with(context)
                 .asBitmap()
                 .load(mImageInfos.get(position).getImage_path())
+                .thumbnail(0.1f)
                 .into(holder.mIv_select);
         holder.mTv_select.setText(mImageInfos.get(position).getImage_work_name());
         holder.itemView.setTag(position);

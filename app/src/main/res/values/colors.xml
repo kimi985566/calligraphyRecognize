@@ -5,14 +5,16 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="color_tab_1">#FF4081</color>
-    <color name="color_tab_2">#303F9F</color>
+    <color name="color_tab_2">#388FFF</color>
     <color name="color_tab_3">#00886A</color>
     <color name="color_tab_4">#FFFF00</color>
     <color name="color_tab_5">#F63D2B</color>
 
+    <color name="white">#FFFFFF</color>
+
     <array name="tab_colors">
         <item name="tab_1">#FF4081</item>
-        <item name="tab_2">#303F9F</item>
+        <item name="tab_2">#388FFF</item>
         <item name="tab_3">#00886A</item>
         <item name="tab_4">#6C4A42</item>
         <item name="tab_5">#F63D2B</item>
