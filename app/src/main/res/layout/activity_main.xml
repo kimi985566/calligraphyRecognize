@@ -24,6 +24,7 @@
         android:layout_marginBottom="88dp"
         android:layout_marginRight="@dimen/spacing_normal"
         android:clickable="true"
+        android:backgroundTint="@android:color/holo_orange_dark"
         android:src="@drawable/ic_camera"
         app:borderWidth="0dp"
         app:elevation="6dp"

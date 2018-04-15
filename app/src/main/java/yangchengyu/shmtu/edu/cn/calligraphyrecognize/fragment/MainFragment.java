@@ -1,26 +1,38 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.fragment;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.CacheUtils;
+import com.blankj.utilcode.util.CleanUtils;
+import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.SnackbarUtils;
 import com.bumptech.glide.Glide;
 import com.jude.rollviewpager.RollPagerView;
 
@@ -34,6 +46,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.AboutMeActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.DisplayActivity;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.MainActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.RecognizeActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainFragmentFunctionAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
@@ -49,7 +62,7 @@ import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 
 public class MainFragment extends Fragment
         implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback,
-        RadioGroup.OnCheckedChangeListener, OnCardViewItemListener {
+        RadioGroup.OnCheckedChangeListener, OnCardViewItemListener, CompoundButton.OnCheckedChangeListener {
 
     public static final int SELECT_PIC_RESULT_CODE = 202;
     private int maxSize = 1024;
@@ -68,6 +81,11 @@ public class MainFragment extends Fragment
     private MainFragmentFunctionAdapter mMainFragmentFunctionAdapter;
     private ImageView mIv_setting_background;
     private ImageView mIv_setting_avater;
+    private View mClearItem;
+    private Switch mSwicth_night;
+    private static String ISNIGHT = "isNight";
+    private boolean enableNightMode = false;
+    private SharedPreferences mSharedPreferences;
 
     //单例模式
     public static MainFragment newInstance(int index) {
@@ -153,11 +171,22 @@ public class MainFragment extends Fragment
 
     //第三页的加载
     private void initSetting(View view) {
+        initTopPic(view);
+
+        mSwicth_night = view.findViewById(R.id.sw_item_setting_switch);
+        mClearItem = view.findViewById(R.id.view_fragment_clear);
+        mSharedPreferences = getActivity().getSharedPreferences("myPreference", Context.MODE_PRIVATE);
+        enableNightMode = mSharedPreferences.getBoolean(ISNIGHT, false);
+        mSwicth_night.setChecked(enableNightMode);
+        mSwicth_night.setOnCheckedChangeListener(this);
+        mClearItem.setOnClickListener(this);
+
+    }
+
+    private void initTopPic(View view) {
         mIv_setting_background = view.findViewById(R.id.iv_setting_blur);
         mIv_setting_avater = view.findViewById(R.id.iv_setting_avatar);
-
         initPic();
-
         mIv_setting_avater.setOnClickListener(this);
     }
 
@@ -197,6 +226,11 @@ public class MainFragment extends Fragment
             case R.id.iv_setting_avatar:
                 Intent intent = new Intent(this.getContext(), AboutMeActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.view_fragment_clear:
+                CleanUtils.cleanInternalCache();
+                CleanUtils.cleanExternalCache();
+                SnackbarUtils.with(mClearItem).setMessage("清除缓存成功").showSuccess();
                 break;
         }
     }
@@ -284,6 +318,39 @@ public class MainFragment extends Fragment
                 break;
             default:
                 Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()) {
+            case R.id.sw_item_setting_switch:
+                if (isChecked) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    getActivity().recreate();
+                    getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+                    Toast.makeText(this.getContext(), "夜间模式", Toast.LENGTH_SHORT).show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSharedPreferences = getActivity().getSharedPreferences("myPreference", Context.MODE_PRIVATE);
+                            mSharedPreferences.edit().putBoolean(ISNIGHT, true).commit();
+                        }
+                    }).start();
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    getActivity().recreate();
+                    getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+                    Toast.makeText(this.getContext(), "正常模式", Toast.LENGTH_SHORT).show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSharedPreferences = getActivity().getSharedPreferences("myPreference", Context.MODE_PRIVATE);
+                            mSharedPreferences.edit().putBoolean(ISNIGHT, false).commit();
+                        }
+                    }).start();
+                }
                 break;
         }
     }

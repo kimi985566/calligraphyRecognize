@@ -37,6 +37,26 @@
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/black"
+        android:orientation="vertical"
+        android:paddingTop="10dp">
 
+        <include layout="@layout/item_fragment_setting_switch"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@android:color/darker_gray"/>
+
+        <include
+            android:id="@+id/view_fragment_clear"
+            layout="@layout/item_fragment_setting_text_click"/>
+
+    </LinearLayout>
 
 </LinearLayout>

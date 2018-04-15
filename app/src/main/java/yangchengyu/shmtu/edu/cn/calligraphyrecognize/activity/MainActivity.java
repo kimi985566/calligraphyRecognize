@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             navigationAdapter.setupWithBottomNavigation(mBottomNavigation, tabColors);
             mBottomNavigation.setBehaviorTranslationEnabled(true);
         } else {
-            AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, color_tab_1);
+            AHBottomNavigationItem item_hot = new AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, R.color.color_tab_1);
             AHBottomNavigationItem item_content = new AHBottomNavigationItem(R.string.item_content, R.drawable.ic_menu_content, R.color.color_tab_2);
             AHBottomNavigationItem item_setting = new AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_setting, R.color.color_tab_3);
 
@@ -142,8 +142,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mBottomNavigation.setTranslucentNavigationEnabled(true);
         mBottomNavigation.setColored(true);
         mBottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
-        mBottomNavigation.setCurrentItem(0);
-        mAHBottomNavigationViewPager.setCurrentItem(0);
+        mBottomNavigation.refresh();
 
         mBottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
@@ -154,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     mMainFragment = mMainFragmentAdapter.getCurrentFragment();
                 }
 
-                mAHBottomNavigationViewPager.setCurrentItem(position, false);
+                mAHBottomNavigationViewPager.setCurrentItem(position, true);
 
                 if (mMainFragment == null) {
                     return true;
@@ -162,8 +161,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                 mMainFragment = mMainFragmentAdapter.getCurrentFragment();
 
-                if (position == 0) {
-                    mAHBottomNavigationViewPager.setCurrentItem(0);
+                if (position == 0 || position == 2) {
+                    mAHBottomNavigationViewPager.setCurrentItem(position);
                     mFloatingActionButton.setVisibility(View.VISIBLE);
                     mFloatingActionButton.setAlpha(0f);
                     mFloatingActionButton.setScaleX(0f);
@@ -414,7 +413,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 LogUtils.e("Error in get Token AK SK");
             }
         }, getApplicationContext(), Config.API_KEY, Config.SECRET_KEY);
-
     }
 
     @Override
