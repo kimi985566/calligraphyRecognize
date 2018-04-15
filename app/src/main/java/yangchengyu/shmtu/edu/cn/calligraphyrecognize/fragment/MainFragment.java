@@ -150,8 +150,10 @@ public class MainFragment extends Fragment
     private void setRollViewPager() {
         List<Bitmap> bitmapList = new ArrayList<>();
         Bitmap smu = BitmapFactory.decodeResource(getResources(), R.drawable.ic_smu_banner);
+        Bitmap smu_towel = BitmapFactory.decodeResource(getResources(), R.drawable.ic_school_banner);
         Bitmap android = BitmapFactory.decodeResource(getResources(), R.drawable.ic_android_banner);
         bitmapList.add(smu);
+        bitmapList.add(smu_towel);
         bitmapList.add(android);
         mRpv_fragment_main.setAdapter(new RollViewPagerAdapter(bitmapList));
     }
@@ -327,31 +329,25 @@ public class MainFragment extends Fragment
         switch (buttonView.getId()) {
             case R.id.sw_item_setting_switch:
                 if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    getActivity().recreate();
-                    getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
-                    Toast.makeText(this.getContext(), "夜间模式", Toast.LENGTH_SHORT).show();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSharedPreferences = getActivity().getSharedPreferences("myPreference", Context.MODE_PRIVATE);
-                            mSharedPreferences.edit().putBoolean(ISNIGHT, true).commit();
-                        }
-                    }).start();
+                    setDayNightMode(AppCompatDelegate.MODE_NIGHT_YES, "夜间模式", true);
                 } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    getActivity().recreate();
-                    getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
-                    Toast.makeText(this.getContext(), "正常模式", Toast.LENGTH_SHORT).show();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSharedPreferences = getActivity().getSharedPreferences("myPreference", Context.MODE_PRIVATE);
-                            mSharedPreferences.edit().putBoolean(ISNIGHT, false).commit();
-                        }
-                    }).start();
+                    setDayNightMode(AppCompatDelegate.MODE_NIGHT_NO, "正常模式", false);
                 }
                 break;
         }
+    }
+
+    private void setDayNightMode(int modeNightYes, String modeText, final boolean b) {
+        AppCompatDelegate.setDefaultNightMode(modeNightYes);
+        getActivity().recreate();
+        getActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+        Toast.makeText(this.getContext(), modeText, Toast.LENGTH_SHORT).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mSharedPreferences = getActivity().getSharedPreferences("myPreference", Context.MODE_PRIVATE);
+                mSharedPreferences.edit().putBoolean(ISNIGHT, b).commit();
+            }
+        }).start();
     }
 }

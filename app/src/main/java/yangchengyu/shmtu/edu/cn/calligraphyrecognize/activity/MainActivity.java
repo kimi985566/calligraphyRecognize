@@ -53,9 +53,8 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.FileUtil;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.RecognizeService;
 
-import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.R.color.color_tab_1;
-
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
+        AHBottomNavigation.OnTabSelectedListener, View.OnClickListener {
 
     private boolean mIsExit;
     private int[] tabColors;
@@ -112,6 +111,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void initUI() {
+        initView();
+        initNavigation();
+    }
+
+    private void initView() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         }
@@ -119,8 +123,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         alertDialog = new AlertDialog.Builder(this);
         mWindow = this.getWindow();
 
-        bindView();
+        mBottomNavigation = findViewById(R.id.bn_Main);
+        mAHBottomNavigationViewPager = findViewById(R.id.vp_Main);
+        mFloatingActionButton = findViewById(R.id.fab_Main);
 
+        //fab的监听
+        mFloatingActionButton.setOnClickListener(this);
+    }
+
+    private void initNavigation() {
         if (useMenuResource) {
             tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
             navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu_3);
@@ -137,158 +148,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             mBottomNavigation.addItems(mBottomNavigationItems);
         }
-
         mBottomNavigation.manageFloatingActionButtonBehavior(mFloatingActionButton);
         mBottomNavigation.setTranslucentNavigationEnabled(true);
         mBottomNavigation.setColored(true);
         mBottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
         mBottomNavigation.refresh();
+        mBottomNavigation.setOnTabSelectedListener(this);
 
-        mBottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
-            @Override
-            public boolean onTabSelected(int position, boolean wasSelected) {
-                change_status_action_bar_color(position);
+        initNavigationAdapter();
 
-                if (mMainFragment == null) {
-                    mMainFragment = mMainFragmentAdapter.getCurrentFragment();
-                }
+        mMainFragment = mMainFragmentAdapter.getCurrentFragment();
+    }
 
-                mAHBottomNavigationViewPager.setCurrentItem(position, true);
-
-                if (mMainFragment == null) {
-                    return true;
-                }
-
-                mMainFragment = mMainFragmentAdapter.getCurrentFragment();
-
-                if (position == 0 || position == 2) {
-                    mAHBottomNavigationViewPager.setCurrentItem(position);
-                    mFloatingActionButton.setVisibility(View.VISIBLE);
-                    mFloatingActionButton.setAlpha(0f);
-                    mFloatingActionButton.setScaleX(0f);
-                    mFloatingActionButton.setScaleY(0f);
-                    mFloatingActionButton.animate()
-                            .alpha(1)
-                            .scaleX(1)
-                            .scaleY(1)
-                            .setDuration(300)
-                            .setInterpolator(new OvershootInterpolator())
-                            .setListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    mFloatingActionButton.animate()
-                                            .setInterpolator(new LinearOutSlowInInterpolator())
-                                            .start();
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            })
-                            .start();
-
-                } else {
-                    if (mFloatingActionButton.getVisibility() == View.VISIBLE) {
-                        mFloatingActionButton.animate()
-                                .alpha(0)
-                                .scaleX(0)
-                                .scaleY(0)
-                                .setDuration(300)
-                                .setInterpolator(new LinearOutSlowInInterpolator())
-                                .setListener(new Animator.AnimatorListener() {
-                                    @Override
-                                    public void onAnimationStart(Animator animation) {
-
-                                    }
-
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        mFloatingActionButton.setVisibility(View.GONE);
-                                    }
-
-                                    @Override
-                                    public void onAnimationCancel(Animator animation) {
-                                        mFloatingActionButton.setVisibility(View.GONE);
-                                    }
-
-                                    @Override
-                                    public void onAnimationRepeat(Animator animation) {
-
-                                    }
-                                })
-                                .start();
-                    }
-                }
-                return true;
-            }
-
-            //装载页面
-            private void change_status_action_bar_color(int position) {
-                switch (position) {
-                    case 0:
-                        getSupportActionBar().setTitle(R.string.item_hot);
-                        int color_hot = Color.parseColor("#FF4081");
-                        ColorDrawable colorDrawable_hot = new ColorDrawable(color_hot);
-                        getSupportActionBar().setBackgroundDrawable(colorDrawable_hot);
-                        mWindow.setStatusBarColor(color_hot);
-                        break;
-                    case 1:
-                        getSupportActionBar().setTitle(R.string.item_content);
-                        int color_content = Color.parseColor("#388FFF");
-                        ColorDrawable colorDrawable_content = new ColorDrawable(color_content);
-                        getSupportActionBar().setBackgroundDrawable(colorDrawable_content);
-                        mWindow.setStatusBarColor(color_content);
-                        break;
-                    case 2:
-                        getSupportActionBar().setTitle(R.string.item_setting);
-                        int color_setting = Color.parseColor("#00886A");
-                        ColorDrawable colorDrawable_setting = new ColorDrawable(color_setting);
-                        getSupportActionBar().setBackgroundDrawable(colorDrawable_setting);
-                        mWindow.setStatusBarColor(color_setting);
-                        break;
-                }
-            }
-        });
-
+    private void initNavigationAdapter() {
         mAHBottomNavigationViewPager.setOffscreenPageLimit(2);
         mMainFragmentAdapter = new MainFragmentAdapter(getSupportFragmentManager());
         mAHBottomNavigationViewPager.setAdapter(mMainFragmentAdapter);
-
-        mMainFragment = mMainFragmentAdapter.getCurrentFragment();
-
-        //fab的监听
-        FabListener();
-    }
-
-    private void bindView() {
-        mBottomNavigation = findViewById(R.id.bn_Main);
-        mAHBottomNavigationViewPager = findViewById(R.id.vp_Main);
-        mFloatingActionButton = findViewById(R.id.fab_Main);
-    }
-
-    private void FabListener() {
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
-                        FileUtil.getSaveFile(getApplication()).getAbsolutePath());
-                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
-                        CameraActivity.CONTENT_TYPE_GENERAL);
-                startActivityForResult(intent, REQUEST_CODE_GENERAL);
-            }
-        });
     }
 
     @Override
@@ -306,16 +181,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                                     Toast.LENGTH_SHORT)
                                     .show();
                             saveCropImg();
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-                                    intent.putExtra("JSON", result);
-                                    intent.putExtra("cropImgPath", mCropImg.getPath());
-                                    intent.putExtra(RecognizeActivity.FROMWHERE, "recognize");
-                                    startActivity(intent);
-                                }
-                            }).start();
+                            startActivityNewThread(result);
                         }
 
                         private void saveCropImg() {
@@ -337,6 +203,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     break;
             }
         }
+    }
+
+    private void startActivityNewThread(final String result) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                intent.putExtra("JSON", result);
+                intent.putExtra("cropImgPath", mCropImg.getPath());
+                intent.putExtra(RecognizeActivity.FROMWHERE, "recognize");
+                startActivity(intent);
+            }
+        }).start();
     }
 
     //双击退出
@@ -416,9 +295,135 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     @Override
+    public boolean onTabSelected(int position, boolean wasSelected) {
+
+        change_status_action_bar_color(position);
+
+        if (mMainFragment == null) {
+            mMainFragment = mMainFragmentAdapter.getCurrentFragment();
+        }
+
+        mAHBottomNavigationViewPager.setCurrentItem(position, true);
+
+        if (mMainFragment == null) {
+            return true;
+        }
+
+        mMainFragment = mMainFragmentAdapter.getCurrentFragment();
+
+        if (position == 0 || position == 2) {
+            mAHBottomNavigationViewPager.setCurrentItem(position);
+            mFloatingActionButton.setVisibility(View.VISIBLE);
+            mFloatingActionButton.setAlpha(0f);
+            mFloatingActionButton.setScaleX(0f);
+            mFloatingActionButton.setScaleY(0f);
+            mFloatingActionButton.animate()
+                    .alpha(1)
+                    .scaleX(1)
+                    .scaleY(1)
+                    .setDuration(300)
+                    .setInterpolator(new OvershootInterpolator())
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mFloatingActionButton.animate()
+                                    .setInterpolator(new LinearOutSlowInInterpolator())
+                                    .start();
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    })
+                    .start();
+
+        } else {
+            if (mFloatingActionButton.getVisibility() == View.VISIBLE) {
+                mFloatingActionButton.animate()
+                        .alpha(0)
+                        .scaleX(0)
+                        .scaleY(0)
+                        .setDuration(300)
+                        .setInterpolator(new LinearOutSlowInInterpolator())
+                        .setListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                mFloatingActionButton.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animation) {
+                                mFloatingActionButton.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animation) {
+
+                            }
+                        })
+                        .start();
+            }
+        }
+        return true;
+    }
+
+    //装载页面
+    private void change_status_action_bar_color(int position) {
+        switch (position) {
+            case 0:
+                setBarColorTitle(R.string.item_hot, "#FF4081");
+                break;
+            case 1:
+                setBarColorTitle(R.string.item_content, "#388FFF");
+                break;
+            case 2:
+                setBarColorTitle(R.string.item_setting, "#00886A");
+                break;
+        }
+    }
+
+    private void setBarColorTitle(int item_hot, String s) {
+        getSupportActionBar().setTitle(item_hot);
+        int color_hot = Color.parseColor(s);
+        ColorDrawable colorDrawable_hot = new ColorDrawable(color_hot);
+        getSupportActionBar().setBackgroundDrawable(colorDrawable_hot);
+        mWindow.setStatusBarColor(color_hot);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         OCR.getInstance().release();
         mHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_Main:
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
+                        FileUtil.getSaveFile(getApplication()).getAbsolutePath());
+                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
+                        CameraActivity.CONTENT_TYPE_GENERAL);
+                startActivityForResult(intent, REQUEST_CODE_GENERAL);
+                break;
+        }
     }
 }
