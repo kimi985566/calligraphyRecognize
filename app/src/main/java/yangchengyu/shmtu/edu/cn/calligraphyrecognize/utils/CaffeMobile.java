@@ -44,7 +44,7 @@ public class CaffeMobile {
     }
 
     public int[] predictImage(String imgPath) {
-        return predictImage(imgPath, 1);
+        return predictImage(imgPath, 4);
     }
 
     public native float[][] extractFeatures(byte[] data, int width, int height, String blobNames);

@@ -2,6 +2,7 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,16 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
 import com.blankj.utilcode.util.Utils;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.jude.rollviewpager.OnItemClickListener;
 import com.jude.rollviewpager.RollPagerView;
 
@@ -54,7 +65,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
 
 public class ResultActivity extends AppCompatActivity implements OnItemClickListener, CNNListener {
 
-    private static final int RECOGNIZE_COPLETE = 1010;
+    private static final int RECOGNIZE_COMPLETE = 1010;
     private android.support.v7.widget.Toolbar mToolbar_result;
     private Bitmap mBmp;
     private String mFromWhere;
@@ -92,6 +103,11 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private Bitmap mEdgeImg;
     private Bitmap mSkeletonImg;
     private Bitmap mCroppedImg;
+    private ArrayList<Integer> mFinalResult;
+    private BarChart mBarChart;
+    private ArrayList<BarEntry> mYVal = new ArrayList<>();
+    private ArrayList<String> mXLabel = new ArrayList<>();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -202,6 +218,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mRpv_result.setOnItemClickListener(this);
         mCollapsingToolbarLayout = findViewById(R.id.ctb_result);
         mNsv_result = findViewById(R.id.nsv_result);
+        mBarChart = findViewById(R.id.barchart_result);
 
         mCardView_character = findViewById(R.id.cardView_character);
         mCardView_character_error = findViewById(R.id.cardView_character_error);
@@ -210,6 +227,58 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_word_width_height = findViewById(R.id.tv_result_char_width);
         mTv_word_x_y = findViewById(R.id.tv_result_char_left);
         mTv_style = findViewById(R.id.tv_result_style);
+    }
+
+    private void initBarChart() {
+
+        initBarChartData();
+
+        mBarChart.setDescription(null);
+        mBarChart.setDrawBarShadow(false);
+        mBarChart.setPinchZoom(false);
+        mBarChart.setMaxVisibleValueCount(4);
+        mBarChart.setFitBars(true);
+
+        XAxis xAxis = mBarChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawLabels(true);
+        xAxis.setTextSize(8);
+        xAxis.setLabelCount(4, false);
+        xAxis.setValueFormatter(new XFormattedValue(ResultActivity.this));
+
+        YAxis leftAxis = mBarChart.getAxisLeft();
+        leftAxis.setLabelCount(4, true);
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setDrawAxisLine(false);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+
+        mBarChart.getAxisRight().setEnabled(false);
+        Legend legend = mBarChart.getLegend();
+        legend.setEnabled(false);
+
+        mBarChart.setTouchEnabled(false);
+
+        mBarChart.invalidate();
+    }
+
+    private void initBarChartData() {
+        ArrayList<BarEntry> barEntriesData = new ArrayList<>();
+
+        for (int i = 1; i <= 4; i++) {
+            barEntriesData.add(new BarEntry(i, 100 - 20 * i));
+        }
+
+        BarDataSet bardataSet = new BarDataSet(barEntriesData, "");
+        bardataSet.setDrawValues(false);
+
+        ArrayList<IBarDataSet> iBarDataSets = new ArrayList<>();
+        iBarDataSets.add(bardataSet);
+
+        BarData barData = new BarData(iBarDataSets);
+
+        mBarChart.setData(barData);
     }
 
     //处理图片并显示
@@ -320,6 +389,10 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mProgressDialog != null) {
+            mProgressDialog.cancel();
+            mProgressDialog = null;
+        }
     }
 
     //显示图片信息
@@ -365,6 +438,14 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         @Override
         protected Integer doInBackground(String... strings) {
             startTime = SystemClock.uptimeMillis();
+            mFinalResult = new ArrayList<>();
+            for (int i : mCaffeMobile.predictImage(strings[0])) {
+                LogUtils.i(i);
+            }
+            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[0]);
+            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[1]);
+            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[2]);
+            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[3]);
             return mCaffeMobile.predictImage(strings[0])[0];
         }
 
@@ -380,9 +461,10 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     public void onTaskCompleted(int result) {
         mStyle = IMAGENET_CLASSES[result];
         mTv_style.setText(getString(R.string.result_character_style) + mStyle);
+        initBarChart();
         mProgressDialog.dismiss();
         Message message = new Message();
-        message.what = RECOGNIZE_COPLETE;
+        message.what = RECOGNIZE_COMPLETE;
         mHandler.sendMessage(message);
     }
 
@@ -391,7 +473,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case RECOGNIZE_COPLETE:
+                case RECOGNIZE_COMPLETE:
                     if (!mChar_word.equals("1001")) {
                         saveWord();
                     }
@@ -399,4 +481,29 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
             }
         }
     };
+
+
+    class XFormattedValue implements IAxisValueFormatter {
+
+        private Context mContext;
+
+        public XFormattedValue(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            if (value == 1) {
+                return IMAGENET_CLASSES[mFinalResult.get(0)];
+            } else if (value == 2) {
+                return IMAGENET_CLASSES[mFinalResult.get(1)];
+            } else if (value == 3) {
+                return IMAGENET_CLASSES[mFinalResult.get(2)];
+            } else {
+                return IMAGENET_CLASSES[mFinalResult.get(3)];
+            }
+        }
+    }
 }
+
+

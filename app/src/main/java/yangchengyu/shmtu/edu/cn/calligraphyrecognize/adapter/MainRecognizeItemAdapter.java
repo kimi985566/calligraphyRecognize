@@ -79,7 +79,6 @@ public class MainRecognizeItemAdapter extends RecyclerView.Adapter<MainRecognize
         public TextView mTv_height;
         public TextView mTv_width;
         public TextView mTv_style;
-        public TextView mTv_cv;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -88,7 +87,6 @@ public class MainRecognizeItemAdapter extends RecyclerView.Adapter<MainRecognize
             mTv_height = itemView.findViewById(R.id.tv_cardView_main_word_height);
             mTv_width = itemView.findViewById(R.id.tv_cardView_main_word_width);
             mTv_style = itemView.findViewById(R.id.tv_cardView_main_word_style);
-            mTv_cv = itemView.findViewById(R.id.tv_cardView_main_word_cv);
         }
     }
 
@@ -110,7 +108,6 @@ public class MainRecognizeItemAdapter extends RecyclerView.Adapter<MainRecognize
         holder.mTv_style.setText(context.getString(R.string.result_character_cardView_style) + mWordInfos.get(position).getStyle());
         holder.mTv_width.setText(context.getString(R.string.result_character_cardView_width) + String.valueOf(mWordInfos.get(position).getWidth()));
         holder.mTv_height.setText(context.getString(R.string.result_character_cardView_height) + String.valueOf(mWordInfos.get(position).getHeight()));
-        holder.mTv_cv.setText(context.getString(R.string.result_character_cardView_cv) + String.valueOf(0.9));
         holder.itemView.setTag(position);
     }
 

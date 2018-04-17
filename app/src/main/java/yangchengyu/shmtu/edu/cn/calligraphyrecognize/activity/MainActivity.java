@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -177,9 +178,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     RecognizeService.recAccurate(tempImgPath, new RecognizeService.ServiceListener() {
                         @Override
                         public void onResult(final String result) {
-                            Toast.makeText(MainActivity.this, "正在识别",
-                                    Toast.LENGTH_SHORT)
-                                    .show();
+                            try {
+                                Toast.makeText(MainActivity.this, "正在识别",
+                                        Toast.LENGTH_SHORT)
+                                        .show();
+                            } catch (Exception e) {
+                                Looper.prepare();
+                                Toast.makeText(MainActivity.this, (CharSequence) e, Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
                             saveCropImg();
                             startActivityNewThread(result);
                         }
