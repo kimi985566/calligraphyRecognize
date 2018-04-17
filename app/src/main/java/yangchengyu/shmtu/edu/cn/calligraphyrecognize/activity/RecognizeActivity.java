@@ -16,6 +16,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.FileUtils;
+
 import java.util.ArrayList;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
@@ -24,6 +26,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainRecognizeItemAd
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.ItemTouchHelperListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.FileUtil;
 
 public class RecognizeActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
         OnCardViewItemListener {
@@ -35,6 +38,10 @@ public class RecognizeActivity extends AppCompatActivity implements SwipeRefresh
     public static final String Y_ARRAY = "y_array";
     public static final String PIC_PATH = "path";
     public static final String STYLE = "style";
+    public static final String ZUAN = "zuan";
+    public static final String LI = "li";
+    public static final String KAI = "KAI";
+    public static final String CAO = "CAO";
     public static final String FROMWHERE = "fromwhere";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -111,6 +118,10 @@ public class RecognizeActivity extends AppCompatActivity implements SwipeRefresh
                 intent.putExtra(Y_ARRAY, wordInfo.getY_array());
                 intent.putExtra(PIC_PATH, wordInfo.getPic_path());
                 intent.putExtra(STYLE, wordInfo.getStyle());
+                intent.putExtra(ZUAN, wordInfo.getZuanScore());
+                intent.putExtra(LI, wordInfo.getLiScore());
+                intent.putExtra(KAI, wordInfo.getKaiScore());
+                intent.putExtra(CAO, wordInfo.getCaoScore());
                 intent.putExtra(FROMWHERE, "main");
                 startActivity(intent);
             }
@@ -198,6 +209,7 @@ public class RecognizeActivity extends AppCompatActivity implements SwipeRefresh
             if (event == DISMISS_EVENT_SWIPE
                     || event == DISMISS_EVENT_TIMEOUT
                     || event == DISMISS_EVENT_CONSECUTIVE) {
+                FileUtils.deleteFile(mWordInfoTemp.getPic_path());
                 mWordDBhelper.deleteWord(mWordInfoTemp);
             }
         }

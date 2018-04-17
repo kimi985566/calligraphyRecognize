@@ -47,7 +47,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
@@ -107,6 +109,12 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private BarChart mBarChart;
     private ArrayList<BarEntry> mYVal = new ArrayList<>();
     private ArrayList<String> mXLabel = new ArrayList<>();
+    private ArrayList<Map<Integer, Float>> mPair;
+    private BarDataSet mBardataSet;
+    private float mZuanScore;
+    private float mLiScore;
+    private float mKaiScore;
+    private float mCaoScore;
 
 
     @Override
@@ -142,7 +150,27 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mY = this.getIntent().getIntExtra(RecognizeActivity.Y_ARRAY, 0);
         mStyle = this.getIntent().getStringExtra(RecognizeActivity.STYLE);
         mCroppedImgPath = this.getIntent().getStringExtra(RecognizeActivity.PIC_PATH);
+        mZuanScore = this.getIntent().getFloatExtra(RecognizeActivity.ZUAN, 0f);
+        mLiScore = this.getIntent().getFloatExtra(RecognizeActivity.LI, 0f);
+        mKaiScore = this.getIntent().getFloatExtra(RecognizeActivity.KAI, 0f);
+        mCaoScore = this.getIntent().getFloatExtra(RecognizeActivity.CAO, 0f);
+
+        initBarChartDataFromMain();
+
         initWordCard();
+
+        initBarChart();
+    }
+
+    private void initBarChartDataFromMain() {
+        float[] floats = new float[]{mZuanScore, mLiScore, mKaiScore, mCaoScore};
+
+        mPair = new ArrayList<>();
+        Map<Integer, Float> map = new HashMap<>();
+        for (int i = 0; i < 4; i++) {
+            map.put(i, floats[i]);
+            mPair.add(map);
+        }
     }
 
     //加载回调的检验结果
@@ -229,15 +257,30 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_style = findViewById(R.id.tv_result_style);
     }
 
+    private void initBarChartData() {
+        ArrayList<BarEntry> barEntriesData = new ArrayList<>();
+
+        for (int i = 1; i <= 4; i++) {
+            barEntriesData.add(new BarEntry(i, mPair.get(i - 1).get(i - 1)));
+        }
+
+        mBardataSet = new BarDataSet(barEntriesData, "");
+
+        ArrayList<IBarDataSet> iBarDataSets = new ArrayList<>();
+        iBarDataSets.add(mBardataSet);
+
+        BarData barData = new BarData(iBarDataSets);
+
+        mBarChart.setData(barData);
+    }
+
     private void initBarChart() {
 
         initBarChartData();
 
         mBarChart.setDescription(null);
-        mBarChart.setDrawBarShadow(false);
         mBarChart.setPinchZoom(false);
         mBarChart.setMaxVisibleValueCount(4);
-        mBarChart.setFitBars(true);
 
         XAxis xAxis = mBarChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -258,27 +301,10 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         Legend legend = mBarChart.getLegend();
         legend.setEnabled(false);
 
-        mBarChart.setTouchEnabled(false);
+        mBarChart.setTouchEnabled(true);
+        mBarChart.animateY(3000);
 
         mBarChart.invalidate();
-    }
-
-    private void initBarChartData() {
-        ArrayList<BarEntry> barEntriesData = new ArrayList<>();
-
-        for (int i = 1; i <= 4; i++) {
-            barEntriesData.add(new BarEntry(i, 100 - 20 * i));
-        }
-
-        BarDataSet bardataSet = new BarDataSet(barEntriesData, "");
-        bardataSet.setDrawValues(false);
-
-        ArrayList<IBarDataSet> iBarDataSets = new ArrayList<>();
-        iBarDataSets.add(bardataSet);
-
-        BarData barData = new BarData(iBarDataSets);
-
-        mBarChart.setData(barData);
     }
 
     //处理图片并显示
@@ -326,6 +352,10 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                 wordInfo.setY_array(mY);
                 wordInfo.setPic_path(mCroppedImgPath);
                 wordInfo.setStyle(mStyle);
+                wordInfo.setZuanScore(mPair.get(0).get(0));
+                wordInfo.setLiScore(mPair.get(1).get(1));
+                wordInfo.setKaiScore(mPair.get(2).get(2));
+                wordInfo.setCaoScore(mPair.get(3).get(3));
                 WordDBhelper dBhelper = new WordDBhelper(getApplicationContext());
                 dBhelper.addWord(wordInfo);
             }
@@ -439,13 +469,20 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         protected Integer doInBackground(String... strings) {
             startTime = SystemClock.uptimeMillis();
             mFinalResult = new ArrayList<>();
-            for (int i : mCaffeMobile.predictImage(strings[0])) {
-                LogUtils.i(i);
-            }
+            float[] floats = mCaffeMobile.getConfidenceScore(strings[0]);
+
             mFinalResult.add(mCaffeMobile.predictImage(strings[0])[0]);
             mFinalResult.add(mCaffeMobile.predictImage(strings[0])[1]);
             mFinalResult.add(mCaffeMobile.predictImage(strings[0])[2]);
             mFinalResult.add(mCaffeMobile.predictImage(strings[0])[3]);
+
+            mPair = new ArrayList<>();
+            Map<Integer, Float> map = new HashMap<>();
+            for (int i = 0; i < 4; i++) {
+                int num = mCaffeMobile.predictImage(strings[0])[i];
+                map.put(num, floats[num]);
+                mPair.add(map);
+            }
             return mCaffeMobile.predictImage(strings[0])[0];
         }
 
@@ -494,13 +531,13 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             if (value == 1) {
-                return IMAGENET_CLASSES[mFinalResult.get(0)];
+                return IMAGENET_CLASSES[0];
             } else if (value == 2) {
-                return IMAGENET_CLASSES[mFinalResult.get(1)];
+                return IMAGENET_CLASSES[1];
             } else if (value == 3) {
-                return IMAGENET_CLASSES[mFinalResult.get(2)];
+                return IMAGENET_CLASSES[2];
             } else {
-                return IMAGENET_CLASSES[mFinalResult.get(3)];
+                return IMAGENET_CLASSES[3];
             }
         }
     }

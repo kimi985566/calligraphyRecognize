@@ -16,6 +16,10 @@ public class WordInfo implements Serializable {
     private int y_array;
     private String style;
     private String pic_path;
+    private float zuanScore;
+    private float liScore;
+    private float kaiScore;
+    private float caoScore;
 
     public WordInfo() {
     }
@@ -93,5 +97,37 @@ public class WordInfo implements Serializable {
 
     public void setPic_path(String pic_path) {
         this.pic_path = pic_path;
+    }
+
+    public float getZuanScore() {
+        return zuanScore;
+    }
+
+    public void setZuanScore(float zuanScore) {
+        this.zuanScore = zuanScore;
+    }
+
+    public float getLiScore() {
+        return liScore;
+    }
+
+    public void setLiScore(float liScore) {
+        this.liScore = liScore;
+    }
+
+    public float getKaiScore() {
+        return kaiScore;
+    }
+
+    public void setKaiScore(float kaiScore) {
+        this.kaiScore = kaiScore;
+    }
+
+    public float getCaoScore() {
+        return caoScore;
+    }
+
+    public void setCaoScore(float caoScore) {
+        this.caoScore = caoScore;
     }
 }
