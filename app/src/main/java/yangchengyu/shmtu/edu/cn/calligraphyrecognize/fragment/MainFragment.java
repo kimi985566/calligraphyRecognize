@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -132,9 +133,9 @@ public class MainFragment extends Fragment
     }
 
     private void setHorizonFunc() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
-        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        mRv_fragment_main.setLayoutManager(linearLayoutManager);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this.getContext(), 2,
+                GridLayoutManager.VERTICAL, false);
+        mRv_fragment_main.setLayoutManager(gridLayoutManager);
         mMainFragmentFunctionAdapter = new MainFragmentFunctionAdapter(this.getContext(), mFunctionInfos);
         mMainFragmentFunctionAdapter.setOnCardViewItemListener(this);
         mRv_fragment_main.setAdapter(mMainFragmentFunctionAdapter);
@@ -151,10 +152,8 @@ public class MainFragment extends Fragment
         List<Bitmap> bitmapList = new ArrayList<>();
         Bitmap smu = BitmapFactory.decodeResource(getResources(), R.drawable.ic_smu_banner);
         Bitmap smu_towel = BitmapFactory.decodeResource(getResources(), R.drawable.ic_school_banner);
-        Bitmap android = BitmapFactory.decodeResource(getResources(), R.drawable.ic_android_banner);
         bitmapList.add(smu);
         bitmapList.add(smu_towel);
-        bitmapList.add(android);
         mRpv_fragment_main.setAdapter(new RollViewPagerAdapter(bitmapList));
     }
 

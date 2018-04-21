@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Calligraphy Recognize</string>
     <string name="tv_app_name">书法风格识别</string>
-    <string name="item_hot">热门</string>
-    <string name="item_content">内容</string>
+    <string name="item_hot">书法识别</string>
+    <string name="item_content">图像处理</string>
     <string name="item_setting">设置</string>
     <string name="request_permission">This APP needs camera permission.</string>
     <string name="camera_for_recognize">拍照识别</string>

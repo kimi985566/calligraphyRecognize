@@ -70,6 +70,10 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private static final int RECOGNIZE_COMPLETE = 1010;
     private android.support.v7.widget.Toolbar mToolbar_result;
     private Bitmap mBmp;
+    private Bitmap mBinImg;
+    private Bitmap mEdgeImg;
+    private Bitmap mSkeletonImg;
+    private Bitmap mCroppedImg;
     private String mFromWhere;
     private String mChar_word;
     private String mCroppedImgPath;
@@ -93,22 +97,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private CardView mCardView_style;
     private List<Bitmap> mBitmapList;
     private CaffeMobile mCaffeMobile;
-
-    //加载动态库
-    static {
-        System.loadLibrary("caffe");
-        System.loadLibrary("caffe_jni");
-    }
-
     private ProgressDialog mProgressDialog;
-    private Bitmap mBinImg;
-    private Bitmap mEdgeImg;
-    private Bitmap mSkeletonImg;
-    private Bitmap mCroppedImg;
-    private ArrayList<Integer> mFinalResult;
     private BarChart mBarChart;
-    private ArrayList<BarEntry> mYVal = new ArrayList<>();
-    private ArrayList<String> mXLabel = new ArrayList<>();
     private ArrayList<Map<Integer, Float>> mPair;
     private BarDataSet mBardataSet;
     private float mZuanScore;
@@ -116,6 +106,11 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private float mKaiScore;
     private float mCaoScore;
 
+    //加载动态库
+    static {
+        System.loadLibrary("caffe");
+        System.loadLibrary("caffe_jni");
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -143,6 +138,14 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     //通过解析intent加载详情的文字信息
     private void initDetailFromFragment() {
+        initIntentExtra();
+        getWords();
+        initBarChartDataFromMain();
+        initWordCard();
+        initBarChart();
+    }
+
+    private void initIntentExtra() {
         mChar_word = this.getIntent().getStringExtra(RecognizeActivity.WORD);
         mWidth = this.getIntent().getIntExtra(RecognizeActivity.WIDTH, 100);
         mHeight = this.getIntent().getIntExtra(RecognizeActivity.HEIGHT, 100);
@@ -154,12 +157,6 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mLiScore = this.getIntent().getFloatExtra(RecognizeActivity.LI, 0f);
         mKaiScore = this.getIntent().getFloatExtra(RecognizeActivity.KAI, 0f);
         mCaoScore = this.getIntent().getFloatExtra(RecognizeActivity.CAO, 0f);
-
-        initBarChartDataFromMain();
-
-        initWordCard();
-
-        initBarChart();
     }
 
     private void initBarChartDataFromMain() {
@@ -189,6 +186,12 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     //识别文字信息
     private void recognizeImg() {
+        setProgressBar();
+        initCaffe();
+        executeImg();
+    }
+
+    private void setProgressBar() {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);//转盘
         mProgressDialog.setCancelable(false);
@@ -196,8 +199,6 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mProgressDialog.setTitle("提示");
         mProgressDialog.setMessage("正在识别中");
         mProgressDialog.show();
-        initCaffe();
-        executeImg();
     }
 
     //设置TextView文字信息
@@ -468,13 +469,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         @Override
         protected Integer doInBackground(String... strings) {
             startTime = SystemClock.uptimeMillis();
-            mFinalResult = new ArrayList<>();
             float[] floats = mCaffeMobile.getConfidenceScore(strings[0]);
-
-            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[0]);
-            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[1]);
-            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[2]);
-            mFinalResult.add(mCaffeMobile.predictImage(strings[0])[3]);
 
             mPair = new ArrayList<>();
             Map<Integer, Float> map = new HashMap<>();
@@ -498,7 +493,6 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     public void onTaskCompleted(int result) {
         mStyle = IMAGENET_CLASSES[result];
         mTv_style.setText(getString(R.string.result_character_style) + mStyle);
-        initBarChart();
         mProgressDialog.dismiss();
         Message message = new Message();
         message.what = RECOGNIZE_COMPLETE;
@@ -514,11 +508,11 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                     if (!mChar_word.equals("1001")) {
                         saveWord();
                     }
+                    initBarChart();
                     break;
             }
         }
     };
-
 
     class XFormattedValue implements IAxisValueFormatter {
 
@@ -542,5 +536,3 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 }
-
-
