@@ -57,7 +57,9 @@
             android:theme="@style/AppTheme.Launcher">
         </activity>
 
-        <activity android:name=".activity.ResultActivity">
+        <activity
+            android:name=".activity.ResultActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.RecognizeActivity"/>
