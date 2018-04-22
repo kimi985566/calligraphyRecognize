@@ -20,9 +20,9 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
@@ -133,7 +133,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private void initUI() {
         mFromWhere = this.getIntent().getStringExtra(RecognizeActivity.FROMWHERE);
         initContent();
-        setActionBar();
+        setMyActionBar();
         collapsingToolbarSetting();
     }
 
@@ -334,7 +334,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     }
 
     //设置ActionBar样式
-    private void setActionBar() {
+    private void setMyActionBar() {
         setSupportActionBar(mToolbar_result);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -412,6 +412,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
     }
 
