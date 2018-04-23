@@ -33,10 +33,7 @@ public class ImageProcessUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                org.opencv.android.Utils.bitmapToMat(bitmap, src);//将bitmap转化为mat
-                Imgproc.cvtColor(src, dst, Imgproc.COLOR_BGRA2GRAY);//灰度化
-                Imgproc.threshold(dst, dst, 0, 255,
-                        Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);//二值化
+                getBinaryImage(bitmap, src, dst);
                 org.opencv.android.Utils.matToBitmap(dst, result);//转回bitmap
             }
         }).start();
@@ -94,10 +91,7 @@ public class ImageProcessUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                org.opencv.android.Utils.bitmapToMat(bitmap, src);
-                Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
-                Imgproc.threshold(src, src, 0, 255,
-                        Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+                getBinaryInvImage(bitmap, src, src);
                 gThin(src.getNativeObjAddr(), dst.getNativeObjAddr());
                 Imgproc.threshold(dst, dst, 0, 255,
                         Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
@@ -110,15 +104,52 @@ public class ImageProcessUtils {
         return result;
     }
 
+    public static void imageGravityJava(Bitmap bitmap, Integer x, Integer y) {
+        Mat src = new Mat();
+        Mat dst = new Mat();
+
+        getBinaryInvImage(bitmap, src, dst);
+
+        nativeGravity(dst.getNativeObjAddr(), x, y);
+
+        src.release();//释放mat
+        dst.release();
+    }
+
+    public static double imageBinaryRatio(Bitmap bitmap) {
+        Mat src = new Mat();
+        Mat dst = new Mat();
+
+        getBinaryImage(bitmap, src, dst);
+
+        double ratio = nativeBinaryRatio(dst.getNativeObjAddr());
+
+        src.release();//释放mat
+        dst.release();
+        return ratio;
+    }
+
+    public static double imageWHRatio(Bitmap bitmap) {
+        Mat src = new Mat();
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);
+        double width = src.width();
+        double height = src.height();
+
+        double ratio = width / height;
+
+        src.release();
+
+        return ratio;
+    }
+
+
     //Java层的骨架化，备用方案
     public static Bitmap skeletonProcess(Bitmap bitmap) {
         Mat src = new Mat();
         Mat dst = new Mat();
         Bitmap result = bitmap;
-        org.opencv.android.Utils.bitmapToMat(bitmap, src);
-        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
-        Imgproc.threshold(src, src, 0, 255,
-                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+
+        getBinaryInvImage(bitmap, src, src);
 
         Mat ske = new Mat(src.size(), CvType.CV_8UC1, new Scalar(0, 0, 0));
         Mat temp = new Mat(src.size(), CvType.CV_8UC1);
@@ -146,37 +177,30 @@ public class ImageProcessUtils {
         erode.release();
         sStrElement.release();
         src.release();
+
         return result;
     }
 
-    public static Bitmap addWeight(Bitmap srcBitmap, Bitmap dstBitmap) {
-        Bitmap result = null;
-        srcBitmap = edgeProcess(srcBitmap);
-        dstBitmap = skeletonFromJNI(dstBitmap);
-        Mat src = new Mat();
-        Mat dst = new Mat();
-        org.opencv.android.Utils.bitmapToMat(srcBitmap, src);
-        org.opencv.android.Utils.bitmapToMat(dstBitmap, dst);
-        result = addWeight(srcBitmap, dstBitmap);
-        return result;
+    private static void getBinaryImage(Bitmap bitmap, Mat src, Mat dst) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);//将bitmap转化为mat
+        Imgproc.cvtColor(src, dst, Imgproc.COLOR_BGRA2GRAY);//灰度化
+        Imgproc.threshold(dst, dst, 0, 255,
+                Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);//二值化
     }
 
-    public static Bitmap getStrokes(Bitmap bitmap) {
-        Mat src = new Mat();
-        Mat dst = new Mat();
-        Bitmap result = bitmap;
-        Bitmap binBitmap = binProcess(bitmap);//二值化图像
-        Bitmap edgeBitmap = edgeProcess(bitmap);//书法字边缘图像
-        Bitmap skeletonBitmap = skeletonFromJNI(bitmap);//骨架化图像
-        //TODO: pick strokes from Bitmap
-
-        return result;
+    private static void getBinaryInvImage(Bitmap bitmap, Mat src, Mat dst) {
+        org.opencv.android.Utils.bitmapToMat(bitmap, src);//将bitmap转化为mat
+        Imgproc.cvtColor(src, dst, Imgproc.COLOR_BGRA2GRAY);//灰度化
+        Imgproc.threshold(dst, dst, 0, 255,
+                Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);//二值化
     }
 
     //Native方法：骨架化具体实现
     public static native void gThin(long matSrcAddr, long matDstAddr);
 
-    //获取书法字链码
-    public static native void strokeLinked(long matSrcAddr, String[] link);
+    //Native方法：获取图像重心
+    public static native int nativeGravity(long matSrcAddr, Integer x, Integer y);
 
+    //Native方法：统计黑白像素比
+    public static native double nativeBinaryRatio(long matSrcAddr);
 }

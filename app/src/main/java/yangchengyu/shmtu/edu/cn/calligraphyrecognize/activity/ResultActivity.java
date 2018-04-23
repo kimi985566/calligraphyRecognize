@@ -22,7 +22,6 @@ import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
@@ -52,6 +51,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
@@ -113,6 +115,14 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         System.loadLibrary("caffe_jni");
     }
 
+    private Integer mX_native = new Integer(0);
+    private Integer mY_native = new Integer(0);
+    private TextView mTv_native_gravity;
+    private TextView mTv_native_ratio;
+    private TextView mTv_native_wh_ratio;
+    private double mBinRatio;
+    private double mWhRatio;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         translucentSetting();
@@ -127,6 +137,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
             initDetailFromFragment();
         }
         initRollViewPager();
+        initNativeConfigure();
     }
 
     //载入UI界面设置等
@@ -257,6 +268,10 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_word_width_height = findViewById(R.id.tv_result_char_width);
         mTv_word_x_y = findViewById(R.id.tv_result_char_left);
         mTv_style = findViewById(R.id.tv_result_style);
+
+        mTv_native_gravity = findViewById(R.id.tv_result_native_gravity);
+        mTv_native_ratio = findViewById(R.id.tv_result_native_ratio);
+        mTv_native_wh_ratio = findViewById(R.id.tv_result_native_wh_ratio);
     }
 
     private void initBarChartData() {
@@ -282,13 +297,15 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
         mBarChart.setDescription(null);
         mBarChart.setPinchZoom(false);
+        mBarChart.setFitBars(true);
+        mBarChart.setFitsSystemWindows(true);
         mBarChart.setMaxVisibleValueCount(4);
 
         XAxis xAxis = mBarChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setDrawLabels(true);
-        xAxis.setTextSize(8);
+        xAxis.setTextSize(11f);
         xAxis.setLabelCount(4, false);
         xAxis.setValueFormatter(new XFormattedValue(ResultActivity.this));
 
@@ -331,6 +348,24 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         bitmapList.add(mSkeletonImg);
 
         return bitmapList;
+    }
+
+    private void initNativeConfigure() {
+
+        Bitmap gravityTemp = BitmapFactory.decodeFile(mCroppedImgPath);
+        Bitmap binRatioTemp = BitmapFactory.decodeFile(mCroppedImgPath);
+
+        //求重心
+        ImageProcessUtils.imageGravityJava(gravityTemp, mX_native, mY_native);
+        //求黑白像素比
+        mBinRatio = ImageProcessUtils.imageBinaryRatio(binRatioTemp);
+
+        mWhRatio = ImageProcessUtils.imageWHRatio(mCroppedImg);
+
+        mTv_native_gravity.setText("通过算法求得文字重心：(" + mX_native + "," + mY_native + ")");
+        mTv_native_ratio.setText("黑白像素比(黑/白)：" + Config.doubleToString(mBinRatio));
+        mTv_native_wh_ratio.setText("高宽比(高/宽)：" + Config.doubleToString(mWhRatio));
+
     }
 
     //设置ActionBar样式

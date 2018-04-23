@@ -25,4 +25,5 @@
     <string name="save_net_mode">1</string>
     <string name="result_character_style">使用Caffe深度学习框架识别出的书法风格：</string>
     <string name="fragment_main_select_tv_word">功能选择</string>
+    <string name="skeProcess_java">Java方法的骨架化</string>
 </resources>

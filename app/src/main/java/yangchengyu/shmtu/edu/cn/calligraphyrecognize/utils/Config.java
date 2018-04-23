@@ -3,6 +3,7 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils;
 import android.os.Environment;
 
 import java.io.File;
+import java.text.DecimalFormat;
 
 public class Config {
 
@@ -30,4 +31,15 @@ public class Config {
     //精选页面的网址
     public static final String URLAddress = "http://119.28.224.38";//Tencent Cloud
     public static final String picAddress = URLAddress + "/Calligraphy/getCalligraphyJSON.php";
+
+    /**
+     * double转String,保留小数点后两位
+     *
+     * @param   num
+     * @return
+     */
+    public static String doubleToString(double num) {
+        //使用0.00不足位补0，#.##仅保留有效位
+        return new DecimalFormat("0.000").format(num);
+    }
 }

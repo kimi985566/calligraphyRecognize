@@ -12,12 +12,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btn_content_select"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
@@ -25,7 +25,7 @@
 
             <Button
                 android:id="@+id/btn_content_process"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
@@ -41,7 +41,7 @@
 
             <RadioButton
                 android:id="@+id/rb_bin"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
@@ -50,7 +50,7 @@
 
             <RadioButton
                 android:id="@+id/rb_edge"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
@@ -59,12 +59,21 @@
 
             <RadioButton
                 android:id="@+id/rb_ske"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:text="@string/skeProcess"/>
+
+            <RadioButton
+                android:id="@+id/rb_ske_java"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="@string/skeProcess_java"/>
 
         </RadioGroup>
 

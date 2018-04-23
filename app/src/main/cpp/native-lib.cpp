@@ -4,10 +4,62 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 using namespace std;
 
+CvPoint aoiGravityCenter(IplImage *src) {
+
+    CvPoint center;
+
+    double m00, m10, m01;
+
+    CvMoments moment;
+
+    //函数 cvMoments 计算最高达三阶的空间和中心矩，并且将结果存在结构 moments 中
+    cvMoments(src, &moment, 1);
+
+    //从矩状态结构中提取空间矩
+    m00 = cvGetSpatialMoment(&moment, 0, 0);
+    if (m00 == 0)
+        return 1;
+
+    m10 = cvGetSpatialMoment(&moment, 1, 0);
+    m01 = cvGetSpatialMoment(&moment, 0, 1);
+
+    center.x = (int) (m10 / m00);
+    center.y = (int) (m01 / m00);
+
+    return center;
+}
+
+CvPoint grayCenter(IplImage *TheImage) {
+    //灰度重心法求质心
+    CvPoint Center;
+
+    int i, j;
+
+    CvScalar cs = cvSum(TheImage);
+
+    Center.x = Center.y = 0;
+
+    double x = 0;
+    double y = 0;
+
+    for (i = 0; i < TheImage->width; i++) {
+        for (j = 0; j < TheImage->height; j++) {
+            CvScalar s = cvGet2D(TheImage, j, i);
+            x += i * s.val[0] / cs.val[0];
+            y += j * s.val[0] / cs.val[0];
+        }
+    }
+
+    Center.x = cvRound(x);
+    Center.y = cvRound(y);
+
+    return Center;
+}
 
 //实现JNI的测试方法
 extern "C"
@@ -34,6 +86,7 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_fragment_MainFragment_stringF
  * 直到图像中再也没有可以删除的点后，退出迭代循环。
  *
  */
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_gThin(JNIEnv *env,
@@ -129,31 +182,51 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_gThin
         if (!ifEnd) break;
     }
 
-}extern "C"
-JNIEXPORT void JNICALL
-Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_strokeLinked(JNIEnv *env,
-                                                                                        jclass type,
-                                                                                        jlong matSrcAddr,
-                                                                                        jobjectArray link) {
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeGravity(
+        JNIEnv *env, jclass type, jlong matSrcAddr, jobject x, jobject y) {
 
     Mat &src = *(Mat *) matSrcAddr;//通过指针获取Java层对应空间的原始图片mat
 
-    int i, j, n;
-    int w, h;
-    //方便处理8邻域，防止越界
-    w = src.cols - 1;
-    h = src.rows - 1;
-    int step = src.step;
+    IplImage frame = IplImage(src);
+    CvPoint result = aoiGravityCenter(&frame);
 
-    /**
-     * p4 p3 p2
-     * p5 p0 p1
-     * p6 p7 p8
-     * */
+    //通过JNI传值，保存到Java层的数据
+    jclass c;
+    jfieldID id;
 
-    int p1, p2, p3, p4, p5, p6, p7, p8;
-    uchar *img;
-    bool ifEnd;
-    cv::Mat tmpimg;
-    int dir[4] = {-step, step, 1, -1};
+    c = env->FindClass("java/lang/Integer");
+    id = env->GetFieldID(c, "value", "I");
+
+    env->SetIntField(x, id, (int) result.x);
+    env->SetIntField(y, id, (int) result.y);
+
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeBinaryRatio__J(
+        JNIEnv *env, jclass type, jlong matSrcAddr) {
+
+    Mat &src = *(Mat *) matSrcAddr;//通过指针获取Java层对应空间的原始图片mat
+
+    double counterW = 0.0;
+    double counterB = 0.0;
+    //迭代器访问像素点
+    Mat_<uchar>::iterator it = src.begin<uchar>();
+    Mat_<uchar>::iterator itend = src.end<uchar>();
+    for (; it != itend; ++it) {
+        if ((*it) > 0) {
+            counterW += 1;
+        } else {
+            counterB += 1;
+        }
+    }
+    jdouble ratio = counterB / counterW;
+    return ratio;
+
 }

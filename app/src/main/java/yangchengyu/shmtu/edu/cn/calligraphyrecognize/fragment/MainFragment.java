@@ -222,6 +222,10 @@ public class MainFragment extends Fragment
                         mTemp = ImageProcessUtils.skeletonFromJNI(mBmp);
                         mIv_content.setImageBitmap(mTemp);
                         break;
+                    case R.id.rb_ske_java:
+                        mTemp = ImageProcessUtils.skeletonProcess(mBmp);
+                        mIv_content.setImageBitmap(mTemp);
+                        break;
                 }
                 break;
             case R.id.iv_setting_avatar:
@@ -302,6 +306,10 @@ public class MainFragment extends Fragment
             case R.id.rb_ske:
                 mBtn_content_process.setText(R.string.skeProcess);
                 mTv_test.setText(R.string.skeProcess);
+                break;
+            case R.id.rb_ske_java:
+                mBtn_content_process.setText(R.string.skeProcess_java);
+                mTv_test.setText(R.string.skeProcess_java);
                 break;
         }
     }
