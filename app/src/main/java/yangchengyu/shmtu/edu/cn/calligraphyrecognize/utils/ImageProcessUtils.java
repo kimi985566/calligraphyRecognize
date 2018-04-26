@@ -142,7 +142,6 @@ public class ImageProcessUtils {
         return ratio;
     }
 
-
     //Java层的骨架化，备用方案
     public static Bitmap skeletonProcess(Bitmap bitmap) {
         Mat src = new Mat();

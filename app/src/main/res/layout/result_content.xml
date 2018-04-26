@@ -107,6 +107,26 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
+        android:id="@+id/cardView_alg_style"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:elevation="4dp"
+        app:cardCornerRadius="10dp">
+
+        <TextView
+            android:id="@+id/tv_result_alg_style"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:fontFamily="@font/lixukefonts"
+            android:gravity="center"
+            android:text="算法风格识别结果："
+            android:textSize="20sp"/>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -129,6 +149,17 @@
                 android:fontFamily="@font/lixukefonts"
                 android:gravity="center"
                 android:text="通过算法求得文字重心："
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/tv_result_native_cen_ratio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/lixukefonts"
+                android:gravity="center"
+                android:text="cen(h/w)："
                 android:textSize="20sp"/>
 
             <TextView

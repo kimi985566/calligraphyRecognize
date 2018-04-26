@@ -35,11 +35,12 @@ public class Config {
     /**
      * double转String,保留小数点后两位
      *
-     * @param   num
+     * @param num
      * @return
      */
     public static String doubleToString(double num) {
-        //使用0.00不足位补0，#.##仅保留有效位
+        //使用0.000不足位补0，#.###仅保留有效位
         return new DecimalFormat("0.000").format(num);
     }
+
 }

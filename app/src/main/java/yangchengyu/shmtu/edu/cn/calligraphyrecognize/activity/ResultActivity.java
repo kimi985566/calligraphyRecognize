@@ -42,6 +42,7 @@ import com.jude.rollviewpager.RollPagerView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,18 +52,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
+import java.util.TreeSet;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.DB.WordDBhelper;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.KNNDistance;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.KNNNode;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.CNNListener;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.CaffeMobile;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.CompareClass;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.KNNUtils;
+
+import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.KNNUtils.computeP;
+import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.KNNUtils.maxP;
+import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.KNNUtils.oudistance;
 
 /**
  * 检验结果显示页面，用以展示书法识别结果
@@ -122,6 +130,13 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private TextView mTv_native_wh_ratio;
     private double mBinRatio;
     private double mWhRatio;
+    private double mCenx;
+    private double mCeny;
+    private double mTempWidth;
+    private double mTempHeight;
+    private TextView mTv_native_cen_ratio;
+    private TextView mTv_alg_style;
+    private double mMostKNNPoints;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -268,10 +283,12 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_word_width_height = findViewById(R.id.tv_result_char_width);
         mTv_word_x_y = findViewById(R.id.tv_result_char_left);
         mTv_style = findViewById(R.id.tv_result_style);
+        mTv_alg_style = findViewById(R.id.tv_result_alg_style);
 
         mTv_native_gravity = findViewById(R.id.tv_result_native_gravity);
         mTv_native_ratio = findViewById(R.id.tv_result_native_ratio);
         mTv_native_wh_ratio = findViewById(R.id.tv_result_native_wh_ratio);
+        mTv_native_cen_ratio = findViewById(R.id.tv_result_native_cen_ratio);
     }
 
     private void initBarChartData() {
@@ -359,13 +376,71 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         ImageProcessUtils.imageGravityJava(gravityTemp, mX_native, mY_native);
         //求黑白像素比
         mBinRatio = ImageProcessUtils.imageBinaryRatio(binRatioTemp);
-
+        //求图像宽高比
         mWhRatio = ImageProcessUtils.imageWHRatio(mCroppedImg);
+        //求重心比
+        getCenXY(gravityTemp);
 
         mTv_native_gravity.setText("通过算法求得文字重心：(" + mX_native + "," + mY_native + ")");
-        mTv_native_ratio.setText("黑白像素比(黑/白)：" + Config.doubleToString(mBinRatio));
+        mTv_native_ratio.setText("黑白像素比：" + Config.doubleToString(mBinRatio));
         mTv_native_wh_ratio.setText("高宽比(高/宽)：" + Config.doubleToString(mWhRatio));
+        mTv_native_cen_ratio.setText("重心占图像比例：(" + Config.doubleToString(mCenx) + "," + Config.doubleToString(mCeny) + ")");
 
+        getAlgStyle();
+    }
+
+    /**
+     * KNN步骤
+     * <p>
+     * 1. 输入所有已知点
+     * 2. 输入未知点
+     * 3. 计算所有已知点到未知点的欧式距离，并根据距离对所有已知点排序
+     * 4. 选取最近的k个点
+     * 5. 计算k个点所在分类出现的频率
+     */
+
+    private void getAlgStyle() {
+
+        ArrayList<KNNNode> dataList = KNNUtils.getCatList();
+
+        KNNNode x = new KNNNode(5, mCenx, mCeny, mBinRatio);
+
+        Set<KNNDistance> distanceSet = getKNNDistances(dataList, x);
+
+        mMostKNNPoints = 4;
+
+        // 1、计算每个分类所包含的点的个数
+        ArrayList<KNNDistance> distanceList = new ArrayList<>(distanceSet);
+        Map<String, Integer> map = KNNUtils.getNumberOfType(distanceList, dataList, mMostKNNPoints);
+
+        // 2、计算频率
+        Map<String, Double> p = computeP(map, mMostKNNPoints);
+
+        x.setType(maxP(p));
+
+        LogUtils.i("KNN result：" + x.getType());
+
+        mTv_alg_style.setText("KNN分类的书法结果：" + x.getType());
+    }
+
+    @NonNull
+    private Set<KNNDistance> getKNNDistances(ArrayList<KNNNode> dataList, KNNNode x) {
+        CompareClass compare = new CompareClass();
+        Set<KNNDistance> distanceSet = new TreeSet<>(compare);
+        for (KNNNode point : dataList) {
+            distanceSet.add(new KNNDistance(point.getId(), x.getId(), oudistance(point, x)));
+        }
+        return distanceSet;
+    }
+
+    private void getCenXY(Bitmap gravityTemp) {
+        Mat src = new Mat();
+        org.opencv.android.Utils.bitmapToMat(gravityTemp, src);
+        mTempWidth = src.width();
+        mTempHeight = src.height();
+
+        mCenx = mX_native / mTempWidth;
+        mCeny = mY_native / mTempHeight;
     }
 
     //设置ActionBar样式
