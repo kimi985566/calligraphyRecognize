@@ -397,6 +397,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
      * 3. 计算所有已知点到未知点的欧式距离，并根据距离对所有已知点排序
      * 4. 选取最近的k个点
      * 5. 计算k个点所在分类出现的频率
+     * 6. 返回前k个点出现频率最高的类别作为当前点的预测分类
      */
 
     private void getAlgStyle() {
