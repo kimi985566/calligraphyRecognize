@@ -40,8 +40,7 @@ public class KNNUtils {
     }
 
     // 计算每个分类包含的点的个数
-    public static Map<String, Integer> getNumberOfType(
-            ArrayList<KNNDistance> listDistance, ArrayList<KNNNode> listPoint, double k) {
+    public static Map<String, Integer> getNumberOfType(ArrayList<KNNDistance> listDistance, ArrayList<KNNNode> listPoint, double k) {
         Map<String, Integer> map = new HashMap<>();
         int i = 0;
         for (KNNDistance distance : listDistance) {

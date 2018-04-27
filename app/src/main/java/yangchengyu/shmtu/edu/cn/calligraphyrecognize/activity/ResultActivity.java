@@ -423,6 +423,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_alg_style.setText("KNN分类的书法结果：" + x.getType());
     }
 
+    //Set:该体系集合可以知道某物是否已近存在于集合中,不会存储重复的元素
     @NonNull
     private Set<KNNDistance> getKNNDistances(ArrayList<KNNNode> dataList, KNNNode x) {
         CompareClass compare = new CompareClass();
