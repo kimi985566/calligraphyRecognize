@@ -9,11 +9,11 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.KNNNode;
 
 /**
  * KNN原理：
- *
+ * <p>
  * 存在一个样本数据集合，并且样本集中每个数据都存在标签。
  * 输入没有标签的新数据后，将新数据的每一个特征与样本集中数据对应的特征进行比较
  * 通过算法提取最相似样本（最紧邻）的分类标签
- *
+ * <p>
  * 一般流程：
  * 1. 收集数据
  * 2. 准备数据
@@ -21,8 +21,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.KNNNode;
  * 4. 训练算法
  * 5. 测试算法
  * 6. 使用算法
- *
- * */
+ */
 
 public class KNNUtils {
 
@@ -47,16 +46,31 @@ public class KNNUtils {
         return key;
     }
 
-    // 计算频率
+    /**
+     * 计算频率
+     *
+     * @param map 存储的Map键值对
+     * @param k   前k个
+     * @return 出现的概率
+     */
     public static Map<String, Double> computeP(Map<String, Integer> map, double k) {
         Map<String, Double> p = new HashMap<>();
+        //返回映射所包含的映射关系的Set集合（一个关系就是一个键-值对），
+        //就是把(key-value)作为一个整体一对一对地存放到Set集合当中的。
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
             p.put(entry.getKey(), entry.getValue() / k);
         }
         return p;
     }
 
-    // 计算每个分类包含的点的个数
+    /**
+     * 计算每个分类包含的点的个数
+     *
+     * @param listDistance 点之间的距离
+     * @param listPoint    点的集合
+     * @param k            前k个
+     * @return 分类个数的Map
+     */
     public static Map<String, Integer> getNumberOfType(ArrayList<KNNDistance> listDistance, ArrayList<KNNNode> listPoint, double k) {
         Map<String, Integer> map = new HashMap<>();
         int i = 0;
