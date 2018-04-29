@@ -83,6 +83,24 @@
                 android:value=".activity.MainActivity"/>
         </activity>
 
+        <activity android:name=".activity.OpenCVActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity"/>
+        </activity>
+
+        <activity android:name=".activity.ProcessActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.OpenCVActivity"/>
+        </activity>
+
+        <activity android:name=".activity.SeekBarProcessActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.OpenCVActivity"/>
+        </activity>
+
     </application>
 
 </manifest>

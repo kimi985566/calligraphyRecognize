@@ -2,6 +2,9 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,6 +26,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.OvershootInterpolator;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -38,6 +43,10 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
 import com.blankj.utilcode.util.Utils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,13 +84,23 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private Handler mHandler = new Handler();
 
     private boolean hasGotToken = false;
+    private boolean isAdd = false;
 
-    private static final int REQUEST_CODE_GENERAL = 105;
     private static final int PERMISSIONS_REQUEST_CODE = 101;
+    private static final int REQUEST_CODE_GENERAL = 105;
+    private static final int REQUEST_CODE_GENERAL_BASIC = 106;
 
     private String[] mPerms = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
     private File mCropImg;
+    private RelativeLayout mFab_root_view;
+    private FloatingActionButton mFab_style;
+    private FloatingActionButton mFab_ocr;
+    private LinearLayout mLl_01;
+    private LinearLayout mLl_02;
+    private AnimatorSet mAddFab_style;
+    private AnimatorSet mAddFab_ocr;
+    private String mTempImgPath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,8 +147,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mAHBottomNavigationViewPager = findViewById(R.id.vp_Main);
         mFloatingActionButton = findViewById(R.id.fab_Main);
 
+        mFab_root_view = findViewById(R.id.fab_menu_root_view);
+        mLl_01 = findViewById(R.id.ll01);
+        mLl_02 = findViewById(R.id.ll02);
+        mFab_style = findViewById(R.id.miniFab_style);
+        mFab_ocr = findViewById(R.id.miniFab_ocr);
+
         //fab的监听
         mFloatingActionButton.setOnClickListener(this);
+        mFab_style.setOnClickListener(this);
+        mFab_ocr.setOnClickListener(this);
+
+        setFABAnim();
     }
 
     private void initNavigation() {
@@ -167,49 +196,69 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mAHBottomNavigationViewPager.setAdapter(mMainFragmentAdapter);
     }
 
+    @SuppressLint("ResourceType")
+    private void setFABAnim() {
+        mAddFab_style = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.fab_pop_anim);
+        mAddFab_ocr = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.fab_pop_anim);
+    }
+
     @Override
     protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_GENERAL:
-                    final String tempImgPath = FileUtil.getSaveFile(getApplicationContext())
+                    hideFABMenu();
+                    mTempImgPath = FileUtil.getSaveFile(getApplicationContext())
                             .getAbsolutePath();
-                    RecognizeService.recAccurate(tempImgPath, new RecognizeService.ServiceListener() {
+                    RecognizeService.recAccurate(mTempImgPath, new RecognizeService.ServiceListener() {
                         @Override
                         public void onResult(final String result) {
-                            try {
-                                Toast.makeText(MainActivity.this, "正在识别",
-                                        Toast.LENGTH_SHORT)
-                                        .show();
-                            } catch (Exception e) {
-                                Looper.prepare();
-                                Toast.makeText(MainActivity.this, (CharSequence) e, Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-
+                            waitForResult();
                             saveCropImg();
                             startActivityNewThread(result);
                         }
-
-                        private void saveCropImg() {
-                            try {
-                                FileUtils.createOrExistsDir(Config.CROP_IMG);
-                                mCropImg = new File(Config.CROP_IMG, System.currentTimeMillis() + ".jpg");
-                                FileOutputStream fos = new FileOutputStream(mCropImg);
-                                Bitmap bitmap = BitmapFactory.decodeFile(tempImgPath);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                                fos.flush();
-                                fos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
                     });
+                    break;
+                case REQUEST_CODE_GENERAL_BASIC:
+                    hideFABMenu();
+                    RecognizeService.recGeneralBasic(FileUtil.getSaveFile(getApplicationContext()).getAbsolutePath(),
+                            new RecognizeService.ServiceListener() {
+                                @Override
+                                public void onResult(String result) {
+                                    infoPopText(result);
+                                }
+                            });
                     break;
                 default:
                     break;
             }
+        }
+    }
+
+    private void saveCropImg() {
+        try {
+            FileUtils.createOrExistsDir(Config.CROP_IMG);
+            mCropImg = new File(Config.CROP_IMG, System.currentTimeMillis() + ".jpg");
+            FileOutputStream fos = new FileOutputStream(mCropImg);
+            Bitmap bitmap = BitmapFactory.decodeFile(mTempImgPath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void waitForResult() {
+        try {
+            Toast.makeText(MainActivity.this, "正在识别",
+                    Toast.LENGTH_SHORT)
+                    .show();
+        } catch (Exception e) {
+            Looper.prepare();
+            Toast.makeText(MainActivity.this, (CharSequence) e, Toast.LENGTH_SHORT).show();
+            Looper.loop();
         }
     }
 
@@ -418,6 +467,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onDestroy() {
         super.onDestroy();
         OCR.getInstance().release();
+        isAdd = false;
         mHandler.removeCallbacksAndMessages(null);
     }
 
@@ -425,6 +475,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab_Main:
+                mFloatingActionButton.setImageResource(isAdd ? R.drawable.ic_fab_add : R.drawable.ic_fab_close);
+                isAdd = !isAdd;
+                mFab_root_view.setVisibility(isAdd ? View.VISIBLE : View.GONE);
+                if (isAdd) {
+                    mAddFab_style.setTarget(mLl_01);
+                    mAddFab_style.start();
+                    mAddFab_ocr.setTarget(mLl_02);
+                    mAddFab_ocr.setStartDelay(150);
+                    mAddFab_ocr.start();
+                }
+                break;
+            case R.id.miniFab_style:
                 Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
                         FileUtil.getSaveFile(getApplication()).getAbsolutePath());
@@ -432,6 +494,40 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         CameraActivity.CONTENT_TYPE_GENERAL);
                 startActivityForResult(intent, REQUEST_CODE_GENERAL);
                 break;
+            case R.id.miniFab_ocr:
+                intent = new Intent(MainActivity.this, CameraActivity.class);
+                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
+                        FileUtil.getSaveFile(getApplication()).getAbsolutePath());
+                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
+                        CameraActivity.CONTENT_TYPE_GENERAL);
+                startActivityForResult(intent, REQUEST_CODE_GENERAL_BASIC);
+                break;
+            default:
+                hideFABMenu();
+                break;
         }
+    }
+
+    private void infoPopText(final String result) {
+        String finalResult = new String();
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            int words_num = jsonObject.getInt("words_result_num");
+            JSONArray word_result = jsonObject.getJSONArray("words_result");
+            for (int i = 0; i < words_num; i++) {
+                JSONObject wordObject = word_result.getJSONObject(i);
+                String word = wordObject.getString("words");
+                finalResult = finalResult + "第" + (i + 1) + "行结果为：" + word + "\n";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        alertText("识别结果", finalResult);
+    }
+
+    private void hideFABMenu() {
+        mFab_root_view.setVisibility(View.GONE);
+        mFloatingActionButton.setImageResource(R.drawable.ic_fab_add);
+        isAdd = false;
     }
 }

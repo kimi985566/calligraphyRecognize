@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,7 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +26,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blankj.utilcode.util.CacheUtils;
 import com.blankj.utilcode.util.CleanUtils;
-import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
 import com.bumptech.glide.Glide;
 import com.jude.rollviewpager.RollPagerView;
@@ -47,7 +41,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.AboutMeActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.DisplayActivity;
-import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.MainActivity;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.OpenCVActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity.RecognizeActivity;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.MainFragmentFunctionAdapter;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter.RollViewPagerAdapter;
@@ -144,8 +138,10 @@ public class MainFragment extends Fragment
     private void setFunctionList() {
         FunctionInfo functionInfo_recognize = new FunctionInfo(R.drawable.ic_function_pic, "识别记录");
         FunctionInfo functionInfo_select = new FunctionInfo(R.drawable.ic_function_select, "精选书法");
+        FunctionInfo functionInfo_opencv = new FunctionInfo(R.drawable.ic_function_opencv, "图像处理");
         mFunctionInfos.add(functionInfo_recognize);
         mFunctionInfos.add(functionInfo_select);
+        mFunctionInfos.add(functionInfo_opencv);
     }
 
     private void setRollViewPager() {
@@ -323,6 +319,10 @@ public class MainFragment extends Fragment
                 break;
             case 1:
                 intent = new Intent(this.getContext(), DisplayActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this.getContext(), OpenCVActivity.class);
                 startActivity(intent);
                 break;
             default:

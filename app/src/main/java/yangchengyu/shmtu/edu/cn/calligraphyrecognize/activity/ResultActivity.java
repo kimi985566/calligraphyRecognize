@@ -1,5 +1,7 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -21,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
@@ -76,7 +79,7 @@ import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.KNNUtils.oudis
  * 检验结果显示页面，用以展示书法识别结果
  */
 
-public class ResultActivity extends AppCompatActivity implements OnItemClickListener, CNNListener {
+public class ResultActivity extends AppCompatActivity implements OnItemClickListener, CNNListener, View.OnClickListener {
 
     private static final int RECOGNIZE_COMPLETE = 1010;
     private android.support.v7.widget.Toolbar mToolbar_result;
@@ -116,6 +119,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private float mLiScore;
     private float mKaiScore;
     private float mCaoScore;
+    private Boolean isShowAlgDetail = false;
+    private Boolean isShowCaffeDetail = false;
 
     //加载动态库
     static {
@@ -137,6 +142,12 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private TextView mTv_native_cen_ratio;
     private TextView mTv_alg_style;
     private double mMostKNNPoints;
+    private ImageView mIv_caffe;
+    private ImageView mIv_alg;
+    private AnimatorSet mAdd_caffe;
+    private AnimatorSet mAdd_alg;
+    private CardView mCardView_alg_detail;
+    private CardView mCardView_caffe_detail;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -233,7 +244,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTextView_word.setText(mChar_word);
         mTv_word_width_height.setText(getString(R.string.result_character_recognize_width) + String.valueOf(mWidth) + "*" + String.valueOf(mHeight));
         mTv_word_x_y.setText(getString(R.string.result_character_recognize_x) + "(" + String.valueOf(mX) + "," + String.valueOf(mY) + ")");
-        mTv_style.setText(getString(R.string.result_character_style) + mStyle);
+        mTv_style.setText(mStyle);
     }
 
     //加载滚动显示页面
@@ -279,6 +290,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mCardView_character = findViewById(R.id.cardView_character);
         mCardView_character_error = findViewById(R.id.cardView_character_error);
         mCardView_style = findViewById(R.id.cardView_style);
+        mCardView_alg_detail = findViewById(R.id.cardView_alg_detail);
+        mCardView_caffe_detail = findViewById(R.id.cardView_caffe_detail);
         mTextView_word = findViewById(R.id.tv_result_word_recognize);
         mTv_word_width_height = findViewById(R.id.tv_result_char_width);
         mTv_word_x_y = findViewById(R.id.tv_result_char_left);
@@ -289,6 +302,14 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_native_ratio = findViewById(R.id.tv_result_native_ratio);
         mTv_native_wh_ratio = findViewById(R.id.tv_result_native_wh_ratio);
         mTv_native_cen_ratio = findViewById(R.id.tv_result_native_cen_ratio);
+
+        mIv_caffe = findViewById(R.id.iv_caffe_show);
+        mIv_alg = findViewById(R.id.iv_alg_show);
+
+        mIv_caffe.setOnClickListener(this);
+        mIv_alg.setOnClickListener(this);
+
+        setDetailAnim();
     }
 
     private void initBarChartData() {
@@ -421,7 +442,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
         LogUtils.i("KNN result：" + x.getType());
 
-        mTv_alg_style.setText("KNN分类的书法结果：" + x.getType());
+        mTv_alg_style.setText(x.getType());
     }
 
     //Set:该体系集合可以知道某物是否已近存在于集合中,不会存储重复的元素
@@ -504,6 +525,12 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    @SuppressLint("ResourceType")
+    private void setDetailAnim() {
+        mAdd_caffe = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.fab_pop_anim);
+        mAdd_alg = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.anim.fab_pop_anim);
+    }
+
     //分析识别图片
     private void executeImg() {
         File imgFile = new File(mCroppedImgPath);
@@ -574,6 +601,30 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_caffe_show:
+                mIv_caffe.setImageResource(isShowCaffeDetail ? R.drawable.ic_icon_down : R.drawable.ic_icon_up);
+                isShowCaffeDetail = !isShowCaffeDetail;
+                mCardView_caffe_detail.setVisibility(isShowCaffeDetail ? View.VISIBLE : View.GONE);
+                if (isShowCaffeDetail) {
+                    mAdd_caffe.setTarget(mCardView_caffe_detail);
+                    mAdd_caffe.start();
+                }
+                break;
+            case R.id.iv_alg_show:
+                mIv_alg.setImageResource(isShowAlgDetail ? R.drawable.ic_icon_down : R.drawable.ic_icon_up);
+                isShowAlgDetail = !isShowAlgDetail;
+                mCardView_alg_detail.setVisibility(isShowAlgDetail ? View.VISIBLE : View.GONE);
+                if (isShowAlgDetail) {
+                    mAdd_alg.setTarget(mCardView_alg_detail);
+                    mAdd_alg.start();
+                }
+                break;
+        }
+    }
+
     private class CNNTask extends AsyncTask<String, Void, Integer> {
 
         private CNNListener listener;
@@ -609,7 +660,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     @Override
     public void onTaskCompleted(int result) {
         mStyle = IMAGENET_CLASSES[result];
-        mTv_style.setText(getString(R.string.result_character_style) + mStyle);
+        mTv_style.setText(mStyle);
         mProgressDialog.dismiss();
         Message message = new Message();
         message.what = RECOGNIZE_COMPLETE;
