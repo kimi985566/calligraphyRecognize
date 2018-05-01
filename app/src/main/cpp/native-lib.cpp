@@ -226,7 +226,7 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
             counterB += 1;
         }
     }
-    jdouble ratio = counterB / (counterW + counterB);
+    jdouble ratio = counterB / counterW;
     return ratio;
 
 }

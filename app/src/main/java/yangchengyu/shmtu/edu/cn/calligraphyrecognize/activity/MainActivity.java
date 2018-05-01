@@ -278,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     //双击退出
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        hideFABMenu();
         LogUtils.i(this.getClass().getSimpleName() + ": onKeyDown");
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mIsExit) {
@@ -353,6 +354,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @Override
     public boolean onTabSelected(int position, boolean wasSelected) {
+
+        hideFABMenu();
 
         change_status_action_bar_color(position);
 
