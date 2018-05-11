@@ -138,7 +138,7 @@ public class MainFragment extends Fragment
     private void setFunctionList() {
         FunctionInfo functionInfo_recognize = new FunctionInfo(R.drawable.ic_function_pic, "识别记录");
         FunctionInfo functionInfo_select = new FunctionInfo(R.drawable.ic_function_select, "精选书法");
-        FunctionInfo functionInfo_opencv = new FunctionInfo(R.drawable.ic_function_opencv, "图像处理");
+        FunctionInfo functionInfo_opencv = new FunctionInfo(R.drawable.ic_function_opencv, "OpenCV学习");
         mFunctionInfos.add(functionInfo_recognize);
         mFunctionInfos.add(functionInfo_select);
         mFunctionInfos.add(functionInfo_opencv);

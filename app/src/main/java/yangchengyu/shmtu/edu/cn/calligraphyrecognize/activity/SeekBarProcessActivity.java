@@ -56,6 +56,9 @@ public class SeekBarProcessActivity extends AppCompatActivity implements SeekBar
 
         processName = this.getIntent().getStringExtra("name");
 
+        mBtnSelect.setOnClickListener(this);
+        mBtnProcess.setOnClickListener(this);
+
         mBtnProcess.setText(processName);
         mBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_image_test);
         mThreshSeekBar.setOnSeekBarChangeListener(this);
@@ -90,6 +93,7 @@ public class SeekBarProcessActivity extends AppCompatActivity implements SeekBar
                         SELECT_PIC_RESULT_CODE);
                 break;
             case R.id.btn_thresh_process:
+                mTvThresh.setText("当前阈值：" + mValue);
                 select2Process(mValue);
                 break;
         }
@@ -102,14 +106,14 @@ public class SeekBarProcessActivity extends AppCompatActivity implements SeekBar
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        mValue = mThreshSeekBar.getProgress();
-        mTvThresh.setText("当前阈值：" + mValue);
-        select2Process(mValue);
+
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
+        mValue = mThreshSeekBar.getProgress();
+        mTvThresh.setText("当前阈值：" + mValue);
+        select2Process(mValue);
     }
 
     @Override
