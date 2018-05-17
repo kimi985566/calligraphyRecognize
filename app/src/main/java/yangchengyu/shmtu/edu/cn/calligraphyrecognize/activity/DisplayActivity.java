@@ -46,17 +46,42 @@ public class DisplayActivity extends AppCompatActivity implements SwipeRefreshLa
     }
 
     private void initUI() {
+
+        initView();
+
+        initToolBar();
+
+        initSwipeRefreshLayout();
+
+        initRecycleView();
+    }
+
+    //获取界面
+    private void initView() {
         mToolbar = findViewById(R.id.toolbar_sub);
-        mToolbar.setTitle("精选书法");
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         mSwipeRefreshLayout_select = findViewById(R.id.fragment_select_swipe_refresh_layout);
         mRecyclerView_select = findViewById(R.id.fragment_select_recycle_view);
+    }
+
+    //设置列表
+    private void initRecycleView() {
+        mRecyclerView_select.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView_select.setHasFixedSize(true);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2,
+                GridLayoutManager.VERTICAL, false);
+        mRecyclerView_select.setLayoutManager(gridLayoutManager);
+
+        mMainSelectAdapter = new MainSelectAdapter(this, mImageInfos);
+        mMainSelectAdapter.setOnCardViewItemListener(this);
+        mRecyclerView_select.setAdapter(mMainSelectAdapter);
+    }
+
+    //设置下拉刷新样式
+    private void initSwipeRefreshLayout() {
         mSwipeRefreshLayout_select.setColorSchemeResources(
                 R.color.color_tab_1, R.color.color_tab_2,
                 R.color.color_tab_3, R.color.color_tab_4);
-
         mSwipeRefreshLayout_select.post(new Runnable() {
             @Override
             public void run() {
@@ -68,18 +93,14 @@ public class DisplayActivity extends AppCompatActivity implements SwipeRefreshLa
                         .showSuccess();
             }
         });
-
         mSwipeRefreshLayout_select.setOnRefreshListener(this);
-        mRecyclerView_select.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView_select.setHasFixedSize(true);
+    }
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2,
-                GridLayoutManager.VERTICAL, false);
-        mRecyclerView_select.setLayoutManager(gridLayoutManager);
-
-        mMainSelectAdapter = new MainSelectAdapter(this, mImageInfos);
-        mMainSelectAdapter.setOnCardViewItemListener(this);
-        mRecyclerView_select.setAdapter(mMainSelectAdapter);
+    private void initToolBar() {
+        mToolbar.setTitle("精选书法");
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @SuppressLint("HandlerLeak")

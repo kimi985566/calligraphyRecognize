@@ -1,6 +1,7 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.adapter;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +24,7 @@ public class MainSelectAdapter extends RecyclerView.Adapter<MainSelectAdapter.Vi
     private static final String TAG = MainSelectAdapter.class.getSimpleName();
 
     private Context context;
-    private ArrayList<ImageInfo> mImageInfos = new ArrayList<>();
+    private ArrayList<ImageInfo> mImageInfos;
     private OnCardViewItemListener mOnCardViewItemListener;
 
     public MainSelectAdapter(Context context, ArrayList<ImageInfo> imageInfos) {

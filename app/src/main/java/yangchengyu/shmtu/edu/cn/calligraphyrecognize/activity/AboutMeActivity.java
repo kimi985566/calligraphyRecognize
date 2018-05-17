@@ -34,9 +34,11 @@ public class AboutMeActivity extends AppCompatActivity {
         toolBarSetting();
         collapsingToolbarSetting();
 
+        //连接到我的Github
         mWebView.loadUrl("https://github.com/kimi985566");
     }
 
+    //装载UI界面
     private void initUI() {
         mCollapsingToolbar = findViewById(R.id.collapsing_toolbar);
         mIv_aboutMe = findViewById(R.id.detail_aboutMe);
@@ -44,12 +46,14 @@ public class AboutMeActivity extends AppCompatActivity {
         mWebView = findViewById(R.id.webView);
     }
 
+    //设置伸缩工具栏名字及样式
     private void collapsingToolbarSetting() {
         mCollapsingToolbar.setTitle("Chengyu Yang");
         mCollapsingToolbar.setExpandedTitleColor(Color.BLACK);
         mCollapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
     }
 
+    //设置全屏
     private void translucentSetting() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -58,6 +62,7 @@ public class AboutMeActivity extends AppCompatActivity {
         }
     }
 
+    //设置工具栏的返回按钮
     private void toolBarSetting() {
         setSupportActionBar(mToolBarAboutMe);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

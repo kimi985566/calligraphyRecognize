@@ -458,8 +458,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 
-    private void setBarColorTitle(int item_hot, String s) {
-        getSupportActionBar().setTitle(item_hot);
+    private void setBarColorTitle(int item, String s) {
+        getSupportActionBar().setTitle(item);
         int color_hot = Color.parseColor(s);
         ColorDrawable colorDrawable_hot = new ColorDrawable(color_hot);
         getSupportActionBar().setBackgroundDrawable(colorDrawable_hot);
@@ -490,25 +490,24 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
                 break;
             case R.id.miniFab_style:
-                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
-                        FileUtil.getSaveFile(getApplication()).getAbsolutePath());
-                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
-                        CameraActivity.CONTENT_TYPE_GENERAL);
-                startActivityForResult(intent, REQUEST_CODE_GENERAL);
+                startIntentForRecognize(REQUEST_CODE_GENERAL);
                 break;
             case R.id.miniFab_ocr:
-                intent = new Intent(MainActivity.this, CameraActivity.class);
-                intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
-                        FileUtil.getSaveFile(getApplication()).getAbsolutePath());
-                intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
-                        CameraActivity.CONTENT_TYPE_GENERAL);
-                startActivityForResult(intent, REQUEST_CODE_GENERAL_BASIC);
+                startIntentForRecognize(REQUEST_CODE_GENERAL_BASIC);
                 break;
             default:
                 hideFABMenu();
                 break;
         }
+    }
+
+    private void startIntentForRecognize(int code) {
+        Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+        intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,
+                FileUtil.getSaveFile(getApplication()).getAbsolutePath());
+        intent.putExtra(CameraActivity.KEY_CONTENT_TYPE,
+                CameraActivity.CONTENT_TYPE_GENERAL);
+        startActivityForResult(intent, code);
     }
 
     private void infoPopText(final String result) {
