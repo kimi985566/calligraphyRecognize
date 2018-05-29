@@ -40,7 +40,7 @@ import java.io.FileNotFoundException
 import java.util.*
 
 
-//装在多个Fragment
+//装载多个Fragment
 
 class MainFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback, RadioGroup.OnCheckedChangeListener, OnCardViewItemListener, CompoundButton.OnCheckedChangeListener {
     private val maxSize = 1024
