@@ -202,20 +202,20 @@ public class CvImgProcessUtils {
 
     private static Mat getCustomOperator(String command) {
         sKernel = new Mat(3, 3, CvType.CV_32FC1);
-        if (command.equals(OpenCVConstants.CUSTOM_BLUR_NAME)) {
+        if (command.equals(OpenCVConstants.Companion.getCUSTOM_BLUR_NAME())) {
             sKernel.put(0, 0, 1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0,
                     1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0,
                     1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0);
-        } else if (command.equals(OpenCVConstants.CUSTOM_EDGE_NAME)) {
+        } else if (command.equals(OpenCVConstants.Companion.getCUSTOM_EDGE_NAME())) {
             sKernel.put(0, 0, -1, -1, -1, -1, 8, -1, -1, -1, -1);
-        } else if (command.equals(OpenCVConstants.CUSTOM_SHARPEN_NAME)) {
+        } else if (command.equals(OpenCVConstants.Companion.getCUSTOM_SHARPEN_NAME())) {
             sKernel.put(0, 0, -1, -1, -1, -1, 9, -1, -1, -1, -1);
         }
         return sKernel;
     }
 
     public static void erodeOrDilate(String command, Bitmap bitmap) {
-        Boolean isErode = OpenCVConstants.ERODE_NAME.equals(command);
+        Boolean isErode = OpenCVConstants.Companion.getERODE_NAME().equals(command);
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         Mat strElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
                 new Size(3, 3), new Point(-1, -1));
@@ -231,7 +231,7 @@ public class CvImgProcessUtils {
     }
 
     public static void openOrClose(String command, Bitmap bitmap) {
-        Boolean isOpen = OpenCVConstants.OPEN_OPERATION_NAME.equals(command);
+        Boolean isOpen = OpenCVConstants.Companion.getOPEN_OPERATION_NAME().equals(command);
         org.opencv.android.Utils.bitmapToMat(bitmap, sSrc);
         sStrElement = Imgproc.getStructuringElement(Imgproc.MORPH_CROSS,
                 new Size(3, 3), new Point(-1, -1));
@@ -270,13 +270,13 @@ public class CvImgProcessUtils {
     }
 
     private static int getType(String command) {
-        if (OpenCVConstants.THRESH_BINARY_NAME.equals(command)) {
+        if (OpenCVConstants.Companion.getTHRESH_BINARY_NAME().equals(command)) {
             return Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU;
-        } else if (OpenCVConstants.THRESH_BINARY_INV_NAME.equals(command)) {
+        } else if (OpenCVConstants.Companion.getTHRESH_BINARY_INV_NAME().equals(command)) {
             return Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU;
-        } else if (OpenCVConstants.THRESH_TRUNCAT_NAME.equals(command)) {
+        } else if (OpenCVConstants.Companion.getTHRESH_TRUNCAT_NAME().equals(command)) {
             return Imgproc.THRESH_TRUNC | Imgproc.THRESH_OTSU;
-        } else if (OpenCVConstants.THRESH_ZERO_NAME.equals(command)) {
+        } else if (OpenCVConstants.Companion.getTHRESH_ZERO_NAME().equals(command)) {
             return Imgproc.THRESH_TOZERO | Imgproc.THRESH_OTSU;
         } else {
             return Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU;
@@ -303,9 +303,9 @@ public class CvImgProcessUtils {
     }
 
     private static int getAdaptiveThreshold(String command) {
-        if (OpenCVConstants.ADAPTIVE_THRESH_MEAN_NAME.equals(command)) {
+        if (OpenCVConstants.Companion.getADAPTIVE_THRESH_MEAN_NAME().equals(command)) {
             return Imgproc.ADAPTIVE_THRESH_MEAN_C;
-        } else if (OpenCVConstants.ADAPTIVE_THRESH_GAUSSIAN_NAME.equals(command)) {
+        } else if (OpenCVConstants.Companion.getADAPTIVE_THRESH_GAUSSIAN_NAME().equals(command)) {
             return Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C;
         } else {
             return Imgproc.ADAPTIVE_THRESH_MEAN_C;
@@ -332,9 +332,9 @@ public class CvImgProcessUtils {
     }
 
     private static void getGradientProcess(String command) {
-        if (OpenCVConstants.GRADIENT_SOBEL_X_NAME.equals(command)) {
+        if (OpenCVConstants.Companion.getGRADIENT_SOBEL_X_NAME().equals(command)) {
             Imgproc.Sobel(sSrc, sDst, CvType.CV_16S, 1, 0);
-        } else if (OpenCVConstants.GRADIENT_SOBEL_Y_NAME.equals(command)) {
+        } else if (OpenCVConstants.Companion.getGRADIENT_SOBEL_Y_NAME().equals(command)) {
             Imgproc.Sobel(sSrc, sDst, CvType.CV_16S, 0, 1);
         }
     }

@@ -45,7 +45,7 @@ public class OpenCVActivity extends AppCompatActivity implements ListView.OnItem
         mOpenCVListViewAdapter = new OpenCVListViewAdapter(this, mOpenCVInfos);
         mListView.setAdapter(mOpenCVListViewAdapter);
         mListView.setOnItemClickListener(this);
-        mOpenCVListViewAdapter.getOpenCVInfos().addAll(OpenCVInfo.getAllList());
+        mOpenCVListViewAdapter.getOpenCVInfos().addAll(OpenCVInfo.Companion.getAllList());
         mOpenCVListViewAdapter.notifyDataSetChanged();
     }
 
@@ -75,8 +75,8 @@ public class OpenCVActivity extends AppCompatActivity implements ListView.OnItem
     }
 
     private void processIntent() {
-        if (OpenCVConstants.MANUAL_THRESH_NAME.equals(mProcessName)
-                || OpenCVConstants.CANNY_NAME.equals(mProcessName)) {
+        if (OpenCVConstants.Companion.getMANUAL_THRESH_NAME().equals(mProcessName)
+                || OpenCVConstants.Companion.getCANNY_NAME().equals(mProcessName)) {
             Intent intent = new Intent(OpenCVActivity.this, SeekBarProcessActivity.class);
             intent.putExtra("commend", mProcessCMD);
             intent.putExtra("name", mProcessName);

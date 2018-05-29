@@ -168,7 +168,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     //载入UI界面设置等
     private void initUI() {
-        mFromWhere = this.getIntent().getStringExtra(RecognizeActivity.FROMWHERE);
+        mFromWhere = this.getIntent().getStringExtra(RecognizeActivity.Companion.getFROMWHERE());
         initContent();
         setMyActionBar();
         collapsingToolbarSetting();
@@ -184,17 +184,17 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     }
 
     private void initIntentExtra() {
-        mChar_word = this.getIntent().getStringExtra(RecognizeActivity.WORD);
-        mWidth = this.getIntent().getIntExtra(RecognizeActivity.WIDTH, 100);
-        mHeight = this.getIntent().getIntExtra(RecognizeActivity.HEIGHT, 100);
-        mX = this.getIntent().getIntExtra(RecognizeActivity.X_ARRAY, 0);
-        mY = this.getIntent().getIntExtra(RecognizeActivity.Y_ARRAY, 0);
-        mStyle = this.getIntent().getStringExtra(RecognizeActivity.STYLE);
-        mCroppedImgPath = this.getIntent().getStringExtra(RecognizeActivity.PIC_PATH);
-        mZuanScore = this.getIntent().getFloatExtra(RecognizeActivity.ZUAN, 0f);
-        mLiScore = this.getIntent().getFloatExtra(RecognizeActivity.LI, 0f);
-        mKaiScore = this.getIntent().getFloatExtra(RecognizeActivity.KAI, 0f);
-        mCaoScore = this.getIntent().getFloatExtra(RecognizeActivity.CAO, 0f);
+        mChar_word = this.getIntent().getStringExtra(RecognizeActivity.Companion.getWORD());
+        mWidth = this.getIntent().getIntExtra(RecognizeActivity.Companion.getWIDTH(), 100);
+        mHeight = this.getIntent().getIntExtra(RecognizeActivity.Companion.getHEIGHT(), 100);
+        mX = this.getIntent().getIntExtra(RecognizeActivity.Companion.getX_ARRAY(), 0);
+        mY = this.getIntent().getIntExtra(RecognizeActivity.Companion.getY_ARRAY(), 0);
+        mStyle = this.getIntent().getStringExtra(RecognizeActivity.Companion.getSTYLE());
+        mCroppedImgPath = this.getIntent().getStringExtra(RecognizeActivity.Companion.getPIC_PATH());
+        mZuanScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getZUAN(), 0f);
+        mLiScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getLI(), 0f);
+        mKaiScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getKAI(), 0f);
+        mCaoScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getCAO(), 0f);
     }
 
     private void initBarChartDataFromMain() {
@@ -376,9 +376,9 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         Bitmap edgetemp = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap sketemp = BitmapFactory.decodeFile(mCroppedImgPath);
 
-        mBinImg = ImageProcessUtils.binProcess(bintemp);
-        mEdgeImg = ImageProcessUtils.edgeProcess(edgetemp);
-        mSkeletonImg = ImageProcessUtils.skeletonFromJNI(sketemp);
+        mBinImg = ImageProcessUtils.INSTANCE.binProcess(bintemp);
+        mEdgeImg = ImageProcessUtils.INSTANCE.edgeProcess(edgetemp);
+        mSkeletonImg = ImageProcessUtils.INSTANCE.skeletonFromJNI(sketemp);
 
         bitmapList.add(mCroppedImg);
         bitmapList.add(mBinImg);
@@ -394,18 +394,18 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         Bitmap binRatioTemp = BitmapFactory.decodeFile(mCroppedImgPath);
 
         //求重心
-        ImageProcessUtils.imageGravityJava(gravityTemp, mX_native, mY_native);
+        ImageProcessUtils.INSTANCE.imageGravityJava(gravityTemp, mX_native, mY_native);
         //求黑白像素比
-        mBinRatio = ImageProcessUtils.imageBinaryRatio(binRatioTemp);
+        mBinRatio = ImageProcessUtils.INSTANCE.imageBinaryRatio(binRatioTemp);
         //求图像宽高比
-        mWhRatio = ImageProcessUtils.imageWHRatio(mCroppedImg);
+        mWhRatio = ImageProcessUtils.INSTANCE.imageWHRatio(mCroppedImg);
         //求重心比
         getCenXY(gravityTemp);
 
         mTv_native_gravity.setText("通过算法求得文字重心：(" + mX_native + "," + mY_native + ")");
-        mTv_native_ratio.setText("黑白像素比：" + Config.doubleToString(mBinRatio));
-        mTv_native_wh_ratio.setText("高宽比(高/宽)：" + Config.doubleToString(mWhRatio));
-        mTv_native_cen_ratio.setText("重心占图像比例：(" + Config.doubleToString(mCenx) + "," + Config.doubleToString(mCeny) + ")");
+        mTv_native_ratio.setText("黑白像素比：" + Config.INSTANCE.doubleToString(mBinRatio));
+        mTv_native_wh_ratio.setText("高宽比(高/宽)：" + Config.INSTANCE.doubleToString(mWhRatio));
+        mTv_native_cen_ratio.setText("重心占图像比例：(" + Config.INSTANCE.doubleToString(mCenx) + "," + Config.INSTANCE.doubleToString(mCeny) + ")");
 
         getAlgStyle();
     }
@@ -502,7 +502,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private void initCaffe() {
         mCaffeMobile = new CaffeMobile();
         mCaffeMobile.setNumThreads(4);
-        mCaffeMobile.loadModel(Config.modelProto, Config.modelBinary);
+        mCaffeMobile.loadModel(Config.INSTANCE.getModelProto(), Config.INSTANCE.getModelBinary());
         mCaffeMobile.setMean(meanValues);
 
         getWords();
