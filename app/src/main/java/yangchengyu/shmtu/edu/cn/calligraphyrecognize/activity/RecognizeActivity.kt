@@ -25,14 +25,6 @@ import java.util.*
 
 class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, OnCardViewItemListener {
 
-    private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
-    private var mRecyclerView: RecyclerView? = null
-    private var mWordDBhelper: WordDBhelper? = null
-    private var mWordInfoTemp: WordInfo? = null
-    private var mMainCardViewItemAdapter: MainRecognizeItemAdapter? = null
-    private var mWordInfo = ArrayList<WordInfo>()
-    private var mToolbar: Toolbar? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recognize)
@@ -124,10 +116,10 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
             mWordInfoTemp = mWordInfo[mPosition]
             mItemTouchHelperListener.onItemDelete(mPosition)
 
-            val snackbar = Snackbar.make(mRecyclerView!!, "是否撤销删除", Snackbar.LENGTH_LONG)
-            snackbar.setAction("Yes") { mItemTouchHelperListener.onItemRecover(mPosition, mWordInfoTemp!!) }
-            snackbar.addCallback(MySnackBarCallBack())
-            snackbar.show()
+            val snackBar = Snackbar.make(mRecyclerView!!, "是否撤销删除", Snackbar.LENGTH_LONG)
+            snackBar.setAction("Yes") { mItemTouchHelperListener.onItemRecover(mPosition, mWordInfoTemp!!) }
+            snackBar.addCallback(MySnackBarCallBack())
+            snackBar.show()
         }
 
         override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
@@ -139,11 +131,6 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
             } else {
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
-        }
-
-        override fun clearView(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder) {
-            super.clearView(recyclerView, viewHolder)
-
         }
 
         override fun isLongPressDragEnabled(): Boolean {
@@ -170,18 +157,25 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
     }
 
     companion object {
+        const val WORD = "word"
+        const val WIDTH = "width"
+        const val HEIGHT = "height"
+        const val X_ARRAY = "x_array"
+        const val Y_ARRAY = "y_array"
+        const val PIC_PATH = "path"
+        const val STYLE = "style"
+        const val ZUAN = "zuan"
+        const val LI = "li"
+        const val KAI = "KAI"
+        const val CAO = "CAO"
+        const val FROMWHERE = "fromwhere"
 
-        val WORD = "word"
-        val WIDTH = "width"
-        val HEIGHT = "height"
-        val X_ARRAY = "x_array"
-        val Y_ARRAY = "y_array"
-        val PIC_PATH = "path"
-        val STYLE = "style"
-        val ZUAN = "zuan"
-        val LI = "li"
-        val KAI = "KAI"
-        val CAO = "CAO"
-        val FROMWHERE = "fromwhere"
+        private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
+        private var mRecyclerView: RecyclerView? = null
+        private var mWordDBhelper: WordDBhelper? = null
+        private var mWordInfoTemp: WordInfo? = null
+        private var mMainCardViewItemAdapter: MainRecognizeItemAdapter? = null
+        private var mWordInfo = ArrayList<WordInfo>()
+        private var mToolbar: Toolbar? = null
     }
 }

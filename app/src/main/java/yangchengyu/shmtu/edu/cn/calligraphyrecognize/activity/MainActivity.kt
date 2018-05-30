@@ -58,74 +58,49 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, AHBottomNavigation.OnTabSelectedListener, View.OnClickListener {
 
-    private var mIsExit: Boolean = false
-    private var tabColors: IntArray? = null
-    private val useMenuResource = true
-
-    private var mMainFragment: MainFragment? = null
-    private var mMainFragmentAdapter: MainFragmentAdapter? = null
-    private var mFloatingActionButton: FloatingActionButton? = null
-
-    private var mBottomNavigation: AHBottomNavigation? = null
-    private var navigationAdapter: AHBottomNavigationAdapter? = null
-    private var mAHBottomNavigationViewPager: AHBottomNavigationViewPager? = null
-    private val mBottomNavigationItems = ArrayList<AHBottomNavigationItem>()
-    private var alertDialog: AlertDialog.Builder? = null
-
-    private var mWindow: Window? = null
-    private val mHandler = Handler()
-
-    private var hasGotToken = false
-    private var isAdd = false
-
-    private val mPerms = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
-    private var mCropImg: File? = null
-    private var mFab_root_view: RelativeLayout? = null
-    private var mFab_style: FloatingActionButton? = null
-    private var mFab_ocr: FloatingActionButton? = null
-    private var mLl_01: LinearLayout? = null
-    private var mLl_02: LinearLayout? = null
-    private var mAddFab_style: AnimatorSet? = null
-    private var mAddFab_ocr: AnimatorSet? = null
-    private var mTempImgPath: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initTheme()//状态了沉浸式主题
+        initTheme()
         setContentView(R.layout.activity_main)
         Utils.init(this)
-        ask_perms()//获取系统权限
-        initUI()//UI空间加载
+        askPerms()
+        initUI()
         initAccessTokenWithAkSk()//加载OCR识别API_KEY
     }
 
+    //状态了沉浸式主题
     private fun initTheme() {
         val enabledTranslucentNavigation = getSharedPreferences("shared", Context.MODE_PRIVATE)
                 .getBoolean("translucentNavigation", false)
         setTheme(if (enabledTranslucentNavigation) R.style.AppTheme_TranslucentNavigation else R.style.AppTheme)
     }
 
-    private fun ask_perms() {
+    //获取系统权限
+    private fun askPerms() {
         if (EasyPermissions.hasPermissions(this, *mPerms)) {
             LogUtils.i(this.javaClass.simpleName + " : permissions are granted")
         } else {
             LogUtils.i(this.javaClass.simpleName + ": these permissions are denied , " +
                     "ready to request this permission")
+            //回调再次获取权限
             EasyPermissions.requestPermissions(this, "使用拍照功能需要拍照权限",
                     PERMISSIONS_REQUEST_CODE, *mPerms)
         }
     }
 
+    //UI界面加载
     private fun initUI() {
         initView()
         initNavigation()
     }
 
+    //装载实际内容
     private fun initView() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         }
 
+        //alertView
         alertDialog = AlertDialog.Builder(this)
         mWindow = this.window
 
@@ -133,6 +108,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         mAHBottomNavigationViewPager = findViewById(R.id.vp_Main)
         mFloatingActionButton = findViewById(R.id.fab_Main)
 
+        //fab弹出的两个小按钮
         mFab_root_view = findViewById(R.id.fab_menu_root_view)
         mLl_01 = findViewById(R.id.ll01)
         mLl_02 = findViewById(R.id.ll02)
@@ -148,22 +124,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
     }
 
     private fun initNavigation() {
-        if (useMenuResource) {
-            tabColors = applicationContext.resources.getIntArray(R.array.tab_colors)
-            navigationAdapter = AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu_3)
-            navigationAdapter!!.setupWithBottomNavigation(mBottomNavigation, tabColors)
-            mBottomNavigation!!.isBehaviorTranslationEnabled = true
-        } else {
-            val item_hot = AHBottomNavigationItem(R.string.item_hot, R.drawable.ic_menu_hot, R.color.color_tab_1)
-            val item_content = AHBottomNavigationItem(R.string.item_content, R.drawable.ic_menu_content, R.color.color_tab_2)
-            val item_setting = AHBottomNavigationItem(R.string.item_setting, R.drawable.ic_menu_setting, R.color.color_tab_3)
-
-            mBottomNavigationItems.add(item_hot)
-            mBottomNavigationItems.add(item_content)
-            mBottomNavigationItems.add(item_setting)
-
-            mBottomNavigation!!.addItems(mBottomNavigationItems)
-        }
+        tabColors = applicationContext.resources.getIntArray(R.array.tab_colors)
+        navigationAdapter = AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu_3)
+        navigationAdapter!!.setupWithBottomNavigation(mBottomNavigation, tabColors)
+        mBottomNavigation!!.isBehaviorTranslationEnabled = true
         mBottomNavigation!!.manageFloatingActionButtonBehavior(mFloatingActionButton!!)
         mBottomNavigation!!.isTranslucentNavigationEnabled = true
         mBottomNavigation!!.isColored = true
@@ -188,10 +152,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         mAddFab_ocr = AnimatorInflater.loadAnimator(this, R.anim.fab_pop_anim) as AnimatorSet
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    //kotlin会进行空值判断，因此在这里的data需要可空，即添加“？”解决问题
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
+            //书法风格识别
                 REQUEST_CODE_GENERAL -> {
                     hideFABMenu()
                     mTempImgPath = FileUtil.getSaveFile(applicationContext)
@@ -202,6 +168,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
                         startActivityNewThread(result)
                     }
                 }
+            //文字识别
                 REQUEST_CODE_GENERAL_BASIC -> {
                     hideFABMenu()
                     RecognizeService.recGeneralBasic(FileUtil.getSaveFile(applicationContext).absolutePath
@@ -213,6 +180,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         }
     }
 
+    //保存裁剪的识别图片
     private fun saveCropImg() {
         try {
             FileUtils.createOrExistsDir(Config.CROP_IMG)
@@ -228,6 +196,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
     }
 
+    //识别等待提示
     private fun waitForResult() {
         try {
             Toast.makeText(this@MainActivity, "正在识别",
@@ -241,6 +210,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
     }
 
+    //在新线程下打开结果页面
     private fun startActivityNewThread(result: String) {
         Thread(Runnable {
             val intent = Intent(this@MainActivity, ResultActivity::class.java)
@@ -271,17 +241,20 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         return super.onKeyDown(keyCode, event)
     }
 
+    //获取权限
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    //被授予权限后
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         LogUtils.i("EasyPermission CallBack onPermissionsGranted() : " + perms[0] +
                 " request granted , to do something...")
     }
 
+    //权限被拒绝后再次请求权限
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         LogUtils.i("EasyPermission CallBack onPermissionsDenied():" + requestCode + ":" + perms.size)
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
@@ -289,6 +262,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         }
     }
 
+    //alertView
     private fun alertText(title: String, message: String) {
         this.runOnUiThread {
             alertDialog!!.setTitle(title)
@@ -298,6 +272,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         }
     }
 
+    //获取Baidu Api token
     private fun initAccessTokenWithAkSk() {
         OCR.getInstance().initAccessTokenWithAkSk(object : OnResultListener<AccessToken> {
             override fun onResult(result: AccessToken) {
@@ -318,7 +293,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
         hideFABMenu()
 
-        change_status_action_bar_color(position)
+        changeStatusBarColor(position)
 
         if (mMainFragment == null) {
             mMainFragment = mMainFragmentAdapter!!.currentFragment
@@ -397,7 +372,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
     }
 
     //装载页面
-    private fun change_status_action_bar_color(position: Int) {
+    private fun changeStatusBarColor(position: Int) {
         when (position) {
             0 -> setBarColorTitle(R.string.item_hot, "#FF4081")
             1 -> setBarColorTitle(R.string.item_content, "#388FFF")
@@ -407,12 +382,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
     private fun setBarColorTitle(item: Int, s: String) {
         supportActionBar!!.setTitle(item)
-        val color_hot = Color.parseColor(s)
-        val colorDrawable_hot = ColorDrawable(color_hot)
-        supportActionBar!!.setBackgroundDrawable(colorDrawable_hot)
-        mWindow!!.statusBarColor = color_hot
+        val color = Color.parseColor(s)
+        val colorDrawable = ColorDrawable(color)
+        supportActionBar!!.setBackgroundDrawable(colorDrawable)
+        mWindow!!.statusBarColor = color
     }
 
+    //退出时的一些操作
     override fun onDestroy() {
         super.onDestroy()
         OCR.getInstance().release()
@@ -420,8 +396,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         mHandler.removeCallbacksAndMessages(null)
     }
 
+    //点击事件
     override fun onClick(v: View) {
         when (v.id) {
+        //弹出小的fab
             R.id.fab_Main -> {
                 mFloatingActionButton!!.setImageResource(if (isAdd) R.drawable.ic_fab_add else R.drawable.ic_fab_close)
                 isAdd = !isAdd
@@ -434,7 +412,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
                     mAddFab_ocr!!.start()
                 }
             }
+        //书法风格识别
             R.id.miniFab_style -> startIntentForRecognize(REQUEST_CODE_GENERAL)
+        //文字识别
             R.id.miniFab_ocr -> startIntentForRecognize(REQUEST_CODE_GENERAL_BASIC)
             else -> hideFABMenu()
         }
@@ -453,10 +433,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         var finalResult = String()
         try {
             val jsonObject = JSONObject(result)
-            val words_num = jsonObject.getInt("words_result_num")
-            val word_result = jsonObject.getJSONArray("words_result")
-            for (i in 0 until words_num) {
-                val wordObject = word_result.getJSONObject(i)
+            val wordsNum = jsonObject.getInt("words_result_num")
+            val wordResult = jsonObject.getJSONArray("words_result")
+            for (i in 0 until wordsNum) {
+                val wordObject = wordResult.getJSONObject(i)
                 val word = wordObject.getString("words")
                 finalResult = finalResult + "第" + (i + 1) + "行结果为：" + word + "\n"
             }
@@ -474,9 +454,39 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
     }
 
     companion object {
+        private const val PERMISSIONS_REQUEST_CODE = 101
+        private const val REQUEST_CODE_GENERAL = 105
+        private const val REQUEST_CODE_GENERAL_BASIC = 106
 
-        private val PERMISSIONS_REQUEST_CODE = 101
-        private val REQUEST_CODE_GENERAL = 105
-        private val REQUEST_CODE_GENERAL_BASIC = 106
+        private var mIsExit: Boolean = false
+        private var tabColors: IntArray? = null
+        private val useMenuResource = true
+
+        private var mMainFragment: MainFragment? = null
+        private var mMainFragmentAdapter: MainFragmentAdapter? = null
+        private var mFloatingActionButton: FloatingActionButton? = null
+
+        private var mBottomNavigation: AHBottomNavigation? = null
+        private var navigationAdapter: AHBottomNavigationAdapter? = null
+        private var mAHBottomNavigationViewPager: AHBottomNavigationViewPager? = null
+        private val mBottomNavigationItems = ArrayList<AHBottomNavigationItem>()
+        private var alertDialog: AlertDialog.Builder? = null
+
+        private var mWindow: Window? = null
+        private val mHandler = Handler()
+
+        private var hasGotToken = false
+        private var isAdd = false
+
+        private val mPerms = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+        private var mCropImg: File? = null
+        private var mFab_root_view: RelativeLayout? = null
+        private var mFab_style: FloatingActionButton? = null
+        private var mFab_ocr: FloatingActionButton? = null
+        private var mLl_01: LinearLayout? = null
+        private var mLl_02: LinearLayout? = null
+        private var mAddFab_style: AnimatorSet? = null
+        private var mAddFab_ocr: AnimatorSet? = null
+        private var mTempImgPath: String? = null
     }
 }

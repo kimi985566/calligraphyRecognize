@@ -18,14 +18,6 @@ import java.io.FileNotFoundException
 
 class ProcessActivity : AppCompatActivity(), View.OnClickListener {
 
-    private var mToolbar: Toolbar? = null
-    private var processName: String? = null
-    private var mBtnSelect: Button? = null
-    private var mBtnProcess: Button? = null
-    private var mIvProcess: ImageView? = null
-    private var mBitmap: Bitmap? = null
-    private val maxSize = 1024
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_normal_process)
@@ -153,11 +145,18 @@ class ProcessActivity : AppCompatActivity(), View.OnClickListener {
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             }
-
         }
     }
 
     companion object {
-        val SELECT_PIC_RESULT_CODE = 202
+        const val SELECT_PIC_RESULT_CODE = 202
+
+        private var mToolbar: Toolbar? = null
+        private var processName: String? = null
+        private var mBtnSelect: Button? = null
+        private var mBtnProcess: Button? = null
+        private var mIvProcess: ImageView? = null
+        private var mBitmap: Bitmap? = null
+        private const val maxSize = 1024
     }
 }

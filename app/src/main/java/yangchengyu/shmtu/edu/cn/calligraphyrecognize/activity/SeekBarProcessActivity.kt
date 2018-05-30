@@ -20,22 +20,9 @@ import java.io.FileNotFoundException
 
 class SeekBarProcessActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, View.OnClickListener {
 
-    private var mToolbar: Toolbar? = null
-    private var mBtnSelect: Button? = null
-    private var mBtnProcess: Button? = null
-    private var mThreshSeekBar: SeekBar? = null
-    private var mIvThreshProcess: ImageView? = null
-    private var mTvThresh: TextView? = null
-    private val maxSize = 1024
-    private var processName: String? = null
-    private var mValue: Int = 0
-    private var mBitmap: Bitmap? = null
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seek_bar_process)
-
         initView()
         actionBarSetting()
     }
@@ -103,7 +90,6 @@ class SeekBarProcessActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListe
     override fun onStopTrackingTouch(seekBar: SeekBar) {
         mValue = mThreshSeekBar!!.progress
         mTvThresh!!.text = "当前阈值：$mValue"
-        select2Process(mValue)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -144,6 +130,16 @@ class SeekBarProcessActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListe
     }
 
     companion object {
-        val SELECT_PIC_RESULT_CODE = 202
+        const val SELECT_PIC_RESULT_CODE = 202
+        private var mToolbar: Toolbar? = null
+        private var mBtnSelect: Button? = null
+        private var mBtnProcess: Button? = null
+        private var mThreshSeekBar: SeekBar? = null
+        private var mIvThreshProcess: ImageView? = null
+        private var mTvThresh: TextView? = null
+        private const val maxSize = 1024
+        private var processName: String? = null
+        private var mValue: Int = 0
+        private var mBitmap: Bitmap? = null
     }
 }

@@ -23,7 +23,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.OpenCVInfo;
 
 public class OpenCVActivity extends AppCompatActivity implements ListView.OnItemClickListener {
 
-    private Toolbar mToolbar_opencv;
+    private Toolbar mToolbarOpencv;
     private List<OpenCVInfo> mOpenCVInfos = new ArrayList<>();
     private OpenCVListViewAdapter mOpenCVListViewAdapter;
     private String mProcessName;
@@ -40,7 +40,7 @@ public class OpenCVActivity extends AppCompatActivity implements ListView.OnItem
     }
 
     private void initView() {
-        mToolbar_opencv = findViewById(R.id.toolbar_sub);
+        mToolbarOpencv = findViewById(R.id.toolbar_sub);
         mListView = findViewById(R.id.listView_opencv);
         mOpenCVListViewAdapter = new OpenCVListViewAdapter(this, mOpenCVInfos);
         mListView.setAdapter(mOpenCVListViewAdapter);
@@ -57,7 +57,7 @@ public class OpenCVActivity extends AppCompatActivity implements ListView.OnItem
     }
 
     private void actionBarSetting() {
-        setSupportActionBar(mToolbar_opencv);
+        setSupportActionBar(mToolbarOpencv);
         getSupportActionBar().setTitle("OpenCV图像处理");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

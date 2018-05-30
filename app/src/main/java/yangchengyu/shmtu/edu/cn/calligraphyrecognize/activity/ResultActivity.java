@@ -168,7 +168,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     //载入UI界面设置等
     private void initUI() {
-        mFromWhere = this.getIntent().getStringExtra(RecognizeActivity.Companion.getFROMWHERE());
+        mFromWhere = this.getIntent().getStringExtra(RecognizeActivity.FROMWHERE);
         initContent();
         setMyActionBar();
         collapsingToolbarSetting();
@@ -184,17 +184,17 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     }
 
     private void initIntentExtra() {
-        mChar_word = this.getIntent().getStringExtra(RecognizeActivity.Companion.getWORD());
-        mWidth = this.getIntent().getIntExtra(RecognizeActivity.Companion.getWIDTH(), 100);
-        mHeight = this.getIntent().getIntExtra(RecognizeActivity.Companion.getHEIGHT(), 100);
-        mX = this.getIntent().getIntExtra(RecognizeActivity.Companion.getX_ARRAY(), 0);
-        mY = this.getIntent().getIntExtra(RecognizeActivity.Companion.getY_ARRAY(), 0);
-        mStyle = this.getIntent().getStringExtra(RecognizeActivity.Companion.getSTYLE());
-        mCroppedImgPath = this.getIntent().getStringExtra(RecognizeActivity.Companion.getPIC_PATH());
-        mZuanScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getZUAN(), 0f);
-        mLiScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getLI(), 0f);
-        mKaiScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getKAI(), 0f);
-        mCaoScore = this.getIntent().getFloatExtra(RecognizeActivity.Companion.getCAO(), 0f);
+        mChar_word = this.getIntent().getStringExtra(RecognizeActivity.WORD);
+        mWidth = this.getIntent().getIntExtra(RecognizeActivity.WIDTH, 100);
+        mHeight = this.getIntent().getIntExtra(RecognizeActivity.HEIGHT, 100);
+        mX = this.getIntent().getIntExtra(RecognizeActivity.X_ARRAY, 0);
+        mY = this.getIntent().getIntExtra(RecognizeActivity.Y_ARRAY, 0);
+        mStyle = this.getIntent().getStringExtra(RecognizeActivity.STYLE);
+        mCroppedImgPath = this.getIntent().getStringExtra(RecognizeActivity.PIC_PATH);
+        mZuanScore = this.getIntent().getFloatExtra(RecognizeActivity.ZUAN, 0f);
+        mLiScore = this.getIntent().getFloatExtra(RecognizeActivity.LI, 0f);
+        mKaiScore = this.getIntent().getFloatExtra(RecognizeActivity.KAI, 0f);
+        mCaoScore = this.getIntent().getFloatExtra(RecognizeActivity.CAO, 0f);
     }
 
     private void initBarChartDataFromMain() {

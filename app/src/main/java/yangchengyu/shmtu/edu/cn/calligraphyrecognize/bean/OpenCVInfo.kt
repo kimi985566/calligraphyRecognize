@@ -12,11 +12,6 @@ class OpenCVInfo : OpenCVConstants {
     var name: String? = null
     var commend: String? = null
 
-    constructor(id: Long, name: String) {
-        this.id = id
-        this.name = name
-    }
-
     constructor(id: Long, name: String, commend: String) {
         this.id = id
         this.name = name

@@ -1,5 +1,6 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -14,22 +15,27 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R
 
 /**
  * Created by kimi9 on 2018/2/24.
+ * 个人主页，用以显示个人信息，如Github页面
  */
 
 class AboutMeActivity : AppCompatActivity() {
 
     private var mCollapsingToolbar: CollapsingToolbarLayout? = null
     private var mToolBarAboutMe: Toolbar? = null
-    private var mIv_aboutMe: ImageView? = null
+    private var mIvAboutMe: ImageView? = null
     private var mWebView: WebView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         translucentSetting()
+
         setContentView(R.layout.activity_aboutme)
 
         initUI()
+
         toolBarSetting()
+
         collapsingToolbarSetting()
 
         //连接到我的Github
@@ -39,7 +45,7 @@ class AboutMeActivity : AppCompatActivity() {
     //装载UI界面
     private fun initUI() {
         mCollapsingToolbar = findViewById(R.id.collapsing_toolbar)
-        mIv_aboutMe = findViewById(R.id.detail_aboutMe)
+        mIvAboutMe = findViewById(R.id.detail_aboutMe)
         mToolBarAboutMe = findViewById(R.id.toolBar_aboutMe)
         mWebView = findViewById(R.id.webView)
     }
@@ -52,6 +58,7 @@ class AboutMeActivity : AppCompatActivity() {
     }
 
     //设置全屏
+    @SuppressLint("ObsoleteSdkInt")
     private fun translucentSetting() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)

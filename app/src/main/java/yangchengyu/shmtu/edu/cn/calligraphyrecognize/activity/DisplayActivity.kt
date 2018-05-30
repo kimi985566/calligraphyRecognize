@@ -24,14 +24,19 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.JSONUtils
 import java.util.*
 
+/**
+ * 书法欣赏页面
+ * */
+
 class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, OnCardViewItemListener {
 
     private val mImageInfos = ArrayList<ImageInfo>()
     private var mMainSelectAdapter: MainSelectAdapter? = null
-    private var mSwipeRefreshLayout_select: SwipeRefreshLayout? = null
-    private var mRecyclerView_select: RecyclerView? = null
+    private var mSwipeRefreshLayoutSelect: SwipeRefreshLayout? = null
+    private var mRecyclerViewSelect: RecyclerView? = null
     private var mToolbar: Toolbar? = null
 
+    //处理消息，显示对应功能
     @SuppressLint("HandlerLeak")
     private val getImageHandler = object : Handler() {
         override fun handleMessage(msg: Message) {
@@ -42,12 +47,12 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 val jsonArray = JSONArray(JsonData)
                 for (i in 0 until jsonArray.length()) {
                     val jsonObject = jsonArray.getJSONObject(i)
-                    val page_id = jsonObject.getInt("page_id")
-                    val style_name = jsonObject.getString("style_name")
-                    val works_name = jsonObject.getString("works_name")
-                    val page_path = Config.URLAddress + jsonObject.getString("page_path")
-                    LogUtils.d("$style_name $works_name $page_path")
-                    mImageInfos.add(ImageInfo(page_id, style_name, works_name, page_path))
+                    val pageId = jsonObject.getInt("page_id")
+                    val styleName = jsonObject.getString("style_name")
+                    val worksName = jsonObject.getString("works_name")
+                    val pagePath = Config.URLAddress + jsonObject.getString("page_path")
+                    LogUtils.d("$styleName $worksName $pagePath")
+                    mImageInfos.add(ImageInfo(pageId, styleName, worksName, pagePath))
                 }
                 mMainSelectAdapter!!.updateData(mImageInfos)
             } catch (e: JSONException) {
@@ -77,40 +82,41 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     //获取界面
     private fun initView() {
         mToolbar = findViewById(R.id.toolbar_sub)
-        mSwipeRefreshLayout_select = findViewById(R.id.fragment_select_swipe_refresh_layout)
-        mRecyclerView_select = findViewById(R.id.fragment_select_recycle_view)
+        mSwipeRefreshLayoutSelect = findViewById(R.id.fragment_select_swipe_refresh_layout)
+        mRecyclerViewSelect = findViewById(R.id.fragment_select_recycle_view)
     }
 
     //设置列表
     private fun initRecycleView() {
-        mRecyclerView_select!!.itemAnimator = DefaultItemAnimator()
-        mRecyclerView_select!!.setHasFixedSize(true)
-
+        mRecyclerViewSelect!!.itemAnimator = DefaultItemAnimator()
+        mRecyclerViewSelect!!.setHasFixedSize(true)
+        //设置显示样式为一排两行显示方式
         val gridLayoutManager = GridLayoutManager(this, 2,
                 GridLayoutManager.VERTICAL, false)
-        mRecyclerView_select!!.layoutManager = gridLayoutManager
+        mRecyclerViewSelect!!.layoutManager = gridLayoutManager
 
         mMainSelectAdapter = MainSelectAdapter(this, mImageInfos)
         mMainSelectAdapter!!.setOnCardViewItemListener(this)
-        mRecyclerView_select!!.adapter = mMainSelectAdapter
+        mRecyclerViewSelect!!.adapter = mMainSelectAdapter
     }
 
     //设置下拉刷新样式
     private fun initSwipeRefreshLayout() {
-        mSwipeRefreshLayout_select!!.setColorSchemeResources(
+        mSwipeRefreshLayoutSelect!!.setColorSchemeResources(
                 R.color.color_tab_1, R.color.color_tab_2,
                 R.color.color_tab_3, R.color.color_tab_4)
-        mSwipeRefreshLayout_select!!.post {
-            mSwipeRefreshLayout_select!!.isRefreshing = true
+        mSwipeRefreshLayoutSelect!!.post {
+            mSwipeRefreshLayoutSelect!!.isRefreshing = true
             JSONUtils.getImage(Config.picAddress, getImageHandler)
-            mSwipeRefreshLayout_select!!.isRefreshing = false
-            SnackbarUtils.with(mRecyclerView_select!!)
+            mSwipeRefreshLayoutSelect!!.isRefreshing = false
+            SnackbarUtils.with(mRecyclerViewSelect!!)
                     .setMessage("当前网络：" + NetworkUtils.getNetworkType().toString())
                     .showSuccess()
         }
-        mSwipeRefreshLayout_select!!.setOnRefreshListener(this)
+        mSwipeRefreshLayoutSelect!!.setOnRefreshListener(this)
     }
 
+    //设置工具栏样式
     private fun initToolBar() {
         mToolbar!!.title = "精选书法"
         setSupportActionBar(mToolbar)
@@ -118,13 +124,15 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         supportActionBar!!.setHomeButtonEnabled(true)
     }
 
+    //刷新
     override fun onRefresh() {
         Handler().postDelayed({
             JSONUtils.getImage(Config.picAddress, getImageHandler)
-            mSwipeRefreshLayout_select!!.isRefreshing = false
+            mSwipeRefreshLayoutSelect!!.isRefreshing = false
         }, 2000)
     }
 
+    //点击卡片，显示其所属的书法风格
     override fun onCardViewItemClick(view: View, position: Int) {
         SnackbarUtils.with(view)
                 .setMessage(mImageInfos[position].getImage_style())
