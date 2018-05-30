@@ -27,7 +27,6 @@ public class JSONUtils {
 
             @Override
             public void run() {
-
                 try {
                     URL http_url = new URL(url);
                     mHttpURLConnection = (HttpURLConnection) http_url.openConnection();

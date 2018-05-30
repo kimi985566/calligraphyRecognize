@@ -3,6 +3,7 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.activity;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SnackbarUtils;
@@ -69,6 +71,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.CaffeMobile;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.CompareClass;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.Config;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.ImageProcessUtils;
+import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.JSONUtils;
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.KNNUtils;
 
 import static yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.KNNUtils.computeP;
@@ -121,6 +124,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private float mCaoScore;
     private Boolean isShowAlgDetail = false;
     private Boolean isShowCaffeDetail = false;
+    private AlertDialog.Builder alertDialog;
 
     //加载动态库
     static {
@@ -148,6 +152,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private AnimatorSet mAdd_alg;
     private CardView mCardView_alg_detail;
     private CardView mCardView_caffe_detail;
+    private String mFinalResult;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -155,7 +160,6 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
         Utils.init(this);
-        LogUtils.i("onCreate");
         initUI();
         if (mFromWhere.equals("recognize")) {
             initCharRecognize();
@@ -280,6 +284,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     //findViewById
     private void initContent() {
+        alertDialog = new AlertDialog.Builder(this);
         mToolbar_result = findViewById(R.id.toolBar_result);
         mRpv_result = findViewById(R.id.rpv_result);
         mRpv_result.setOnItemClickListener(this);
@@ -308,6 +313,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
         mIv_caffe.setOnClickListener(this);
         mIv_alg.setOnClickListener(this);
+        mCardView_character.setOnClickListener(this);
 
         setDetailAnim();
     }
@@ -622,6 +628,15 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                     mAdd_alg.start();
                 }
                 break;
+            case R.id.cardView_character:
+                Toast.makeText(this, "加载中", Toast.LENGTH_SHORT).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONUtils.getImage(Config.INSTANCE.getDicAddress() + mChar_word, getDicInfoHandler);
+                    }
+                }).start();
+                break;
         }
     }
 
@@ -702,5 +717,39 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                 return IMAGENET_CLASSES[3];
             }
         }
+    }
+
+    @SuppressLint("HandlerLeak")
+    private Handler getDicInfoHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mFinalResult = new String();
+            String jsonData = (String) msg.obj;
+            try {
+                JSONObject jsonObject = new JSONObject(jsonData);
+                JSONObject object = jsonObject.getJSONObject("result");
+                String pinyin = "拼音：" + object.getString("pinyin") + "\n";
+                String bushou = "部首：" + object.getString("bushou") + "\n";
+                String bihua = "笔画数：" + object.getString("bihua") + "\n";
+                String xiangjie = "详解：" + object.getString("xiangjie") + "\n";
+                mFinalResult = pinyin + bushou + bihua + xiangjie;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            alertText("新华字典",mFinalResult);
+        }
+    };
+
+    private void alertText(final String title, final String message) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                alertDialog.setTitle(title)
+                        .setMessage(message)
+                        .setPositiveButton("确定", null)
+                        .show();
+            }
+        });
     }
 }

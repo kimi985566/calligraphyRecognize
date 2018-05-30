@@ -57,19 +57,12 @@ class MainRecognizeItemAdapter(private val context: Context, private var mWordIn
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        var mImageView_image: ImageView
-        var mTv_word: TextView
-        var mTv_height: TextView
-        var mTv_width: TextView
-        var mTv_style: TextView
+        var mImageView_image: ImageView = itemView.findViewById(R.id.iv_cardView_main_word_image)
+        var mTv_word: TextView = itemView.findViewById(R.id.tv_cardView_main_word)
+        var mTv_height: TextView = itemView.findViewById(R.id.tv_cardView_main_word_height)
+        var mTv_width: TextView = itemView.findViewById(R.id.tv_cardView_main_word_width)
+        var mTv_style: TextView = itemView.findViewById(R.id.tv_cardView_main_word_style)
 
-        init {
-            mImageView_image = itemView.findViewById(R.id.iv_cardView_main_word_image)
-            mTv_word = itemView.findViewById(R.id.tv_cardView_main_word)
-            mTv_height = itemView.findViewById(R.id.tv_cardView_main_word_height)
-            mTv_width = itemView.findViewById(R.id.tv_cardView_main_word_width)
-            mTv_style = itemView.findViewById(R.id.tv_cardView_main_word_style)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainRecognizeItemAdapter.ViewHolder {

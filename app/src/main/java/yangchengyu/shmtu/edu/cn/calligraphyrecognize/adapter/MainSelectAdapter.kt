@@ -40,13 +40,9 @@ class MainSelectAdapter(private val context: Context, private var mImageInfos: A
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        internal val mTv_select: TextView
-        internal val mIv_select: ImageView
+        internal val mTv_select: TextView = itemView.findViewById(R.id.tv_item_fragment_select)
+        internal val mIv_select: ImageView = itemView.findViewById(R.id.iv_item_fragment_select)
 
-        init {
-            mTv_select = itemView.findViewById(R.id.tv_item_fragment_select)
-            mIv_select = itemView.findViewById(R.id.iv_item_fragment_select)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

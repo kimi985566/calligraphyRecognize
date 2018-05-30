@@ -4,10 +4,8 @@ import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-
 import com.jude.rollviewpager.adapter.StaticPagerAdapter
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by kimi9 on 2018/3/14.
@@ -16,7 +14,7 @@ import java.util.ArrayList
 class RollViewPagerAdapter(bitmapList: List<Bitmap>) : StaticPagerAdapter() {
 
 
-    internal var mBitmapList: List<Bitmap> = ArrayList()
+    private var mBitmapList: List<Bitmap> = ArrayList()
 
     init {
         mBitmapList = bitmapList

@@ -36,13 +36,9 @@ class MainFragmentFunctionAdapter(private val context: Context, functionInfos: A
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        internal val mIv_fragment_function: ImageView
-        internal val mTv_fragment_function: TextView
+        internal val mIv_fragment_function: ImageView = itemView.findViewById(R.id.iv_fragment_function)
+        internal val mTv_fragment_function: TextView = itemView.findViewById(R.id.tv_fragment_function)
 
-        init {
-            mIv_fragment_function = itemView.findViewById(R.id.iv_fragment_function)
-            mTv_fragment_function = itemView.findViewById(R.id.tv_fragment_function)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

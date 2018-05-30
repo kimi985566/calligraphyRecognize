@@ -8,8 +8,6 @@ class KNNNode {
     var ratio: Double = 0.toDouble()//binAry
     var type: String? = null//类别
 
-    constructor() {}
-
     constructor(id: Long, x: Double, y: Double, ratio: Double) {
         this.id = id
         this.x = x

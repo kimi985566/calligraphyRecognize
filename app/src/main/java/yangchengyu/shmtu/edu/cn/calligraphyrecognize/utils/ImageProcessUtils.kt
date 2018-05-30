@@ -64,7 +64,6 @@ object ImageProcessUtils {
             org.opencv.android.Utils.matToBitmap(dst, bitmap)
         }).start()
 
-
         src.release()
         dst.release()
         return bitmap
@@ -129,7 +128,6 @@ object ImageProcessUtils {
     //Java层的骨架化，备用方案
     fun skeletonProcess(bitmap: Bitmap): Bitmap {
         val src = Mat()
-        val dst = Mat()
 
         getBinaryInvImage(bitmap, src, src)
 
@@ -178,11 +176,11 @@ object ImageProcessUtils {
     }
 
     //Native方法：骨架化具体实现
-    external fun gThin(matSrcAddr: Long, matDstAddr: Long)
+    private external fun gThin(matSrcAddr: Long, matDstAddr: Long)
 
     //Native方法：获取图像重心
-    external fun nativeGravity(matSrcAddr: Long, x: Int?, y: Int?): Int
+    private external fun nativeGravity(matSrcAddr: Long, x: Int?, y: Int?): Int
 
     //Native方法：统计黑白像素比
-    external fun nativeBinaryRatio(matSrcAddr: Long): Double
+    private external fun nativeBinaryRatio(matSrcAddr: Long): Double
 }

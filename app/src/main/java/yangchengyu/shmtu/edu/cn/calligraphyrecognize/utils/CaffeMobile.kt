@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets
  * 主要是需要支持OpenBLAS
  */
 
-
 class CaffeMobile {
 
     private fun stringToBytes(s: String): ByteArray {
@@ -32,20 +31,20 @@ class CaffeMobile {
 
     external fun setScale(scale: Float)
 
-    external fun getConfidenceScore(data: ByteArray, width: Int, height: Int): FloatArray
+    private external fun getConfidenceScore(data: ByteArray, width: Int, height: Int): FloatArray
 
     fun getConfidenceScore(imgPath: String): FloatArray {
         return getConfidenceScore(stringToBytes(imgPath), 0, 0)
     }
 
-    external fun predictImage(data: ByteArray, width: Int, height: Int, k: Int): IntArray
+    private external fun predictImage(data: ByteArray, width: Int, height: Int, k: Int): IntArray
 
     @JvmOverloads
     fun predictImage(imgPath: String, k: Int = 4): IntArray {
         return predictImage(stringToBytes(imgPath), 0, 0, k)
     }
 
-    external fun extractFeatures(data: ByteArray, width: Int, height: Int, blobNames: String): Array<FloatArray>
+    private external fun extractFeatures(data: ByteArray, width: Int, height: Int, blobNames: String): Array<FloatArray>
 
     fun extractFeatures(imgPath: String, blobNames: String): Array<FloatArray> {
         return extractFeatures(stringToBytes(imgPath), 0, 0, blobNames)

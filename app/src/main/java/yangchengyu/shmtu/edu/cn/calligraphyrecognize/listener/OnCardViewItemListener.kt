@@ -7,5 +7,6 @@ import android.view.View
  */
 
 interface OnCardViewItemListener {
+    //点击卡片
     fun onCardViewItemClick(view: View, position: Int)
 }

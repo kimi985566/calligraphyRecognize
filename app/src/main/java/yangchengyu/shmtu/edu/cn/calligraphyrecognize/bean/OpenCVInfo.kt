@@ -6,17 +6,10 @@ import java.util.ArrayList
  * Created by kimi9 on 2018/2/21.
  */
 
-class OpenCVInfo : OpenCVConstants {
+class OpenCVInfo(var id: Long, name: String, commend: String) : OpenCVConstants {
 
-    var id: Long = 0
-    var name: String? = null
-    var commend: String? = null
-
-    constructor(id: Long, name: String, commend: String) {
-        this.id = id
-        this.name = name
-        this.commend = commend
-    }
+    var name: String? = name
+    var commend: String? = commend
 
     companion object {
 
