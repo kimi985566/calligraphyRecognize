@@ -187,6 +187,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         initBarChart();
     }
 
+    //intent
     private void initIntentExtra() {
         mChar_word = this.getIntent().getStringExtra(RecognizeActivity.WORD);
         mWidth = this.getIntent().getIntExtra(RecognizeActivity.WIDTH, 100);
@@ -201,6 +202,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mCaoScore = this.getIntent().getFloatExtra(RecognizeActivity.CAO, 0f);
     }
 
+    //设置柱状图
     private void initBarChartDataFromMain() {
         float[] floats = new float[]{mZuanScore, mLiScore, mKaiScore, mCaoScore};
 
@@ -233,6 +235,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         executeImg();
     }
 
+    //设置进度窗口
     private void setProgressBar() {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);//转盘
@@ -318,6 +321,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         setDetailAnim();
     }
 
+    //加载柱状图
     private void initBarChartData() {
         ArrayList<BarEntry> barEntriesData = new ArrayList<>();
 
@@ -427,6 +431,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
      * 6. 返回前k个点出现频率最高的类别作为当前点的预测分类
      */
 
+    //KNN获取文字风格分类
     private void getAlgStyle() {
 
         ArrayList<KNNNode> dataList = KNNUtils.getCatList();
@@ -462,6 +467,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         return distanceSet;
     }
 
+    //获取图像重心
     private void getCenXY(Bitmap gravityTemp) {
         Mat src = new Mat();
         org.opencv.android.Utils.bitmapToMat(gravityTemp, src);
@@ -697,6 +703,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     };
 
+    //设置柱状图底部文字
     class XFormattedValue implements IAxisValueFormatter {
 
         private Context mContext;
@@ -719,6 +726,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    //通过API获取文字字典信息并解析数据
     @SuppressLint("HandlerLeak")
     private Handler getDicInfoHandler = new Handler() {
         @Override
@@ -737,10 +745,11 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            alertText("新华字典",mFinalResult);
+            alertText("新华字典", mFinalResult);
         }
     };
 
+    //弹窗
     private void alertText(final String title, final String message) {
         this.runOnUiThread(new Runnable() {
             @Override

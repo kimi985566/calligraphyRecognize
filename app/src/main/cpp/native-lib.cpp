@@ -9,6 +9,7 @@
 using namespace cv;
 using namespace std;
 
+//计算文字重心
 CvPoint aoiGravityCenter(IplImage *src) {
 
     CvPoint center;
@@ -201,12 +202,13 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
     c = env->FindClass("java/lang/Integer");
     id = env->GetFieldID(c, "value", "I");
 
-    env->SetIntField(x, id, (int) result.x);
-    env->SetIntField(y, id, (int) result.y);
+    env->SetIntField(x, id, result.x);
+    env->SetIntField(y, id, result.y);
 
     return 0;
 }
 
+//计算图像黑白像素比值
 extern "C"
 JNIEXPORT jdouble JNICALL
 Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeBinaryRatio__J(
@@ -228,5 +230,4 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
     }
     jdouble ratio = counterB / counterW;
     return ratio;
-
 }

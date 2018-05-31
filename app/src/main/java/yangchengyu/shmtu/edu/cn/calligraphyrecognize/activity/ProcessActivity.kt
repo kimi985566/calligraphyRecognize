@@ -50,6 +50,7 @@ class ProcessActivity : AppCompatActivity(), View.OnClickListener {
         supportActionBar!!.setHomeButtonEnabled(true)
     }
 
+    //点击事件
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btn_process -> select2Process()
@@ -112,6 +113,7 @@ class ProcessActivity : AppCompatActivity(), View.OnClickListener {
         mIvProcess!!.setImageBitmap(temp)
     }
 
+    //设置完成图像处理后的显示界面
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SELECT_PIC_RESULT_CODE && resultCode == Activity.RESULT_OK && data != null) {

@@ -123,6 +123,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         setFABAnim()
     }
 
+    //设置底部导航栏的属性
     private fun initNavigation() {
         tabColors = applicationContext.resources.getIntArray(R.array.tab_colors)
         navigationAdapter = AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu_3)
@@ -199,9 +200,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
     //识别等待提示
     private fun waitForResult() {
         try {
-            Toast.makeText(this@MainActivity, "正在识别",
-                    Toast.LENGTH_SHORT)
-                    .show()
+            Toast.makeText(this@MainActivity, "正在识别", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Looper.prepare()
             Toast.makeText(this@MainActivity, e as CharSequence, Toast.LENGTH_SHORT).show()
@@ -289,6 +288,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         }, applicationContext, Config.API_KEY, Config.SECRET_KEY)
     }
 
+    //设置底部导航栏在被选中后的变化的监听接口
     override fun onTabSelected(position: Int, wasSelected: Boolean): Boolean {
 
         hideFABMenu()
@@ -380,6 +380,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         }
     }
 
+    //设置状态栏颜色，达到切换即可变色
     private fun setBarColorTitle(item: Int, s: String) {
         supportActionBar!!.setTitle(item)
         val color = Color.parseColor(s)
@@ -420,6 +421,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         }
     }
 
+    //跳转到拍照页面进行识别
     private fun startIntentForRecognize(code: Int) {
         val intent = Intent(this@MainActivity, CameraActivity::class.java)
         intent.putExtra(CameraActivity.KEY_OUTPUT_FILE_PATH,

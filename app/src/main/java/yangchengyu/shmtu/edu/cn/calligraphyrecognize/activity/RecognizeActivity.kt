@@ -58,6 +58,7 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
         mRecyclerView!!.adapter = mMainCardViewItemAdapter
     }
 
+    //从数据库中获取数据
     private fun getDBData() {
         mWordDBhelper = WordDBhelper(this)
         mWordInfo = mWordDBhelper!!.allWord
@@ -92,6 +93,7 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
         }).start()
     }
 
+    //点击事件回调
     internal inner class myItemTouchHelperCallBack(private val mItemTouchHelperListener: ItemTouchHelperListener) : ItemTouchHelper.Callback() {
 
         private var mPosition: Int = 0
@@ -144,6 +146,7 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
         }
     }
 
+    //SnackBar的回调
     private inner class MySnackBarCallBack : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
             super.onDismissed(transientBottomBar, event)

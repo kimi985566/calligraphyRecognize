@@ -14,7 +14,7 @@ import android.view.KeyEvent
 
 class SplashActivity : AppCompatActivity() {
 
-    internal val mHandler = Handler()
+    private val mHandler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

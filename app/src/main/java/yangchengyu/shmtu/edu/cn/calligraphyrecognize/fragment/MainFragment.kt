@@ -66,20 +66,24 @@ class MainFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestP
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         //装在主界面第一页
-        if (arguments!!.getInt("index", 0) == 0) {
-            val view = inflater.inflate(R.layout.fragment_main_select, container, false)
-            initMainSelect(view)
-            return view
-            //装在第二页
-        } else if (arguments!!.getInt("index", 0) == 1) {
-            val view = inflater.inflate(R.layout.fragment_main_content, container, false)
-            initMainContent(view)
-            return view
-            //装在第三页
-        } else {
-            val view = inflater.inflate(R.layout.fragment_main_setting, container, false)
-            initSetting(view)
-            return view
+        return when {
+            arguments!!.getInt("index", 0) == 0 -> {
+                val view = inflater.inflate(R.layout.fragment_main_select, container, false)
+                initMainSelect(view)
+                view
+                //装在第二页
+            }
+            arguments!!.getInt("index", 0) == 1 -> {
+                val view = inflater.inflate(R.layout.fragment_main_content, container, false)
+                initMainContent(view)
+                view
+                //装在第三页
+            }
+            else -> {
+                val view = inflater.inflate(R.layout.fragment_main_setting, container, false)
+                initSetting(view)
+                view
+            }
         }
     }
 
@@ -125,7 +129,6 @@ class MainFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestP
     }
 
     //第二页的加载
-
     private fun initMainContent(view: View) {
         mTv_test = view.findViewById(R.id.tv_content)
         mIv_content = view.findViewById(R.id.iv_content)
@@ -151,6 +154,7 @@ class MainFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestP
 
     }
 
+    //加载主页面顶部的图像
     private fun initTopPic(view: View) {
         mIv_setting_background = view.findViewById(R.id.iv_setting_blur)
         mIv_setting_avater = view.findViewById(R.id.iv_setting_avatar)
@@ -158,6 +162,7 @@ class MainFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestP
         mIv_setting_avater!!.setOnClickListener(this)
     }
 
+    //加载我的页面的图像
     private fun initPic() {
         Glide.with(this).load(R.drawable.ic_image_aboutme)
                 .apply(bitmapTransform(BlurTransformation(25)))

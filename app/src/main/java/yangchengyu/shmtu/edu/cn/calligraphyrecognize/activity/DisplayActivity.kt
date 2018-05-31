@@ -109,6 +109,7 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             mSwipeRefreshLayoutSelect!!.isRefreshing = true
             JSONUtils.getImage(Config.picAddress, getImageHandler)
             mSwipeRefreshLayoutSelect!!.isRefreshing = false
+            //显示当前网络的情况
             SnackbarUtils.with(mRecyclerViewSelect!!)
                     .setMessage("当前网络：" + NetworkUtils.getNetworkType().toString())
                     .showSuccess()

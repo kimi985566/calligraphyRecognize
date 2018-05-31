@@ -13,7 +13,6 @@ import java.util.*
 
 class RollViewPagerAdapter(bitmapList: List<Bitmap>) : StaticPagerAdapter() {
 
-
     private var mBitmapList: List<Bitmap> = ArrayList()
 
     init {

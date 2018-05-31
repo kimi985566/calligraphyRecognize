@@ -16,8 +16,6 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemList
 import java.util.*
 
 class MainFragmentFunctionAdapter(private val context: Context, functionInfos: ArrayList<FunctionInfo>) : RecyclerView.Adapter<MainFragmentFunctionAdapter.ViewHolder>(), View.OnClickListener {
-    private var mFunctionInfos = ArrayList<FunctionInfo>()
-    private var mOnCardViewItemListener: OnCardViewItemListener? = null
 
     init {
         mFunctionInfos = functionInfos
@@ -64,7 +62,8 @@ class MainFragmentFunctionAdapter(private val context: Context, functionInfos: A
     }
 
     companion object {
-
         private val TAG = MainFragmentFunctionAdapter::class.java.simpleName
+        private var mFunctionInfos = ArrayList<FunctionInfo>()
+        private var mOnCardViewItemListener: OnCardViewItemListener? = null
     }
 }

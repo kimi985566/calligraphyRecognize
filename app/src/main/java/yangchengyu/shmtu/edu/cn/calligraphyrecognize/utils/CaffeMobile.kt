@@ -19,24 +19,28 @@ class CaffeMobile {
         return s.toByteArray(StandardCharsets.US_ASCII)
     }
 
+    //设置线程数
     external fun setNumThreads(numThreads: Int)
 
-    external fun enableLog(enabled: Boolean)   // currently nonfunctional
+    //加载模型
+    external fun loadModel(modelPath: String, weightsPath: String): Int
 
-    external fun loadModel(modelPath: String, weightsPath: String): Int   // required
-
+    //设置平均值文件
     private external fun setMeanWithMeanFile(meanFile: String)
 
+    //设置平均值数值
     private external fun setMeanWithMeanValues(meanValues: FloatArray)
 
     external fun setScale(scale: Float)
 
+    //设置置信值
     private external fun getConfidenceScore(data: ByteArray, width: Int, height: Int): FloatArray
 
     fun getConfidenceScore(imgPath: String): FloatArray {
         return getConfidenceScore(stringToBytes(imgPath), 0, 0)
     }
 
+    //预测图片
     private external fun predictImage(data: ByteArray, width: Int, height: Int, k: Int): IntArray
 
     @JvmOverloads
@@ -44,6 +48,7 @@ class CaffeMobile {
         return predictImage(stringToBytes(imgPath), 0, 0, k)
     }
 
+    //获取特征
     private external fun extractFeatures(data: ByteArray, width: Int, height: Int, blobNames: String): Array<FloatArray>
 
     fun extractFeatures(imgPath: String, blobNames: String): Array<FloatArray> {

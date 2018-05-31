@@ -69,7 +69,6 @@ class MainSelectAdapter(private val context: Context, private var mImageInfos: A
     }
 
     companion object {
-
         private val TAG = MainSelectAdapter::class.java.simpleName
     }
 }

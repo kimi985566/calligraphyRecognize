@@ -9,7 +9,7 @@ import java.io.File
  */
 
 object FileUtil {
-
+    //保存图片
     fun getSaveFile(context: Context): File {
         return File(context.filesDir, "pic.jpg")
     }

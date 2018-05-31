@@ -13,6 +13,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo
 
 /**
  * Created by kimi9 on 2018/3/18.
+ * 数据库处理工具类
  */
 
 class WordDBhelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {

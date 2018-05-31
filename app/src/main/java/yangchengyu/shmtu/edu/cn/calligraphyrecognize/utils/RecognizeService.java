@@ -25,7 +25,7 @@ import java.io.File;
 public class RecognizeService {
 
     public interface ServiceListener {
-        public void onResult(String result);
+        void onResult(String result);
     }
 
     public static void recGeneral(String filePath, final ServiceListener listener) {
