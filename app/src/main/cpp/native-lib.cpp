@@ -5,6 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 using namespace std;
@@ -62,16 +64,6 @@ CvPoint grayCenter(IplImage *TheImage) {
     return Center;
 }
 
-//实现JNI的测试方法
-extern "C"
-JNIEXPORT jstring JNICALL
-Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_fragment_MainFragment_stringFromJNI(JNIEnv *env,
-                                                                                       jobject instance) {
-
-    return env->NewStringUTF("Hello from JNI");
-
-}
-
 /*
  * 实现图像骨架化的Native方法：Rosenfeld细化算法
  * @param src：原图片
@@ -87,7 +79,6 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_fragment_MainFragment_stringF
  * 直到图像中再也没有可以删除的点后，退出迭代循环。
  *
  */
-
 extern "C"
 JNIEXPORT void JNICALL
 Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_gThin(JNIEnv *env,
@@ -205,6 +196,7 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
     env->SetIntField(x, id, result.x);
     env->SetIntField(y, id, result.y);
 
+    src.release();
     return 0;
 }
 
@@ -228,6 +220,99 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
             counterB += 1;
         }
     }
+
     jdouble ratio = counterB / counterW;
+
+    src.release();
     return ratio;
+}
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeSkeLength(
+        JNIEnv *env, jclass type, jlong matSrcAddr) {
+
+    Mat &src = *(Mat *) matSrcAddr;//通过指针获取Java层对应空间的原始图片mat
+
+    double counterW = 0.0;
+    double counterB = 0.0;
+    //迭代器访问像素点
+    Mat_<uchar>::iterator it = src.begin<uchar>();
+    Mat_<uchar>::iterator itend = src.end<uchar>();
+    for (; it != itend; ++it) {
+        if ((*it) > 0) {
+            counterW += 1;
+        } else {
+            counterB += 1;
+        }
+    }
+
+    src.release();
+    return counterB;
+}
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeBinLength(
+        JNIEnv *env, jclass type, jlong matSrcAddr) {
+
+    Mat &src = *(Mat *) matSrcAddr;//通过指针获取Java层对应空间的原始图片mat
+
+    double counterW = 0.0;
+    double counterB = 0.0;
+    //迭代器访问像素点
+    Mat_<uchar>::iterator it = src.begin<uchar>();
+    Mat_<uchar>::iterator itend = src.end<uchar>();
+    for (; it != itend; ++it) {
+        if ((*it) > 0) {
+            counterW += 1;
+        } else {
+            counterB += 1;
+        }
+    }
+
+    src.release();
+    return counterB;
+}
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeBinaryBlack(
+        JNIEnv *env, jclass type, jlong matSrcAddr, jlong matDstAddr) {
+
+
+    Mat &src = *(Mat *) matSrcAddr;//通过指针获取Java层对应空间的原始图片mat
+    Mat &dst = *(Mat *) matDstAddr;//通过指针获取Java层对应空间的原始图片mat
+
+    double counterWBin = 0.0;
+    double counterWSke = 0.0;
+    double counterBBin = 0.0;
+    double counterBSke = 0.0;
+    //迭代器访问像素点
+    Mat_<uchar>::iterator itBin = src.begin<uchar>();
+    Mat_<uchar>::iterator itBinEnd = src.end<uchar>();
+
+    for (; itBin != itBinEnd; ++itBin) {
+        if ((*itBin) > 0) {
+            counterWBin += 1;
+        } else {
+            counterBBin += 1;
+        }
+    }
+
+    Mat_<uchar>::iterator itSke = dst.begin<uchar>();
+    Mat_<uchar>::iterator itSkeEnd = dst.end<uchar>();
+
+    for (; itSke != itSkeEnd; ++itSke) {
+        if ((*itSke) > 0) {
+            counterWSke += 1;
+        } else {
+            counterBSke += 1;
+        }
+    }
+
+    src.release();
+    dst.release();
+
+    return ((counterBBin - counterBSke) / counterBSke);
 }

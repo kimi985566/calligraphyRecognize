@@ -7,15 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class JSONUtils {
     private static final int TIMEOUT = 8000;
     private static final int CONNECT_TIMEOUT = 10000;
     private static final String GET = "GET";
-    private static final String UTF_8 = "UTF-8";
-    public static final String TAG = JSONUtils.class.getSimpleName();
 
     public static void getImage(final String url, final android.os.Handler handler) {
 
@@ -35,7 +32,7 @@ public class JSONUtils {
                     mHttpURLConnection.setConnectTimeout(CONNECT_TIMEOUT);
                     mInputStream = mHttpURLConnection.getInputStream();
                     mBufferedReader = new BufferedReader(new InputStreamReader(mInputStream));
-                    String strRead = null;
+                    String strRead;
                     StringBuilder result = new StringBuilder();
 
                     while ((strRead = mBufferedReader.readLine()) != null) {
@@ -49,15 +46,11 @@ public class JSONUtils {
                     mBufferedReader.close();
                     mInputStream.close();
 
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         });
-
         thread.start();
     }
 }

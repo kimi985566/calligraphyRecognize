@@ -130,6 +130,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     static {
         System.loadLibrary("caffe");
         System.loadLibrary("caffe_jni");
+        System.loadLibrary("native-lib");
+        System.loadLibrary("opencv_java3");
     }
 
     private Integer mX_native = new Integer(0);
@@ -138,12 +140,16 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private TextView mTv_native_ratio;
     private TextView mTv_native_wh_ratio;
     private double mBinRatio;
+    private double mWidthBin;
+    private double mWidthSke;
     private double mWhRatio;
     private double mCenx;
     private double mCeny;
     private double mTempWidth;
     private double mTempHeight;
     private TextView mTv_native_cen_ratio;
+    private TextView mTv_native_width;
+    private TextView mTv_native_ske_length;
     private TextView mTv_alg_style;
     private double mMostKNNPoints;
     private ImageView mIv_caffe;
@@ -153,6 +159,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private CardView mCardView_alg_detail;
     private CardView mCardView_caffe_detail;
     private String mFinalResult;
+    private Double mWidthWord;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -310,6 +317,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_native_ratio = findViewById(R.id.tv_result_native_ratio);
         mTv_native_wh_ratio = findViewById(R.id.tv_result_native_wh_ratio);
         mTv_native_cen_ratio = findViewById(R.id.tv_result_native_cen_ratio);
+        mTv_native_width = findViewById(R.id.tv_result_native_width);
+        mTv_native_ske_length = findViewById(R.id.tv_result_native_ske_length);
 
         mIv_caffe = findViewById(R.id.iv_caffe_show);
         mIv_alg = findViewById(R.id.iv_alg_show);
@@ -402,6 +411,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
         Bitmap gravityTemp = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap binRatioTemp = BitmapFactory.decodeFile(mCroppedImgPath);
+        Bitmap binWidthTemp = BitmapFactory.decodeFile(mCroppedImgPath);
+        Bitmap binSkeTemp = ImageProcessUtils.INSTANCE.skeletonFromJNI(BitmapFactory.decodeFile(mCroppedImgPath));
 
         //求重心
         ImageProcessUtils.INSTANCE.imageGravityJava(gravityTemp, mX_native, mY_native);
@@ -409,6 +420,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mBinRatio = ImageProcessUtils.INSTANCE.imageBinaryRatio(binRatioTemp);
         //求图像宽高比
         mWhRatio = ImageProcessUtils.INSTANCE.imageWHRatio(mCroppedImg);
+        //宽度变化
+        getWordWidth();
         //求重心比
         getCenXY(gravityTemp);
 
@@ -416,8 +429,18 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         mTv_native_ratio.setText("黑白像素比：" + Config.INSTANCE.doubleToString(mBinRatio));
         mTv_native_wh_ratio.setText("高宽比(高/宽)：" + Config.INSTANCE.doubleToString(mWhRatio));
         mTv_native_cen_ratio.setText("重心占图像比例：(" + Config.INSTANCE.doubleToString(mCenx) + "," + Config.INSTANCE.doubleToString(mCeny) + ")");
+        mTv_native_width.setText("笔画宽度：" + Config.INSTANCE.doubleToString(mWidthWord));
+        mTv_native_ske_length.setText("骨架长度：" + Config.INSTANCE.doubleToString(mWidthSke));
 
         getAlgStyle();
+    }
+
+    private void getWordWidth() {
+        mWidthBin = ImageProcessUtils.INSTANCE.imageBinLength(mBinImg);
+        mWidthSke = ImageProcessUtils.INSTANCE.imageSkeLength(mSkeletonImg);
+        LogUtils.i("bin：" + mWidthBin + " Ske: " + mWidthSke);
+        mWidthWord = (mWidthBin - mWidthSke) / mWidthSke;
+        LogUtils.i("width: " + mWidthWord);
     }
 
     /**
@@ -649,6 +672,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private class CNNTask extends AsyncTask<String, Void, Integer> {
 
         private CNNListener listener;
+
         private long startTime;
 
         public CNNTask(CNNListener listener) {
@@ -676,6 +700,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
             listener.onTaskCompleted(integer);
             super.onPostExecute(integer);
         }
+
     }
 
     @Override
@@ -724,6 +749,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                 return IMAGENET_CLASSES[3];
             }
         }
+
     }
 
     //通过API获取文字字典信息并解析数据

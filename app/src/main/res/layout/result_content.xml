@@ -233,6 +233,17 @@
                 android:textSize="20sp"/>
 
             <TextView
+                android:id="@+id/tv_result_native_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/lixukefonts"
+                android:gravity="center"
+                android:text="二值化图像黑白像素比（B/W）："
+                android:textSize="20sp"/>
+
+            <TextView
                 android:id="@+id/tv_result_native_ratio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -253,6 +264,18 @@
                 android:gravity="center"
                 android:text="二值化图像黑白像素比（B/W）："
                 android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/tv_result_native_ske_length"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/lixukefonts"
+                android:gravity="center"
+                android:text="二值化图像黑白像素比（B/W）："
+                android:textSize="20sp"/>
+
 
         </LinearLayout>
 

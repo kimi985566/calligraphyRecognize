@@ -17,6 +17,8 @@ object ImageProcessUtils {
     init {
         System.loadLibrary("native-lib")
         System.loadLibrary("opencv_java3")
+        System.loadLibrary("caffe")
+        System.loadLibrary("caffe_jni")
     }
 
     //二值化图片
@@ -109,12 +111,55 @@ object ImageProcessUtils {
 
         src.release()//释放mat
         dst.release()
+
         return ratio
+    }
+
+    fun imageSkeLength(bitmap: Bitmap): Double {
+
+        val src = Mat()
+
+        org.opencv.android.Utils.bitmapToMat(bitmap, src)//将bitmap转化为mat
+
+        val length = nativeSkeLength(src.nativeObjAddr)
+
+        src.release()//释放mat
+
+        return length
+    }
+
+    fun imageBinLength(bitmap: Bitmap): Double {
+
+        val src = Mat()
+
+        org.opencv.android.Utils.bitmapToMat(bitmap, src)//将bitmap转化为mat
+
+        val length = nativeBinLength(src.nativeObjAddr)
+
+        src.release()//释放mat
+
+        return length
+    }
+
+    fun imageBinaryWidth(bin: Bitmap, ske: Bitmap): Double {
+        val srcBin = Mat()
+        val srcSke = Mat()
+
+        org.opencv.android.Utils.bitmapToMat(bin, srcBin)//将bitmap转化为mat
+        org.opencv.android.Utils.bitmapToMat(bin, srcSke)//将bitmap转化为mat
+
+        val ratioBin = nativeBinaryBlack(srcBin.nativeObjAddr, srcSke.nativeObjAddr)
+
+        srcBin.release()
+        srcSke.release()
+
+        return ratioBin
     }
 
     fun imageWHRatio(bitmap: Bitmap): Double {
         val src = Mat()
         org.opencv.android.Utils.bitmapToMat(bitmap, src)
+
         val width = src.width().toDouble()
         val height = src.height().toDouble()
 
@@ -176,11 +221,23 @@ object ImageProcessUtils {
     }
 
     //Native方法：骨架化具体实现
+    @JvmStatic
     private external fun gThin(matSrcAddr: Long, matDstAddr: Long)
 
     //Native方法：获取图像重心
+    @JvmStatic
     private external fun nativeGravity(matSrcAddr: Long, x: Int?, y: Int?): Int
 
     //Native方法：统计黑白像素比
+    @JvmStatic
     private external fun nativeBinaryRatio(matSrcAddr: Long): Double
+
+    @JvmStatic
+    private external fun nativeSkeLength(matSrcAddr: Long): Double
+
+    @JvmStatic
+    private external fun nativeBinLength(matSrcAddr: Long): Double
+
+    @JvmStatic
+    private external fun nativeBinaryBlack(matSrcAddr: Long, matDstAddr: Long): Double
 }

@@ -35,7 +35,7 @@ android {
     buildToolsVersion '27.0.3'
     sourceSets {
         main {
-            jni.srcDirs = ['D:\\Android\\workplace\\calligraphyRecognize\\app\\src\\main\\jniLibs']
+            jni.srcDirs = ['src\\main\\jniLibs']
         }
     }
 }
