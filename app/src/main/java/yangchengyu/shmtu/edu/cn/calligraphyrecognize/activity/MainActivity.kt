@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
         mBottomNavigation = findViewById(R.id.bn_Main)
         mAHBottomNavigationViewPager = findViewById(R.id.vp_Main)
-        mFloatingActionButton = findViewById(R.id.fab_Main)
+        mFloatingActionButton = this.findViewById(R.id.fab_Main)
 
         //fab弹出的两个小按钮
         mFab_root_view = findViewById(R.id.fab_menu_root_view)

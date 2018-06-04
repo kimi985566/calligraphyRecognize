@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R;
@@ -19,7 +18,7 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.OpenCVInfo;
 
 public class OpenCVListViewAdapter extends BaseAdapter {
 
-    private List<OpenCVInfo> mOpenCVInfos = new ArrayList<>();
+    private List<OpenCVInfo> mOpenCVInfos;
     private Context mContext;
 
     public OpenCVListViewAdapter(Context context, List<OpenCVInfo> openCVInfos) {

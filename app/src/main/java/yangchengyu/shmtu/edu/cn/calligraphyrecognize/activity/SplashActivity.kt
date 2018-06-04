@@ -42,7 +42,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        mHandler?.removeCallbacksAndMessages(null)
+        mHandler.removeCallbacksAndMessages(null)
         super.onDestroy()
     }
 }

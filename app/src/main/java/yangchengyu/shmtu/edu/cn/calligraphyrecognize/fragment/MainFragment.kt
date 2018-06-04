@@ -309,12 +309,12 @@ class MainFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestP
 
     private fun setDayNightMode(modeNightYes: Int, modeText: String, b: Boolean) {
         AppCompatDelegate.setDefaultNightMode(modeNightYes)
-        activity!!.recreate()
         toast(modeText)
         Thread(Runnable {
             mSharedPreferences = activity!!.getSharedPreferences("myPreference", Context.MODE_PRIVATE)
             mSharedPreferences!!.edit().putBoolean(ISNIGHT, b).apply()
         }).start()
+        activity!!.recreate()
     }
 
     companion object {
