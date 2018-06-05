@@ -7,9 +7,6 @@ public class ImageInfo {
     public String image_work_name;
     public String image_path;
 
-    public ImageInfo() {
-    }
-
     public ImageInfo(int image_id, String image_style, String image_work_name, String image_path) {
         this.image_id = image_id;
         this.image_style = image_style;

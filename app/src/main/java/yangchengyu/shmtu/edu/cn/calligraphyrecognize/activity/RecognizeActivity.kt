@@ -80,8 +80,8 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
             intent.putExtra(WORD, wordInfo.word)
             intent.putExtra(WIDTH, wordInfo.width)
             intent.putExtra(HEIGHT, wordInfo.height)
-            intent.putExtra(X_ARRAY, wordInfo.x_array)
-            intent.putExtra(Y_ARRAY, wordInfo.y_array)
+            intent.putExtra(X_ARRAY, wordInfo.xArray)
+            intent.putExtra(Y_ARRAY, wordInfo.yArray)
             intent.putExtra(PIC_PATH, wordInfo.pic_path)
             intent.putExtra(STYLE, wordInfo.style)
             intent.putExtra(ZUAN, wordInfo.zuanScore)
@@ -163,8 +163,8 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
         const val WORD = "word"
         const val WIDTH = "width"
         const val HEIGHT = "height"
-        const val X_ARRAY = "x_array"
-        const val Y_ARRAY = "y_array"
+        const val X_ARRAY = "xArray"
+        const val Y_ARRAY = "yArray"
         const val PIC_PATH = "path"
         const val STYLE = "style"
         const val ZUAN = "zuan"

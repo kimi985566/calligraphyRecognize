@@ -1,6 +1,6 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean
 
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by kimi9 on 2018/2/21.

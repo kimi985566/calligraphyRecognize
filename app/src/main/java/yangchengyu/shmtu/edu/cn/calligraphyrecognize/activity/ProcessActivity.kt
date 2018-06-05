@@ -74,9 +74,9 @@ class ProcessActivity : AppCompatActivity(), View.OnClickListener {
         } else if (OpenCVConstants.BITMAP_PIXEL_INVERT_NAME == processName) {
             temp = CvImgProcessUtils.invertBitmap(temp)
         } else if (OpenCVConstants.CONTRAST_RATIO_BRIGHTNESS_NAME == processName) {
-            CvImgProcessUtils.contrast_ratio_adjust(temp)
+            CvImgProcessUtils.contrastRatioAdjust(temp)
         } else if (OpenCVConstants.IMAGE_CONTAINER_MAT_NAME == processName) {
-            CvImgProcessUtils.mat_operation(temp)
+            CvImgProcessUtils.matOperation(temp)
         } else if (OpenCVConstants.GET_ROI_NAME == processName) {
             temp = CvImgProcessUtils.getRoi(temp)
         } else if (OpenCVConstants.BOX_BLUR_IMAGE_NAME == processName) {
@@ -88,24 +88,24 @@ class ProcessActivity : AppCompatActivity(), View.OnClickListener {
         } else if (OpenCVConstants.CUSTOM_BLUR_NAME == processName
                 || OpenCVConstants.CUSTOM_EDGE_NAME == processName
                 || OpenCVConstants.CUSTOM_SHARPEN_NAME == processName) {
-            CvImgProcessUtils.customFilter(processName, temp)
+            CvImgProcessUtils.customFilter(processName!!, temp)
         } else if (OpenCVConstants.ERODE_NAME == processName || OpenCVConstants.DILATE_NAME == processName) {
-            CvImgProcessUtils.erodeOrDilate(processName, temp)
+            CvImgProcessUtils.erodeOrDilate(processName!!, temp)
         } else if (OpenCVConstants.OPEN_OPERATION_NAME == processName || OpenCVConstants.CLOSE_OPERATION_NAME == processName) {
-            CvImgProcessUtils.openOrClose(processName, temp)
+            CvImgProcessUtils.openOrClose(processName!!, temp)
         } else if (OpenCVConstants.MORPH_LINE_OPERATION_NAME == processName) {
             CvImgProcessUtils.lineDetection(temp)
         } else if (OpenCVConstants.THRESH_BINARY_NAME == processName
                 || OpenCVConstants.THRESH_BINARY_INV_NAME == processName
                 || OpenCVConstants.THRESH_TRUNCAT_NAME == processName
                 || OpenCVConstants.THRESH_ZERO_NAME == processName) {
-            CvImgProcessUtils.thresholdImg(processName, temp)
+            CvImgProcessUtils.thresholdImg(processName!!, temp)
         } else if (OpenCVConstants.ADAPTIVE_THRESH_MEAN_NAME == processName || OpenCVConstants.ADAPTIVE_THRESH_GAUSSIAN_NAME == processName) {
-            CvImgProcessUtils.adaptiveThresholdImg(processName, temp)
+            CvImgProcessUtils.adaptiveThresholdImg(processName!!, temp)
         } else if (OpenCVConstants.HISTOGRAM_EQ_NAME == processName) {
             CvImgProcessUtils.histogramEq(temp)
         } else if (OpenCVConstants.GRADIENT_SOBEL_X_NAME == processName || OpenCVConstants.GRADIENT_SOBEL_Y_NAME == processName) {
-            CvImgProcessUtils.gradientProcess(processName, temp)
+            CvImgProcessUtils.gradientProcess(processName!!, temp)
         } else if (OpenCVConstants.GRADIENT_IMG_NAME == processName) {
             CvImgProcessUtils.gradientXY(temp)
         }

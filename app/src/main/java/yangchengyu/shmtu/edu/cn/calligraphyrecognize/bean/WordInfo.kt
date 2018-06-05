@@ -12,8 +12,8 @@ class WordInfo : Serializable {
     var word: String? = null
     var height: Int = 0
     var width: Int = 0
-    var x_array: Int = 0
-    var y_array: Int = 0
+    var xArray: Int = 0
+    var yArray: Int = 0
     var style: String? = null
     var pic_path: String? = null
     var zuanScore: Float = 0.toFloat()
@@ -28,8 +28,8 @@ class WordInfo : Serializable {
         this.word = word
         this.height = height
         this.width = width
-        this.x_array = x_array
-        this.y_array = y_array
+        this.xArray = x_array
+        this.yArray = y_array
         this.style = style
         this.pic_path = pic_path
     }

@@ -6,10 +6,8 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-
-import java.util.ArrayList
-
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo
+import java.util.*
 
 /**
  * Created by kimi9 on 2018/3/18.
@@ -34,8 +32,8 @@ class WordDBhelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, 
                     wordInfo.word = cursor.getString(cursor.getColumnIndexOrThrow(KEY_WORD))
                     wordInfo.width = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_WIDTH))
                     wordInfo.height = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_HEIGHT))
-                    wordInfo.x_array = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_X_ARRAY))
-                    wordInfo.y_array = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_X_ARRAY))
+                    wordInfo.xArray = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_X_ARRAY))
+                    wordInfo.yArray = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_X_ARRAY))
                     wordInfo.style = cursor.getString(cursor.getColumnIndexOrThrow(KEY_STYLE))
                     wordInfo.pic_path = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PATH))
                     wordInfo.zuanScore = cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_ZUAN))
@@ -68,8 +66,8 @@ class WordDBhelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, 
         values.put(KEY_WORD, wordInfo.word)
         values.put(KEY_WIDTH, wordInfo.width)
         values.put(KEY_HEIGHT, wordInfo.height)
-        values.put(KEY_X_ARRAY, wordInfo.x_array)
-        values.put(KEY_Y_ARRAY, wordInfo.y_array)
+        values.put(KEY_X_ARRAY, wordInfo.xArray)
+        values.put(KEY_Y_ARRAY, wordInfo.yArray)
         values.put(KEY_STYLE, wordInfo.style)
         values.put(KEY_PATH, wordInfo.pic_path)
         values.put(KEY_ZUAN, wordInfo.zuanScore)

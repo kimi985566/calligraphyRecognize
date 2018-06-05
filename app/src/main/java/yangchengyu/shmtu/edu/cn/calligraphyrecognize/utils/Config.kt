@@ -1,8 +1,6 @@
 package yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils
 
 import android.os.Environment
-
-import java.io.File
 import java.text.DecimalFormat
 
 object Config {

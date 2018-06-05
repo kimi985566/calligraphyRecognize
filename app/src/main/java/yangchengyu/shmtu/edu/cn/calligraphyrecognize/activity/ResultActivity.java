@@ -519,8 +519,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
                 wordInfo.setWord(mChar_word);
                 wordInfo.setWidth(mWidth);
                 wordInfo.setHeight(mHeight);
-                wordInfo.setX_array(mX);
-                wordInfo.setY_array(mY);
+                wordInfo.setXArray(mX);
+                wordInfo.setYArray(mY);
                 wordInfo.setPic_path(mCroppedImgPath);
                 wordInfo.setStyle(mStyle);
                 wordInfo.setZuanScore(mPair.get(0).get(0));

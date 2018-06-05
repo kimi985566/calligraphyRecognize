@@ -5,9 +5,6 @@ public class FunctionInfo {
     int resource;
     String name;
 
-    public FunctionInfo() {
-    }
-
     public FunctionInfo(int resource, String name) {
         this.resource = resource;
         this.name = name;
