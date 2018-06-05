@@ -21,6 +21,7 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.Window
@@ -38,7 +39,6 @@ import com.baidu.ocr.sdk.exception.OCRError
 import com.baidu.ocr.sdk.model.AccessToken
 import com.baidu.ocr.ui.camera.CameraActivity
 import com.blankj.utilcode.util.FileUtils
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.SnackbarUtils
 import com.blankj.utilcode.util.Utils
 import org.json.JSONException
@@ -59,6 +59,7 @@ import java.util.*
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, AHBottomNavigation.OnTabSelectedListener, View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i(TAG, "onCreated")
         super.onCreate(savedInstanceState)
         initTheme()
         setContentView(R.layout.activity_main)
@@ -78,10 +79,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
     //获取系统权限
     private fun askPerms() {
         if (EasyPermissions.hasPermissions(this, *mPerms)) {
-            LogUtils.i(this.javaClass.simpleName + " : permissions are granted")
+            Log.i(TAG, "permissions are granted")
         } else {
-            LogUtils.i(this.javaClass.simpleName + ": these permissions are denied , " +
-                    "ready to request this permission")
+            Log.e(TAG, "These permissions are denied , " + "ready to request this permission")
             //回调再次获取权限
             EasyPermissions.requestPermissions(this, "使用拍照功能需要拍照权限",
                     PERMISSIONS_REQUEST_CODE, *mPerms)
@@ -155,6 +155,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
     //kotlin会进行空值判断，因此在这里的data需要可空，即添加“？”解决问题
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.i(TAG, "onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -222,8 +223,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
     //双击退出
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        Log.i(TAG, "onKeyDown")
         hideFABMenu()
-        LogUtils.i(this.javaClass.simpleName + ": onKeyDown")
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mIsExit) {
                 this.finish()
@@ -243,19 +244,20 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
     //获取权限
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionsResult")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
     //被授予权限后
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        LogUtils.i("EasyPermission CallBack onPermissionsGranted() : " + perms[0] +
+        Log.i(TAG, "EasyPermission CallBack onPermissionsGranted() : " + perms[0] +
                 " request granted , to do something...")
     }
 
     //权限被拒绝后再次请求权限
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        LogUtils.i("EasyPermission CallBack onPermissionsDenied():" + requestCode + ":" + perms.size)
+        Log.w(TAG, "EasyPermission CallBack onPermissionsDenied():" + requestCode + ":" + perms.size)
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this).build().show()
         }
@@ -277,13 +279,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
             override fun onResult(result: AccessToken) {
                 val token = result.accessToken
                 hasGotToken = true
-                LogUtils.d("init Access Token AK SK")
+                Log.i(TAG, "init Access Token AK SK")
             }
 
             override fun onError(error: OCRError) {
                 error.printStackTrace()
                 alertText("AK，SK方式获取token失败", error.message!!)
-                LogUtils.e("Error in get Token AK SK")
+                Log.e(TAG, "Error in get Token AK SK")
             }
         }, applicationContext, Config.API_KEY, Config.SECRET_KEY)
     }
@@ -391,6 +393,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
 
     //退出时的一些操作
     override fun onDestroy() {
+        Log.i(TAG, "onDestroy")
         super.onDestroy()
         OCR.getInstance().release()
         isAdd = false
@@ -459,6 +462,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
         private const val PERMISSIONS_REQUEST_CODE = 101
         private const val REQUEST_CODE_GENERAL = 105
         private const val REQUEST_CODE_GENERAL_BASIC = 106
+
+        private val TAG = this.javaClass.simpleName
 
         private var mIsExit: Boolean = false
         private var tabColors: IntArray? = null

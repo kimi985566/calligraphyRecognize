@@ -10,6 +10,7 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.View
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.NetworkUtils
@@ -36,15 +37,18 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     private var mRecyclerViewSelect: RecyclerView? = null
     private var mToolbar: Toolbar? = null
 
+    private val TAG = this.javaClass.simpleName
+
     //处理消息，显示对应功能
     @SuppressLint("HandlerLeak")
     private val getImageHandler = object : Handler() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
-            val JsonData = msg.obj as String
+            Log.i(TAG, "Get Image Handler Process")
+            val jsonData = msg.obj as String
             try {
                 mImageInfos.clear()
-                val jsonArray = JSONArray(JsonData)
+                val jsonArray = JSONArray(jsonData)
                 for (i in 0 until jsonArray.length()) {
                     val jsonObject = jsonArray.getJSONObject(i)
                     val pageId = jsonObject.getInt("page_id")
@@ -57,6 +61,7 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 mMainSelectAdapter!!.updateData(mImageInfos)
             } catch (e: JSONException) {
                 e.printStackTrace()
+                Log.e(TAG, e.toString())
             }
 
         }
@@ -64,6 +69,7 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate")
         setContentView(R.layout.activity_display)
         initUI()
     }
@@ -127,6 +133,7 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     //刷新
     override fun onRefresh() {
+        Log.i(TAG,"onRefresh")
         Handler().postDelayed({
             JSONUtils.getImage(Config.picAddress, getImageHandler)
             mSwipeRefreshLayoutSelect!!.isRefreshing = false
@@ -136,7 +143,7 @@ class DisplayActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     //点击卡片，显示其所属的书法风格
     override fun onCardViewItemClick(view: View, position: Int) {
         SnackbarUtils.with(view)
-                .setMessage(mImageInfos[position].getImage_style())
+                .setMessage(mImageInfos[position].image_style!!)
                 .setDuration(SnackbarUtils.LENGTH_SHORT)
                 .showSuccess()
     }

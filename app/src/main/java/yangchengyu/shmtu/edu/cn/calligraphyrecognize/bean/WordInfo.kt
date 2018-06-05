@@ -21,16 +21,6 @@ class WordInfo : Serializable {
     var kaiScore: Float = 0.toFloat()
     var caoScore: Float = 0.toFloat()
 
-    constructor() {}
+    constructor()
 
-    constructor(id: Int, word: String, height: Int, width: Int, x_array: Int, y_array: Int, style: String, pic_path: String) {
-        this.id = id
-        this.word = word
-        this.height = height
-        this.width = width
-        this.xArray = x_array
-        this.yArray = y_array
-        this.style = style
-        this.pic_path = pic_path
-    }
 }

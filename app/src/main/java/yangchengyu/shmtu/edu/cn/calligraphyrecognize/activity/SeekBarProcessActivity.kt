@@ -18,6 +18,10 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.OpenCVConstants
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.utils.CvImgProcessUtils
 import java.io.FileNotFoundException
 
+/**
+ *带有拖动条的显示页面
+ *
+ * */
 class SeekBarProcessActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +46,7 @@ class SeekBarProcessActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListe
 
         mBtnProcess!!.text = processName
         mBitmap = BitmapFactory.decodeResource(this.resources, R.drawable.ic_image_test)
-        mThreshSeekBar!!.setOnSeekBarChangeListener(this)
+        mThreshSeekBar!!.setOnSeekBarChangeListener(this)//进度条
     }
 
     private fun actionBarSetting() {
@@ -52,6 +56,7 @@ class SeekBarProcessActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListe
         supportActionBar!!.setHomeButtonEnabled(true)
     }
 
+    //选择对应的操作方式
     private fun select2Process(value: Int) {
         val temp = mBitmap!!.copy(mBitmap!!.config, true)
         if (OpenCVConstants.MANUAL_THRESH_NAME == processName) {
@@ -65,6 +70,7 @@ class SeekBarProcessActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListe
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btn_thresh_select -> {
+                //选择图片
                 val pickIntent = Intent(Intent.ACTION_PICK,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 pickIntent.type = "image/*"

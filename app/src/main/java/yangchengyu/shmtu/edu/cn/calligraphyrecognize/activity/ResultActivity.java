@@ -411,8 +411,6 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
         Bitmap gravityTemp = BitmapFactory.decodeFile(mCroppedImgPath);
         Bitmap binRatioTemp = BitmapFactory.decodeFile(mCroppedImgPath);
-        Bitmap binWidthTemp = BitmapFactory.decodeFile(mCroppedImgPath);
-        Bitmap binSkeTemp = ImageProcessUtils.INSTANCE.skeletonFromJNI(BitmapFactory.decodeFile(mCroppedImgPath));
 
         //求重心
         ImageProcessUtils.INSTANCE.imageGravityJava(gravityTemp, mX_native, mY_native);
@@ -472,9 +470,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         // 2、计算频率
         Map<String, Double> p = computeP(map, mMostKNNPoints);
 
+        //赋予其对应分类
         x.setType(maxP(p));
-
-        LogUtils.i("KNN result：" + x.getType());
 
         mTv_alg_style.setText(x.getType());
     }
@@ -547,6 +544,7 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     private void getWords() {
         AssetManager am = this.getAssets();
         try {
+            //读取分类文本
             InputStream is = am.open("words.txt");
             Scanner sc = new Scanner(is);
             List<String> lines = new ArrayList<>();
@@ -610,30 +608,25 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
     public void onItemClick(int position) {
         switch (position) {
             case 0:
-                SnackbarUtils.with(mCardView_character)
-                        .setMessage("原图")
-                        .setDuration(SnackbarUtils.LENGTH_SHORT)
-                        .showSuccess();
+                showImageProcessName("原图");
                 break;
             case 1:
-                SnackbarUtils.with(mCardView_character)
-                        .setMessage("二值化图像")
-                        .setDuration(SnackbarUtils.LENGTH_SHORT)
-                        .showSuccess();
+                showImageProcessName("二值化图像");
                 break;
             case 2:
-                SnackbarUtils.with(mCardView_character)
-                        .setMessage("轮廓图像")
-                        .setDuration(SnackbarUtils.LENGTH_SHORT)
-                        .showSuccess();
+                showImageProcessName("轮廓图像");
                 break;
             case 3:
-                SnackbarUtils.with(mCardView_character)
-                        .setMessage("骨架化图像")
-                        .setDuration(SnackbarUtils.LENGTH_SHORT)
-                        .showSuccess();
+                showImageProcessName("骨架化图像");
                 break;
         }
+    }
+
+    private void showImageProcessName(String 原图) {
+        SnackbarUtils.with(mCardView_character)
+                .setMessage(原图)
+                .setDuration(SnackbarUtils.LENGTH_SHORT)
+                .showSuccess();
     }
 
     @Override
@@ -669,6 +662,8 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
+    //Caffe深度学习的实际操作
+    //通过AsyncTask异步操作
     private class CNNTask extends AsyncTask<String, Void, Integer> {
 
         private CNNListener listener;
@@ -703,14 +698,15 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
 
     }
 
+    //完成Caffe的检测后
     @Override
     public void onTaskCompleted(int result) {
-        mStyle = IMAGENET_CLASSES[result];
+        mStyle = IMAGENET_CLASSES[result];//获取其分类结果
         mTv_style.setText(mStyle);
-        mProgressDialog.dismiss();
+        mProgressDialog.dismiss();//关闭进度弹窗
         Message message = new Message();
         message.what = RECOGNIZE_COMPLETE;
-        mHandler.sendMessage(message);
+        mHandler.sendMessage(message);//发送完成消息，并绘制柱状图
     }
 
     @SuppressLint("HandlerLeak")

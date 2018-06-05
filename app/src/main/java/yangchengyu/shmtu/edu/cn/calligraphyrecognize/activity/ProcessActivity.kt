@@ -21,7 +21,6 @@ class ProcessActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_normal_process)
-
         initView()
         actionBarSetting()
     }

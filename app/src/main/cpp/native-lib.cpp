@@ -98,7 +98,7 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_gThin
     //方便处理8邻域，防止越界
     width = src.cols - 1;
     height = src.rows - 1;
-    int step = src.step;
+    int step = static_cast<int>(src.step);
 
     /**
      * p4 p3 p2

@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.WindowManager
 import android.webkit.WebView
 import android.widget.ImageView
-
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.R
 
 /**
@@ -25,7 +25,12 @@ class AboutMeActivity : AppCompatActivity() {
     private var mIvAboutMe: ImageView? = null
     private var mWebView: WebView? = null
 
+    private val TAG = this.javaClass.simpleName
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        Log.i(TAG, "onCreate")
+
         super.onCreate(savedInstanceState)
 
         translucentSetting()
@@ -39,6 +44,7 @@ class AboutMeActivity : AppCompatActivity() {
         collapsingToolbarSetting()
 
         //连接到我的Github
+        Log.i(TAG, "load url: https://github.com/kimi985566")
         mWebView!!.loadUrl("https://github.com/kimi985566")
     }
 
@@ -72,5 +78,10 @@ class AboutMeActivity : AppCompatActivity() {
         setSupportActionBar(mToolBarAboutMe)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
+    }
+
+    override fun onDestroy() {
+        Log.i(TAG, "onDestroy")
+        super.onDestroy()
     }
 }

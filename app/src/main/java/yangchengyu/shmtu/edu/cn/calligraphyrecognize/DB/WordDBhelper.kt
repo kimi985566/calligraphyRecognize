@@ -10,12 +10,12 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo
 import java.util.*
 
 /**
- * Created by kimi9 on 2018/3/18.
  * 数据库处理工具类
  */
 
 class WordDBhelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
+    //获取所有的文字
     val allWord: ArrayList<WordInfo>
         get() {
             val wordInfoArrayList = ArrayList<WordInfo>()

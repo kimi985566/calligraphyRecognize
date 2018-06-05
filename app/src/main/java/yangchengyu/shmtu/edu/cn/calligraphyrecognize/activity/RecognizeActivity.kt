@@ -23,6 +23,12 @@ import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.ItemTouchHelperLis
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener.OnCardViewItemListener
 import java.util.*
 
+/**
+ * 识别记录显示页面
+ *
+ * 用以显示过往的检测记录，采用recycleView
+ *
+ * */
 class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, OnCardViewItemListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +70,7 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
         mWordInfo = mWordDBhelper!!.allWord
     }
 
+    //刷新界面
     override fun onRefresh() {
         Handler().postDelayed({
             mWordInfo = mWordDBhelper!!.allWord
@@ -72,6 +79,7 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
         }, 2000)
     }
 
+    //点击卡片，跳转页面
     override fun onCardViewItemClick(view: View, position: Int) {
         Toast.makeText(this, "加载中", Toast.LENGTH_SHORT).show()
         Thread(Runnable {

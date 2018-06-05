@@ -56,10 +56,10 @@ class MainSelectAdapter(private val context: Context, private var mImageInfos: A
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Glide.with(context)
                 .asBitmap()
-                .load(mImageInfos!![position].getImage_path())
+                .load(mImageInfos!![position].image_path)
                 .thumbnail(0.1f)
                 .into(holder.mIv_select)
-        holder.mTv_select.text = mImageInfos!![position].getImage_work_name()
+        holder.mTv_select.text = mImageInfos!![position].image_work_name
         holder.itemView.tag = position
         Log.i(TAG, "MainSelectAdapter OnBindViewHolder success")
     }
