@@ -3,7 +3,7 @@ package yangchengyu.shmtu.edu.cn.calligraphyrecognize.listener
 import yangchengyu.shmtu.edu.cn.calligraphyrecognize.bean.WordInfo
 
 /**
- * Created by kimi9 on 2018/3/20.
+ * Created by kimi9 on 2018/3/20
  */
 
 interface ItemTouchHelperListener {
