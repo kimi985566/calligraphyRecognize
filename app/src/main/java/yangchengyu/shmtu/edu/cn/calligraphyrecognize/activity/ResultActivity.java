@@ -622,9 +622,9 @@ public class ResultActivity extends AppCompatActivity implements OnItemClickList
         }
     }
 
-    private void showImageProcessName(String 原图) {
+    private void showImageProcessName(String name) {
         SnackbarUtils.with(mCardView_character)
-                .setMessage(原图)
+                .setMessage(name)
                 .setDuration(SnackbarUtils.LENGTH_SHORT)
                 .showSuccess();
     }

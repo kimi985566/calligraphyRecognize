@@ -214,9 +214,22 @@ class MainFragment : Fragment(), View.OnClickListener, ActivityCompat.OnRequestP
         }
     }
 
+    /**
+     * 第一步：BitmapFactory.Option
+     *       设置 inJustDecodeBounds为true
+     * 第二步：BitmapFactory.decodeFile(path,option)方法
+     *       解码图片路径为一个位图。如果指定的文件名是空的,或者不能解码到一个位图,函数将返回null。
+     *       获取到outHeight(图片原始高度)和 outWidth(图片的原始宽度)
+     * 第三步：计算缩放比例，也可以不计算，直接给它设定一个值。
+     *       options.inSampleSize = "你的缩放倍数";如果是2就是高度和宽度都是原始的一半。
+     * 第四步：设置options.inJustDecodeBounds = false;
+     *        重新读出图片
+     *        bitmap = BitmapFactory.decodeFile(path, options);
+     * */
     private fun initImageView(data: Intent) {
         val uri = data.data
         val options = BitmapFactory.Options()
+        //如果该值设为true那么将不返回实际的bitmap，也不给其分配内存空间这样就避免内存溢出了。
         options.inJustDecodeBounds = true
         try {
             val inputStream = activity!!.contentResolver.openInputStream(uri!!)

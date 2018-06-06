@@ -58,6 +58,7 @@ class RecognizeActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
 
         mMainCardViewItemAdapter = MainRecognizeItemAdapter(this, mWordInfo)
         mMainCardViewItemAdapter!!.setOnCardViewItemListener(this)
+        //设置拖动的回调接口
         val callback = myItemTouchHelperCallBack(mMainCardViewItemAdapter!!)
         val touchHelper = ItemTouchHelper(callback)
         touchHelper.attachToRecyclerView(mRecyclerView)

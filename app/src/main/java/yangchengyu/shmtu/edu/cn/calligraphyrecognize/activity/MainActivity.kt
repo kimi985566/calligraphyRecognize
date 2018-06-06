@@ -154,6 +154,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
     }
 
     //kotlin会进行空值判断，因此在这里的data需要可空，即添加“？”解决问题
+    //当进入拍照界面但是不去拍照返回时，这时的data为空值，而由于Kotlin有Null判断，会造成问题
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.i(TAG, "onActivityResult")
         super.onActivityResult(requestCode, resultCode, data)
@@ -162,8 +163,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, A
             //书法风格识别
                 REQUEST_CODE_GENERAL -> {
                     hideFABMenu()
-                    mTempImgPath = FileUtil.getSaveFile(applicationContext)
-                            .absolutePath
+                    mTempImgPath = FileUtil.getSaveFile(applicationContext).absolutePath
                     RecognizeService.recAccurate(mTempImgPath) { result ->
                         waitForResult()
                         saveCropImg()

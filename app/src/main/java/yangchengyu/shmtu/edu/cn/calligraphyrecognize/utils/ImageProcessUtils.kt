@@ -184,10 +184,10 @@ object ImageProcessUtils {
 
         var done: Boolean
         do {
-            Imgproc.erode(src, erode, sStrElement!!)
-            Imgproc.dilate(erode, temp, sStrElement!!)
-            Core.subtract(src, temp, temp)
-            Core.bitwise_or(ske, temp, ske)
+            Imgproc.erode(src, erode, sStrElement!!)//腐蚀
+            Imgproc.dilate(erode, temp, sStrElement!!)//膨胀
+            Core.subtract(src, temp, temp)//减操作
+            Core.bitwise_or(ske, temp, ske)//或操作
             erode.copyTo(src)
             done = Core.countNonZero(src) == 0
         } while (!done)
@@ -232,12 +232,15 @@ object ImageProcessUtils {
     @JvmStatic
     private external fun nativeBinaryRatio(matSrcAddr: Long): Double
 
+    //Native方法：获取骨架长度
     @JvmStatic
     private external fun nativeSkeLength(matSrcAddr: Long): Double
 
+    //Native方法：获取二值图像黑色像素点
     @JvmStatic
     private external fun nativeBinLength(matSrcAddr: Long): Double
 
+    //Native方法：笔画宽度
     @JvmStatic
     private external fun nativeBinaryBlack(matSrcAddr: Long, matDstAddr: Long): Double
 }

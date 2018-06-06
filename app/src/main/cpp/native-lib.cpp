@@ -11,7 +11,12 @@
 using namespace cv;
 using namespace std;
 
-//计算文字重心
+/*
+ * 计算文字重心
+ * 不规则区域的矩，表示把一个归一化的灰度级图像函数理解为一个二维随机变量的概率密度。
+ * 这个随机变量的属性可以用统计特征--矩（Moments）来描述。
+ * 通过假设非零的像素值表示区域，矩可以用于二值或灰度级的区域描述。
+ * */
 CvPoint aoiGravityCenter(IplImage *src) {
 
     CvPoint center;
@@ -68,6 +73,8 @@ CvPoint grayCenter(IplImage *TheImage) {
  * 实现图像骨架化的Native方法：Rosenfeld细化算法
  * @param src：原图片
  * @return dst：细化后图片
+ *
+ * 8simple:把p1的值设置为0后，不会改变周围8个像素的8连通性。
  *
  * Rosenfeld细化算法描述如下：
  * 1. 扫描所有像素，如果像素是北部边界点，且是8simple，但不是孤立点和端点，删除该像素。
@@ -183,6 +190,13 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
 
     Mat &src = *(Mat *) matSrcAddr;//通过指针获取Java层对应空间的原始图片mat
 
+    /*
+     * 由于OpenCV主要针对的是计算机视觉方面的处理，因此在函数库中，最重要的结构体是IplImage结构。
+     * 从本质上讲，他是一个CvMat对象，但它还有一些其他成员变量将矩阵解释为图像。
+     * IplImage结构来源于Intel的另外一个函数库Intel Image Processing Library (IPL)，
+     * 该函数库主要是针对图像处理。
+     * */
+
     IplImage frame = IplImage(src);
     CvPoint result = aoiGravityCenter(&frame);
 
@@ -227,6 +241,7 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
     return ratio;
 }
 
+//骨架长度获取
 extern "C"
 JNIEXPORT jdouble JNICALL
 Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeSkeLength(
@@ -251,6 +266,7 @@ Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativ
     return counterB;
 }
 
+//二值化像素点总数获取
 extern "C"
 JNIEXPORT jdouble JNICALL
 Java_yangchengyu_shmtu_edu_cn_calligraphyrecognize_utils_ImageProcessUtils_nativeBinLength(
